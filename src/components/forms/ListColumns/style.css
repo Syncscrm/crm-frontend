@@ -1,0 +1,105 @@
+.list-users-container {
+    width: 100vw;
+    height: 100vh;
+}
+
+.list-users {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.list-user-form-container {
+    width: 700px;
+    height: calc(100vh - 130px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.item-list-users {
+    overflow: hidden;
+    width: calc(100% - 10px);
+    max-width: calc(100vw - 10px);
+    min-height: 60px;
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+
+.item-list-users:hover {
+    box-shadow: rgba(58, 173, 218, 0.589) 0px 4px 10px -2px, rgba(1, 108, 231, 0.541) 0px 3px 7px -3px;
+}
+
+.list-user-logo-container {
+    width: 100px;
+    min-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-inline: 10px;
+}
+
+.list-users-logo {
+    max-width: 100%; /* Ajusta a largura máxima para 100% do container */
+    max-height: 100%; /* Ajusta a altura máxima para 100% do container */
+    object-fit: contain; /* Mantém a proporção sem cortar a imagem */
+    margin: 5; /* Centraliza a imagem no container */
+}
+
+
+.list-user-label-username {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.list-users-title {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.label-is-active {
+    width:60px;
+    height: 40px;
+    border-radius: 5px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-user-container{
+    max-width: calc(100vw - 10px);
+    width: 700px;
+    min-height: 60px;
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    background-color: rgb(53, 186, 238);
+    margin-top: 10px;
+}   
+
+.search-user-input {
+    max-width: calc(100vw - 10px);
+    width: 100%;
+    height: 35px;
+    margin-inline: 10px;
+    border-radius: 5px;
+    border: none;
+
+}

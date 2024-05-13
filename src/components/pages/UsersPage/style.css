@@ -1,0 +1,45 @@
+.users-page-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.users-body-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100vw;
+    height: calc(100vh - 70px);
+}
+
+.admin-menu-button {
+    background-color:deeppink;
+    border-radius: 5px;
+    border: none;
+    height: 30px;
+    padding-inline: 8px;
+    color: white;
+}
+
+.admin-menu-button:hover {
+    background-color:dodgerblue;
+}
+
+.users-page-floating-button {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 55px;
+    height: 55px;
+    background-color: dodgerblue;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 30px;
+}
+
+.admin-floating-button:hover {
+    background-color:deeppink;
+}
+
+

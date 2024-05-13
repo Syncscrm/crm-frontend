@@ -1,0 +1,201 @@
+.compartilhar-card-modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0000002a;
+    z-index: 1010;
+}
+
+.compartilhar-card-container {
+    position: fixed;
+    left: calc(50vw - 350px);
+    top: 50px;
+    width: 700px;
+    max-width: calc(100vw - 10px);
+    height: calc(100vh - 80px);
+    max-height: calc(100vh - 80px);
+    background-color: white;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: center;
+    border-radius: 10px;
+    padding-inline: 10px;
+}
+
+.compartilhar-card-form-container {
+    max-width: calc(100vw - 10px);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: center;
+}
+
+.compartilhar-card-form {
+    width: 100%;
+    display: flex;  
+    justify-content:center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.compartilhar-card-input {
+    background-color: transparent;
+    border: 1px solid #ADADAD;
+    width: calc(100% );
+    min-height: 48px;
+    color: #ADADAD;
+    outline: none;
+    border-radius: 5px;
+    font-size: 16px;
+    padding-inline: 20px;
+    margin-bottom: 5px;
+}
+
+.compartilhar-card-input:focus {
+    border: 2px solid rgb(247, 0, 173);
+    transition: border 1.0s;
+}
+
+.compartilhar-card-input::placeholder {
+    color: #ADADAD;
+}
+
+.compartilhar-card-button {
+    min-height: 50px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgb(197, 197, 197);
+    color: white;
+    margin-inline: 10px;
+    padding-inline: 8px;
+}
+
+.compartilhar-card-button:hover {
+    cursor: pointer;
+    background-position: left bottom;
+}
+
+
+.compartilhar-card-footer {
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+
+.compartilhar-card-close-button {
+    width: 40px;
+    min-height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: #aaaaaa;
+    color: white;
+    margin-inline: 10px;
+}
+
+.compartilhar-card-close-button:hover {
+    cursor: pointer;
+    background-position: left bottom;
+}
+
+.compartilhar-card-list-container {
+    overflow-y: auto;
+    width: 100%;
+    height: calc(100vh - 290px);
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.compartilhar-item-container {
+    width: 100%;
+    height:min-content;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.compartilhar-description {
+    width: 100%;
+    min-height: 40px;
+    border-radius: 5px;
+    background-color: #e2e2e2;
+    color: rgb(78, 78, 78);
+    display: flex;
+    align-items: center;
+    padding-inline: 5px;
+}
+
+.compartilhar-date {
+    width: 100%;
+    min-height: 25px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: #727272;
+}
+.compartilhar-mensagem-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.user-logo-compartilhar-container {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin-right: 5px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 3px -3px;
+}
+
+.user-logo-compartilhar {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    margin: 0;
+    border-radius: 1px;
+}
+
+.btn-completed-compartilhar {
+    width: 35px;
+    height: 35px;
+    color: #727272;
+    margin-left: 5px;
+}
+
+.btn-completed-compartilhar:hover {
+    width: 40px;
+    height: 40px;
+}
+
+.btn-delete-compartilhamento {
+    width: 40px;
+    height: 40px;
+    background-color: deeppink;
+    border: none;
+    border-radius: 5px;
+    margin-left: 5px;
+    color: white;
+}
+
+
+
+

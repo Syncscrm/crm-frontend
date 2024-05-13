@@ -1,0 +1,140 @@
+
+
+
+.home-container {
+    width: calc(100vw);
+    margin-left: 0px;
+    height: calc(100vh - 70px);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.tools-container {
+    margin-bottom: 0px;
+    width: 100vw;
+    height: 35px;
+    display: flex;
+    align-items: center;
+
+}
+
+
+/* -------- SEARCH CONTAINER -------- */
+
+.search-card-container{
+    max-width: calc(100vw - 10px);
+    min-height: 30px;
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
+    border-radius: 5px;
+    /*box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;*/
+}   
+
+.search-card-input {
+    max-width: calc(100vw - 10px);
+    width: 100%;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    padding-inline: 5px;
+    margin-left: 10px;
+}
+
+.search-card-input:focus {
+color: blueviolet;
+border: 1px solid #ccc; /* Cor inicial da borda */
+
+}
+.btn-clear-search {
+    min-width: 30px;
+    height: 30px;
+    background-color: deeppink;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-left: 3px;
+    
+}
+
+/* -------- ORDER BY -------- */
+
+.label-order-by-card {
+    font-size: 13px;
+    min-width: 80px;
+    margin-left: 5px;
+}
+
+.btn-order-by-card {
+    width: 80px;
+    height: 22px;
+    background-color: dodgerblue;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    font-size: 13px;
+    width: 100px;
+    margin-right: 10px;
+}
+
+.search-result-container {
+    width: 360px;
+    max-height: calc(100vh - 113px);
+    position: fixed;
+    top: 70px;
+    left: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+    background-color: #9555e4c2;
+    overflow-y: auto;
+    padding-bottom: 5px;
+}
+
+.search-result-container::-webkit-scrollbar {
+    width: 7px;
+}
+
+.search-result-container::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 5px;
+}
+
+.item-search-result-card {
+    width: calc(100% - 10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.search-icon {
+    background-color: rgb(199, 199, 199);
+    width: 35px;
+    height: 30px;
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    margin-left: 10px;
+    color: white;
+}
+
+.btn-import-search {
+    height: 25px;
+    background-color: rgb(184, 184, 184);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-left: 3px;
+    padding-inline: 5px;
+    margin-left: 5px;
+}

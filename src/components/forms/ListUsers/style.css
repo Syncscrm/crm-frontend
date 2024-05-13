@@ -1,0 +1,134 @@
+/* -------- MODAL -------- */
+
+.list-users-container-modal {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+}
+
+/* -------- LIST USERS CONTAINER -------- */
+
+.list-users-container {
+    width: 700px;
+    max-width: calc(100vw - 10px);
+    height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* -------- SEARCH CONTAINER -------- */
+
+.search-user-container{
+    max-width: calc(100vw - 10px);
+    min-height: 40px;
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}   
+
+.search-user-input {
+    max-width: calc(100vw - 10px);
+    width: 100%;
+    height: 30px;
+    margin-inline: 10px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    padding-inline: 10px;
+}
+
+.search-user-input:focus {
+color: blueviolet;
+border: 1px solid #ccc; /* Cor inicial da borda */
+
+}
+
+/* -------- ORDER BY -------- */
+
+.label-order-by-users {
+    font-size: 13px;
+    min-width: 80px;
+    margin-left: 5px;
+}
+
+.btn-order-by-users {
+    width: 80px;
+    height: 30px;
+    background-color: dodgerblue;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    font-size: 13px;
+    width: 100px;
+    margin-right: 10px;
+}
+
+/* -------- LIST USERS FORM -------- */
+
+.list-user-form-container {
+    width: 700px;
+    max-width: calc(100% - 10px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.item-list-users {
+    overflow: hidden;
+    width: calc(100% - 10px);
+    min-height: 60px;
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+
+.item-list-users:hover {
+    box-shadow: rgba(58, 173, 218, 0.589) 0px 4px 10px -2px, rgba(1, 108, 231, 0.541) 0px 3px 7px -3px;
+}
+
+.list-user-logo-container {
+    width: 100px;
+    min-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-inline: 10px;
+}
+
+.list-users-logo {
+    max-width: 100%; /* Ajusta a largura máxima para 100% do container */
+    max-height: 100%; /* Ajusta a altura máxima para 100% do container */
+    object-fit: contain; /* Mantém a proporção sem cortar a imagem */
+    margin: 5; /* Centraliza a imagem no container */
+    border-radius: 5px;
+
+}
+
+.list-user-label-username {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.label-is-active {
+    width:60px;
+    height: 35px;
+    border-radius: 5px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}

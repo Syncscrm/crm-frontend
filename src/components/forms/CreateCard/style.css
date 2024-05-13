@@ -1,0 +1,158 @@
+.create-card-modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0000002a;
+    z-index: 1010;
+}
+
+.create-card-container {
+    position: fixed;
+    left: calc(50vw - 350px);
+    top: 50px;
+    width: 700px;
+    max-width: calc(100vw - 10px);
+    max-height: calc(100vh - 60px);
+    background-color: white;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: center;
+    border-radius: 10px;
+    padding-inline: 10px;
+}
+
+.create-card-form-container {
+    max-width: calc(100vw - 10px);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.create-card-form {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+}
+
+.create-card-input {
+    background-color: transparent;
+    border: 1px solid #ADADAD;
+    width: calc(100% - 80px);
+    min-height: 48px;
+    color: #ADADAD;
+    outline: none;
+    margin-bottom: 30px;
+    border-radius: 5px;
+    font-size: 16px;
+    padding-inline: 20px;
+    text-align: center;
+}
+
+.create-card-input:focus {
+    border: 2px solid rgb(247, 0, 173);
+    transition: border 1.0s;
+}
+
+.create-card-input::placeholder {
+    color: #ADADAD;
+    text-align: center;
+}
+
+.create-card-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 40px;
+}
+
+.create-card-login-logo {
+    width: 100px;
+}
+
+.create-card-logo-label{
+    color: rgb(92, 92, 92);
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.create-card-logo-label:hover{
+    color:dodgerblue;
+}
+
+.create-card-button {
+    width: 100%;
+    min-height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: dodgerblue;
+    color: white;
+    margin-inline: 10px;
+}
+
+.create-card-button:hover {
+    cursor: pointer;
+    background-position: left bottom;
+}
+
+.create-card-error-message{
+    min-height: 22px;
+    height: 22px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    color: rgb(255, 0, 85);
+    font-size: 13px;
+}
+
+.create-card-label-input {
+    width: calc(100% - 80px);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 30px;
+    font-size: 16px;
+}
+
+.create-card-footer {
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.create-card-title {
+    font-size: 16px;
+}
+
+.create-card-close-button {
+    width: 100%;
+    min-height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: #aaaaaa;
+    color: white;
+    margin-inline: 10px;
+}
+
+.create-card-close-button:hover {
+    cursor: pointer;
+    background-position: left bottom;
+}
+
+
+

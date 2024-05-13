@@ -1,0 +1,206 @@
+/*-------- CONTAINER PRINCIPAL --------*/
+.update-user-container {
+    background-color: rgba(0, 0, 0, 0.24);
+    position: fixed;
+    left: 0;
+    top: 0px;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.update-user-form-container {
+    background-color: #ffffff;
+    max-width: calc(100vw - 10px);
+    width: 700px;
+    max-height: calc(100vh - 60px);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.update-user-form {
+    width: 100%;
+    max-width: calc(100vw - 10px);
+    height: calc(100vh - 40px - 220px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-y: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.update-user-header {
+    margin-top: 10PX;
+    min-height: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.update-user-header-title {
+    color: #616161;
+    margin-inline: 40px;
+}
+
+.update-user-input {
+    background-color: transparent;
+    border: 1px solid #ADADAD;
+    width: calc(100% - 80px);
+    min-height: 48px;
+    color: #575757;
+    outline: none;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    padding-inline: 20px;
+    text-align: center;
+}
+
+.btn-is-active {
+    border: none;
+    border-radius: 5px;
+    width: calc(100% - 80px);
+    min-height: 35px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btns-acess-nivel-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.btn-nivel-acess {
+    border: none;
+    border-radius: 5px;
+    width: calc(80px);
+    min-height: 35px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-inline: 8px;
+}
+
+.update-user-avatar {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    margin: 5;
+    border-radius: 10px;
+}
+
+.update-user-logo-container {
+    width: 100%;
+    min-height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.update-user-label-input {
+    width: calc(100% - 80px);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 30px;
+    font-size: 16px;
+}
+
+
+.minhaLinhaDivisoria {
+    width: calc(100% - 80px);
+    border: 1px solid #ccc;
+}
+
+/* ------ FOOTER -------*/
+.update-user-footer {
+    background-color: #6d6d6d00;
+    width: 100%;
+    min-height: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.update-user-close-button {
+    width: 100%;
+    min-height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: #aaaaaa;
+    color: white;
+    margin-inline: 10px;
+}
+
+.update-user-update-button {
+    width: 100%;
+    min-height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: dodgerblue;
+    color: white;
+    margin-inline: 10px;
+}
+
+.update-user-select-input {
+    background-color: transparent;
+    border: 1px solid #ADADAD;
+    width: calc(100% - 80px);
+    min-height: 48px;
+    color: #ADADAD;
+    outline: none;
+    margin-bottom: 10px;
+    border-radius: 50px;
+    font-size: 16px;
+    padding-inline: 20px;
+    text-align: center;
+}
+
+.column-item {
+    padding: 8px;
+    margin: 5px;
+    background-color: lightgray;
+    border: none;
+    cursor: pointer;
+}
+
+.column-item.selected {
+    background-color: dodgerblue;
+    color: white;
+}
+
+.select-columns-container {
+    width: calc(100% - 30px);
+    background-color: rgb(247, 247, 247);
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.afilhado-item {
+    padding: 8px;
+    margin: 5px;
+    background-color: lightgray;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.afilhado-item.selected {
+    background-color: dodgerblue;
+    color: white;
+
+}

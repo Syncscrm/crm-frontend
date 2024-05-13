@@ -1,0 +1,73 @@
+.column-container {
+    min-width: 300px;
+    max-width: 300px;
+    height: calc(100vh - 90px);
+    min-height: calc(100vh - 90px);
+    background-color: rgb(255, 255, 255);
+    background-color: rgb(235, 1, 1);
+    border-radius: 10px;
+    display: flex;
+    justify-content: flex-start;
+    margin-inline: 5px;
+    background-color: #F0F2F5; 
+    flex-direction: column;
+    padding-inline: 5px;
+}
+
+.column-header {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.column-title {
+    font-weight:700;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 30px;
+    padding-inline: 8px;
+    color: #364664;
+}
+
+.column-info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 20px;
+    font-size: 12px;
+    padding-inline: 8px;
+    color: #82839E;
+}
+
+.btn-add-new-card {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 3px;
+    font-size: 18px;
+    color: #ffffff;
+    background-color: #82839E;
+}
+
+.column-body {
+    width: 100%;
+    height: calc(100vh - 155px);
+    padding-left: 3px;
+    padding-right: 4px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 8px;
+}
+
+.column-body::-webkit-scrollbar {
+    width: 7px;
+}
+
+.column-body::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 5px;
+}

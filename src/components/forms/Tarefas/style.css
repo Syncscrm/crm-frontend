@@ -1,0 +1,208 @@
+.tarefa-card-modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0000002a;
+    z-index: 1010;
+}
+
+.tarefa-card-container {
+    position: fixed;
+    left: calc(50vw - 350px);
+    top: 50px;
+    width: 700px;
+    max-width: calc(100vw - 10px);
+    height: calc(100vh - 80px);
+    max-height: calc(100vh - 80px);
+    background-color: white;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: center;
+    border-radius: 10px;
+    padding-inline: 10px;
+}
+
+.tarefa-card-form-container {
+    max-width: calc(100vw - 10px);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: center;
+}
+
+.tarefa-card-form {
+    width: 100%;
+    display: flex;  
+    justify-content:center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.tarefa-card-input {
+    background-color: transparent;
+    border: 1px solid #ADADAD;
+    width: calc(100% );
+    min-height: 48px;
+    color: #ADADAD;
+    outline: none;
+    border-radius: 5px;
+    font-size: 16px;
+    padding-inline: 20px;
+    margin-bottom: 5px;
+}
+
+.tarefa-card-input:focus {
+    border: 2px solid rgb(247, 0, 173);
+    transition: border 1.0s;
+}
+
+.tarefa-card-input::placeholder {
+    color: #ADADAD;
+}
+
+.tarefa-card-button {
+    min-height: 50px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgb(197, 197, 197);
+    color: white;
+    margin-inline: 10px;
+    padding-inline: 8px;
+}
+
+.tarefa-card-button:hover {
+    cursor: pointer;
+    background-position: left bottom;
+}
+
+
+.tarefa-card-footer {
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+
+.tarefa-card-close-button {
+    width: 40px;
+    min-height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: #aaaaaa;
+    color: white;
+    margin-inline: 10px;
+}
+
+.tarefa-card-close-button:hover {
+    cursor: pointer;
+    background-position: left bottom;
+}
+
+.tarefa-card-list-container {
+    overflow-y: auto;
+    width: 100%;
+    height: calc(100vh - 340px);
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.tarefa-item-container {
+    width: 100%;
+    height:min-content;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.tarefa-description {
+    width: 100%;
+    min-height: 40px;
+    border-radius: 5px;
+    background-color: #e2e2e2;
+    color: rgb(78, 78, 78);
+    display: flex;
+    align-items: flex-start;
+    padding-inline: 5px;
+    flex-direction: column;
+}
+
+.tarefa-description-title {
+    font-size: 15px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.tarefa-description-date {
+    font-size: 12px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+}
+
+.tarefa-date {
+    width: 100%;
+    min-height: 18px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: #727272;
+}
+.tarefa-mensagem-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.user-logo-tarefa-container {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin-right: 5px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 3px -3px;
+}
+
+.user-logo-tarefa {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    margin: 0;
+    border-radius: 1px;
+}
+
+.btn-completed-task {
+    width: 35px;
+    height: 35px;
+    color: #727272;
+    margin-left: 5px;
+}
+
+.btn-completed-task:hover {
+    width: 40px;
+    height: 40px;
+}
+
+
+
+

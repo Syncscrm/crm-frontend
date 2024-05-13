@@ -1,0 +1,235 @@
+.card-container {
+    position: relative;
+
+    width: 100%;
+    display: flex;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    margin-bottom: 10px;
+    flex-direction: column;
+}
+
+.card-container:hover {
+    box-shadow: rgb(148, 148, 148) 0px 4px 10px -2px,rgb(150, 150, 150) 0px 3px 7px -3px;
+}
+
+.card-header {
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #82839E;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    padding-inline: 5px;
+
+}
+
+.card-body-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 23px;
+    font-size: 13px;
+    color: #82839E;
+}
+
+.card-body-item-separate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 20px;
+    font-size: 13px;
+    color: #82839E;
+}
+
+.card-body-item-fone {
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+    width: 100%;
+    height: 23px;
+    font-size: 13px;
+    color: #82839E;
+}
+
+.card-body-item-fone-number {
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+    height: 23px;
+    font-size: 13px;
+    color: #82839E;
+}
+
+.icons-whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    height: 19px;
+    width: 19px;
+    color: #ffffff;
+    background-color: #26CC63;
+    border-radius: 4px;
+    padding: 2px;
+}
+
+.icons-whatsapp:hover {
+    height: 23px;
+    width: 23px;
+}
+
+.card-valor-item-separate {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.card-icon-item {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #82839E;
+}
+
+.card-valor-item {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.card-footer {
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content:space-between ;
+    position: relative;
+    padding-inline: 5px;
+}
+
+.card-n-dias {
+    min-width: 50px;
+    max-width: 50px;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: dodgerblue;
+    color: white;
+    border-radius: 5px;
+    font-size: 11px;
+    padding-inline: 3px;
+}
+
+.card-star-container {
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0px;
+}
+
+.card-icon-star {
+    font-size: 18px;
+    color: #C4C4C4;
+}
+
+.card-icon-star:hover {
+    font-size: 25px;
+    color: gold;
+}
+
+.card-icons-status-container {
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding-top: 2px;
+    font-size: 20px;
+}
+
+.card-icon-em-andamento {
+    color: rgb(138, 138, 138);
+}
+
+.card-icon-em-andamento:hover {
+    font-size: 26px;
+}
+
+.card-icon-vendido {
+    color: dodgerblue;
+}
+
+.card-icon-vendido:hover {
+    font-size: 24px;
+}
+
+.card-icon-perdido {
+    color:rgb(255, 20, 98);
+}
+
+.card-icon-perdido:hover {
+    font-size: 24px;
+}
+
+.btns-card-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-update-card {
+    width: 100%;
+    min-height: 40px;
+    border: none;
+    border-radius: 3px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    background-color: #a7a7a7;
+    color: white;
+    margin-inline: 5px;
+}
+
+.btn-update-card:hover {
+    background-color:dodgerblue;
+}
+
+.icons-btns-update-card {
+    font-size: 20px;
+}
+
+.edit-status-footer-container {
+    width: calc(100% - 0px);
+    height: calc(83px);
+    background-color: rgba(0, 0, 0, 0.678);
+    border-radius: 8px;
+    z-index: 1000;
+    position:absolute;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.icon-edit-status-card-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin-inline: 5px;
+}
