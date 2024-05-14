@@ -86,8 +86,8 @@ function LoginPage() {
       {isCreatingAccount ? (
         <div className="login-form-container">
           <div className="logo-container">
-            <img src={Logo} alt="SuiteFlow Logo" className="login-logo" />
-            <h3 className="logo-label">SuiteFlow</h3>
+            <img style={{display: 'none'}}  src={Logo} alt="SyncsCRM Logo" className="login-logo" />
+            <h3 className="logo-label">SyncsCRM</h3>
           </div>
           <form className="login-form" onSubmit={handleCreateUser}>
             <input
@@ -131,8 +131,8 @@ function LoginPage() {
 
         <div className="login-form-container">
           <div className="logo-container">
-            <img src={Logo} alt="SuiteFlow Logo" className="login-logo" />
-            <h3 className="logo-label">SuiteFlow</h3>
+            <img style={{display: ''}} src={Logo} alt="SyncsCRM Logo" className="login-logo" />
+            <h3 className="logo-label">SyncsCRM</h3>
           </div>
           <form className="login-form" onSubmit={handleLogin}>
             <input
@@ -152,7 +152,7 @@ function LoginPage() {
             {true && <div className="error-message">{error}</div>}
             <button className="login-button" type="submit">LOGIN</button>
           </form>
-          <button className="login-button-new-account" onClick={() => { setIsCreatingAccount(true); setError('') } }>Não tem uma conta? Inscrever-se</button>
+          <button style={{display: 'none'}} className="login-button-new-account" onClick={() => { setIsCreatingAccount(true); setError('') } }>Não tem uma conta? Inscrever-se</button>
         </div>
       )}
     </div>

@@ -71,3 +71,12 @@
     background-color: #ccc;
     border-radius: 5px;
 }
+
+.column-footer {
+    width: 100%;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    font-size: 9px;
+    color:#82839E;
+}

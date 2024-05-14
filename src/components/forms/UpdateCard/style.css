@@ -1,20 +1,20 @@
 .update-card-modal {
     position: fixed;
-    left: 0;
     top: 0;
     width: 100vw;
     height: 100vh;
     background-color: #0000002a;
     z-index: 1010;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.update-card-container {
-    position: fixed;
-    left: calc(50vw - 350px);
-    top: 50px;
+.update-card-container-update {
+    margin-inline: 5px;
     width: 700px;
     max-width: calc(100vw - 10px);
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - 70px);
     background-color: white;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
     display: flex;
@@ -163,6 +163,7 @@
     padding-inline: 5px;
     height: 30px;
     margin-right: 5px;
+    margin-bottom: 5px;
 }
 
 .update-card-status-container {

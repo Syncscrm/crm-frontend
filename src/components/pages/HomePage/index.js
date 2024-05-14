@@ -122,18 +122,16 @@ function HomePage() {
       <div className='tools-container'>
 
         <div className='search-card-container'>
-          <MdOutlineSearch style={{ display: 'none' }} className='search-icon' />
+          
           <input
-            style={{ backgroundColor: searchTerm.trim() ? '#e0e0e0' : '', color: searchTerm.trim() ? 'white' : '' }}
+            style={{ backgroundColor: searchTerm.trim() ? '#e0e0e0' : '', color: searchTerm.trim() ? 'rgb(83, 83, 83)' : '' }}
             className='search-card-input'
-            placeholder="Buscar usuário pelo nome..."
+            placeholder="Buscar Cards..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
+          <MdOutlineSearch style={{ display: '' }} className='search-icon' />
           <button style={{ display: searchTerm.trim() ? '' : 'none' }} className='btn-clear-search' onClick={() => setSearchTerm('')}>X</button>
-          <button className='btn-import-search' onClick={() => setOpenCloseImportExcelEntidades(true)}>Import</button>
-          <button className='btn-import-search' onClick={() => setOpenCloseImportExcelSuiteFlow(true)}>ImportSuiteFlow</button>
-
 
         </div>
 

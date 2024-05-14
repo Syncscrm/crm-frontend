@@ -78,7 +78,7 @@ function UpdateCard({ idCard, cardData }) {
     e.preventDefault();
     setIsUpdatingCard(true);
     setError('');
-  
+
     const cardData = {
       id: idCard,
       name,
@@ -94,7 +94,7 @@ function UpdateCard({ idCard, cardData }) {
       sale_value: saleValue,
       status: statusCard ? statusCard : '',
     };
-  
+
     try {
       const response = await axios.post(`${apiUrl}/card/update`, cardData);
       //console.log(response.data);  // Verifique se todos os dados necessários estão sendo retornados
@@ -105,14 +105,14 @@ function UpdateCard({ idCard, cardData }) {
       setPreviewSearchCards(prevCards => prevCards.map(card => card.id === idCard ? { ...card, ...updatedCardData } : card));
       setListNotifications(prevCards => prevCards.map(card => card.id === idCard ? { ...card, ...updatedCardData } : card));
 
-  
+
       setOpenCloseUpdateCard(false);
       setIsUpdatingCard(false);
       console.log('Card atualizado com sucesso!');
 
-      console.log(columnId,currentIdColumn )
+      console.log(columnId, currentIdColumn)
 
-      if(columnId != currentIdColumn){
+      if (columnId != currentIdColumn) {
         addHistoricoCardContext(`Coluna alterada para ${getNameColumnCard(columnId)}`, idCard, user.id)
       }
 
@@ -121,9 +121,9 @@ function UpdateCard({ idCard, cardData }) {
       setError('Erro ao atualizar o Card.');
     }
   };
-  
+
   useEffect(() => {
-    if(cardData){
+    if (cardData) {
       setCurrentIdColumn(cardData.column_id)
 
     }
@@ -132,7 +132,7 @@ function UpdateCard({ idCard, cardData }) {
 
   return (
     <div className='update-card-modal'>
-      <div className='update-card-container'>
+      <div className='update-card-container-update'>
         <div className="update-card-form-container">
 
           <label htmlFor="address" className='update-card-label-input'>Selecionar Coluna:</label>

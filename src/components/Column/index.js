@@ -154,7 +154,7 @@ function Column(props) {
             }
             {provided.placeholder}
           </div>
-          <div style={{ display: 'none' }} className='column-footer'>{props.columnData.id}</div>
+          <div style={{ display: '' }} className='column-footer'>{props.columnData.id}</div>
           {isModalOpen && <CreateCard columnId={props.columnData.id} onClose={handleCloseModal} />}
         </div>
       )}

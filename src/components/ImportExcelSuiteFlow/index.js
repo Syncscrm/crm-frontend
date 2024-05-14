@@ -309,21 +309,21 @@ function ImportExcelSuiteFlow() {
               card_id: cardId,
               nome_obra: nome_obra,
               contato_obra: contato_responsavel,
-              previsao_medicao: recebimento_medidas,
+              previsao_medicao: recebimento_medidas ? recebimento_medidas : new Date(),
               status_medicao: 'Parado',
-              previsao_producao: previsao_producao,
+              previsao_producao: previsao_producao ? previsao_producao : new Date(),
               status_producao: 'Parado',
-              previsao_entrega_vidro: entrega_vidro,
+              previsao_entrega_vidro: entrega_vidro ? entrega_vidro : new Date(),
               status_entrega_vidro: 'Parado',
               previsao_vistoria_pre: null,
               status_vistoria_pre: 'Parado',
-              previsao_entrega_obra: prazo_entrega,
+              previsao_entrega_obra: prazo_entrega ? prazo_entrega : new Date(),
               status_entrega_obra: 'Parado',
-              previsao_instalacao: previsao_instalacao,
+              previsao_instalacao: previsao_instalacao ? previsao_instalacao : new Date(),
               status_instalacao: 'Parado',
               previsao_vistoria_pos: null,
               status_vistoria_pos: 'Parado',
-              previsao_assistencia: previsao_assistencia,
+              previsao_assistencia: previsao_assistencia ? previsao_assistencia : new Date(),
               status_assistencia: 'Parado',
               horas_producao: horas_producao,
               quantidade_esquadrias: quantidade_esquadrias,
@@ -337,9 +337,6 @@ function ImportExcelSuiteFlow() {
             // CRIAR TABELA DE HISTORICO
             try {
               const historicos = JSON.parse(lista_historico);
-              
-              const tarefas = JSON.parse(lista_de_tarefas);
-
 
               function parseDateString(dateStr) {
                 const parts = dateStr.split('/'); // Divide a string pela barra
@@ -366,9 +363,13 @@ function ImportExcelSuiteFlow() {
                 console.log(`Histórico adicionado com sucesso: ${response.data}`);
               }
 
+              // CRIAR TABELA DE HISTORICO
+            try {
 
-               // Processar cada histórico individualmente
-               for (const tarefa of tarefas) {
+              const tarefas = JSON.parse(lista_de_tarefas);
+
+              // Processar cada histórico individualmente
+              for (const tarefa of tarefas) {
                 const tasksData = {
                   user_id: buscarIdReferencia(entidade), // from useUser context
                   card_id: cardId, // or any other type depending on the context
@@ -377,10 +378,16 @@ function ImportExcelSuiteFlow() {
                   due_date: parseDateString(tarefa.date),
                   completed: tarefa.status,
                 };
-          
+
                 const response = await axios.post(`${apiUrl}/card/add-tarefa`, tasksData);
                 console.log(`Tarefa adicionado com sucesso: ${response.data}`);
               }
+
+            } catch (error) {
+              console.error('Erro ao analisar a lista de tarefas ou ao salvar no banco:', error);
+            }
+
+
 
             } catch (error) {
               console.error('Erro ao analisar a lista de tarefas ou ao salvar no banco:', error);

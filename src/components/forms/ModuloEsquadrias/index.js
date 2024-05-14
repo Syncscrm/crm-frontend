@@ -154,10 +154,10 @@ function ModuloEsquadrias({ idCard }) {
 
 
   return (
-    <div className='update-card-modal'>
-      <div className='update-card-container'>
-        <div className="update-card-form-container">
-          <form className="update-card-form">
+    <div className='modulo-esquadrias-modal'>
+      <div className='modulo-esquadrias-container'>
+        <div className="modulo-esquadrias-form-container">
+          <form className="modulo-esquadrias-form">
 
             <label htmlFor="nomeObra" className='modulo-esquadrias-label-input'>Nome da Obra:</label>
             <input id="nomeObra" className="modulo-esquadrias-input" type="text" name="nomeObra" value={nomeObra} onChange={(e) => setNomeObra(e.target.value)} />

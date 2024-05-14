@@ -1,20 +1,22 @@
-.update-card-modal {
+.modulo-esquadrias-modal {
     position: fixed;
-    left: 0;
     top: 0;
     width: 100vw;
     height: 100vh;
     background-color: #0000002a;
     z-index: 1010;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.update-card-container {
+.modulo-esquadrias-container {
     position: fixed;
-    left: calc(50vw - 350px);
-    top: 50px;
+    left: auto;
+    top: 40px;
     width: 700px;
     max-width: calc(100vw - 10px);
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - 70px);
     background-color: white;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
     display: flex;
@@ -22,13 +24,13 @@
     justify-content:flex-start;
     align-items: center;
     border-radius: 10px;
-    padding-inline: 10px;
     padding-top: 20px;
+    margin-inline: 5px;
 }
 
-.update-card-form-container {
-    max-width: calc(100vw - 10px);
+.modulo-esquadrias-form-container {
     width: 100%;
+    max-width: calc(100vw 0px);
     display: flex;
     flex-direction: column;
     justify-content:flex-start;
@@ -36,7 +38,7 @@
     overflow-y: auto;
 }
 
-.update-card-form {
+.modulo-esquadrias-form {
     width: 100%;
     height: 100%;
     display: flex;
@@ -48,7 +50,7 @@
 .modulo-esquadrias-input {
     background-color: transparent;
     border: 1px solid #ADADAD;
-    width: calc(100% - 80px);
+    width: calc(100% - 20px);
     min-height: 48px;
     color: #ADADAD;
     outline: none;
@@ -70,11 +72,11 @@
 }
 
 .module-esquadrias-row-container {
-    width: calc(100% - 80px);
+    width: calc(100% - 10px);
     display: flex;
     align-items: center;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content:space-around;
 }
 
 .module-esquadrias-column {

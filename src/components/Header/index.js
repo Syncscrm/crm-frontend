@@ -31,7 +31,7 @@ import ModuloEsquadrias from '../forms/ModuloEsquadrias';
 
 function Header() {
 
-  const { user, clearUserContext } = useUser();
+  const { user, clearUserContext, setOpenCloseImportExcelEntidades, setOpenCloseImportExcelSuiteFlow } = useUser();
   const { setColumns, setColumnsUser } = useColumns();
 
   const { setCurrentCardData, openCloseUpdateCard,
@@ -189,7 +189,7 @@ function Header() {
         <FaBars />
       </div>
       <div className='header-logo-center' onClick={() => pipelinePage()}>
-        <label className='header-logo-center-label'>SuiteFlow</label>
+        <label className='header-logo-center-label'>SyncsCRM</label>
       </div>
       <div className='header-menu-right'>
         <MdNotifications className='icon-notification-header' onClick={() => setShowNotifications(!showNotifications)} />
@@ -202,6 +202,8 @@ function Header() {
           <button className='left-menu-button' onClick={() => pipelinePage()}>Home</button>
           <button className='left-menu-button' onClick={() => usersPage()}>Usuários</button>
           <button className='left-menu-button' onClick={() => processColumnsPage()}>Colunas</button>
+          <button className='left-menu-button' onClick={() => setOpenCloseImportExcelEntidades(true)}>Import Excel</button>
+          <button className='left-menu-button' onClick={() => setOpenCloseImportExcelSuiteFlow(true)}>Import SuiteFlow</button>
 
         </div>
       )}
@@ -271,7 +273,7 @@ function Header() {
               {
                 listNotifications.map((item) => (
                   <>
-                    <div key={item.task_id} className='item-notifications' onClick={() => getCardData(item)}>
+                    <div key={item.task_id} className='item-notifications'>
                       <label className='label-notifications-header'><MdAddTask className='icon-notifications-card' />{item.description}</label>
                       <label className='label-notifications-header'><MdDateRange className='icon-notifications-card' />{formatDate(item.due_date)}</label>
                       <PreviewCard key={item.id} cardData={item} />
