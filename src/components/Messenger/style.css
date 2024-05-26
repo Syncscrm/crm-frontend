@@ -1,0 +1,258 @@
+.messenger-container {
+    position: fixed;
+    bottom: 30px;
+    right: 10px;
+    width: 340px;
+    min-height: calc(100vh - 70px);
+    max-height: calc(100vh - 70px);
+    display: flex;
+    border-radius: 15px;
+    background-color: rgba(34, 34, 34, 0.952);
+    z-index: 1000;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.messenger-username-label {
+    color: rgb(255, 255, 255);
+    font-weight: 500;
+    font-size: 12px;
+    width: 100%;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    padding-inline: 8px;
+}
+
+.messenger-body {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding-inline: 8px;
+    overflow: hidden;
+
+}
+
+.messenger-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messenger-body::-webkit-scrollbar-thumb {
+    background-color: #a0a0a0;
+    border-radius: 5px;
+}
+
+.item-list-messenger {
+    width: 100%;
+    min-height: 55px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    padding-inline: 8px;
+    overflow-y: auto;
+}
+
+.item-list-messenger:hover {
+    background-color: #a0a0a0;
+}
+
+.user-logo-messenger-container {
+    min-width: 50px;
+    min-height: 50px;
+    width: 50px;
+
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin-right: 5px;
+    background-color: rgb(255, 255, 255);
+}
+
+
+
+.messenger-logo-user {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    margin: 0;
+    border-radius: 3px;
+}
+
+.user-logo-message-container {
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin-right: 5px;
+    background-color: rgb(255, 255, 255);
+}
+
+.message-logo-user {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    margin: 0;
+    border-radius: 3px;
+}
+
+.header-messenger {
+    width: 100%;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.message-container {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    width: 340px;
+    min-height: calc(100vh - 70px);
+    max-height: calc(100vh - 70px);
+    height: 100%;
+    display: flex;
+    border-radius: 15px;
+    background-color: rgb(34, 34, 34);
+    z-index: 1000;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    flex-direction: column;
+}
+
+.message-header {
+    width: 100%;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.message-logo-user {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    margin: 0;
+    border-radius: 5px;
+}
+
+.icons-back-message {
+    color: white;
+    width: 20px;
+    height: 20px;
+    margin-inline: 10px;
+}
+
+.message-body {
+    height: 100%;
+    display: flex;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    flex-direction: column;
+    padding-inline: 8px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.message-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.message-body::-webkit-scrollbar-thumb {
+    background-color: #a0a0a0;
+    border-radius: 5px;
+}
+
+.message-footer {
+    width: 100%;
+    padding-inline: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.message-input {
+    background-color: rgb(61, 61, 61);
+    width: calc(100% - 40px);
+    min-height: 35px;
+    border-radius: 30px;
+    border: none;
+    padding-inline: 12px;
+    color: white;
+}
+
+.message-input:focus {
+    border: none;
+}
+
+.icon-send-message {
+    width: 26px;
+    height: 26px;
+    margin-left: 10px;
+}
+
+.item-list-message {
+    width: 100%;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.message-label {
+    color: rgb(255, 255, 255);
+    font-weight: 500;
+    font-size: 13px;
+    padding-inline: 8px;
+    background-color: rgb(78, 78, 78);
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.date-message-label {
+    color: rgb(255, 255, 255);
+    font-weight: 500;
+    font-size: 9px;
+    padding-inline: 8px;
+    padding: 2px;
+}
+
+.close-messenger-modal {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #a0a0a0;
+    color: black;
+    position:absolute;
+    right: 10px;
+    top:10px;
+
+}
+
+.close-messenger-modal:hover {
+    background-color: deepskyblue;
+    color: white;
+
+}
+
+/* Ajuste para telas menores que 800px */
+@media (max-width: 800px) {
+    .messenger-container,
+    .message-container {
+        width: calc(100vw - 10px);
+        right: 5px;
+        bottom: 30px;
+    }
+}

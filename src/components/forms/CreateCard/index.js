@@ -1,27 +1,15 @@
-import React, { useState, useRef } from 'react';
-
-// API
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { apiUrl } from '../../../config/apiConfig';
-
-// NAVIGATE
-import { useNavigate } from 'react-router-dom';
-
-// STYLE
+import { useUser } from '../../../contexts/userContext';
 import './style.css';
 
-// ASSETS
-import Logo from '../../../assets/logo-suite-flow.ico';
-
-// CONTEXT API
-import { useUser } from '../../../contexts/userContext';
+// API URL for IBGE
+const apiUrlIbge = 'https://servicodados.ibge.gov.br/api/v1/localidades';
 
 function CreateCard({ columnId, onClose }) {
-
-  // CONTEXT API
   const { openModalCreateUser, user } = useUser();
 
-  // ESTADOS LOCAL
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [state, setState] = useState('');
@@ -29,18 +17,45 @@ function CreateCard({ columnId, onClose }) {
   const [fone, setFone] = useState('');
   const [error, setError] = useState('');
   const [isCreatingCard, setIsCreatingCard] = useState(false);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
 
+  useEffect(() => {
+    axios.get(`${apiUrlIbge}/estados?orderBy=nome`).then(response => {
+      const stateOptions = response.data.map(state => ({
+        sigla: state.sigla,
+        nome: state.nome,
+      }));
+      setStates(stateOptions);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (state) {
+      axios.get(`${apiUrlIbge}/estados/${state}/municipios?orderBy=nome`).then(response => {
+        const cityOptions = response.data.map(city => ({
+          id: city.id,
+          nome: city.nome,
+        }));
+        setCities(cityOptions);
+      });
+    } else {
+      setCities([]);
+    }
+  }, [state]);
 
   const handleCreateCard = async (e) => {
     e.preventDefault();
     setIsCreatingCard(true);
-
     setError('');
+
+    const selectedState = states.find((st) => st.sigla === state);
+    const selectedCity = cities.find((ct) => ct.id === parseInt(city));
 
     const cardData = {
       name,
-      state,
-      city,
+      state: selectedState ? selectedState.sigla : '',
+      city: selectedCity ? selectedCity.nome : '',
       fone,
       email,
       column_id: columnId,
@@ -51,35 +66,48 @@ function CreateCard({ columnId, onClose }) {
     try {
       await axios.post(`${apiUrl}/card/create`, cardData);
       openModalCreateUser();
-      onClose()
+      onClose();
     } catch (error) {
       setIsCreatingCard(false);
-        setError('Erro ao criar Card.');
+      setError('Erro ao criar Card.');
     }
   };
 
   return (
     <div className='create-card-modal'>
       <div className='create-card-container'>
+        <div className='header-update-card-container'>
+          <label>Criar Oportunidade</label>
+        </div>
         <div className="create-card-form-container">
           <form className="create-card-form" onSubmit={handleCreateCard}>
-            <label htmlFor="address" className='create-card-label-input'>Nome:</label>
-            <input id="username" className="create-card-input" type="text" placeholder="" value={name} onChange={(e) => setName(e.target.value)} />
+            <label htmlFor="username" className='create-card-label-input'>Nome:</label>
+            <input id="username" className="create-card-input" type="text" value={name} onChange={(e) => setName(e.target.value)} />
 
-            <label htmlFor="address" className='create-card-label-input'>Estado:</label>
-            <input id="state" className="create-card-input" type="text" placeholder="" value={state} onChange={(e) => setState(e.target.value)} />
+            <label htmlFor="city-state" className='create-card-label-input'>Cidade / Estado:</label>
+            <div className='select-cidade-estado-container'>
+              <select id="state" className="select-estado-cidade" value={state} onChange={(e) => setState(e.target.value)}>
+                <option value="">Selecione o estado</option>
+                {states.map(state => (
+                  <option key={state.sigla} value={state.sigla}>{state.nome}</option>
+                ))}
+              </select>
 
-            <label htmlFor="address" className='create-card-label-input'>Cidade:</label>
-            <input id="city" className="create-user-input" type="text" placeholder="" value={city} onChange={(e) => setCity(e.target.value)} />
+              <select id="city" className="select-estado-cidade" value={city} onChange={(e) => setCity(e.target.value)} disabled={!state}>
+                <option value="">Selecione a cidade</option>
+                {cities.map(city => (
+                  <option key={city.id} value={city.id}>{city.nome}</option>
+                ))}
+              </select>
+            </div>
 
-            <label htmlFor="address" className='create-card-label-input'>Fone:</label>
-            <input id="fone" className="create-user-input" type="text" placeholder="" value={fone} onChange={(e) => setFone(e.target.value)} />
+            <label htmlFor="fone" className='create-card-label-input'>Fone:</label>
+            <input id="fone" className="create-user-input" type="text" value={fone} onChange={(e) => setFone(e.target.value)} />
 
-            <label htmlFor="address" className='create-card-label-input'>Email:</label>
-            <input id="email" className="create-user-input" type="email" placeholder="" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <label htmlFor="email" className='create-card-label-input'>Email:</label>
+            <input id="email" className="create-user-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
 
-            <label htmlFor="address" className='create-card-label-input'>Column ID: {columnId}</label>
-
+            <label className='create-card-label-input'>Column ID: {columnId}</label>
           </form>
         </div>
         {error && <div className="create-card-error-message">{error}</div>}

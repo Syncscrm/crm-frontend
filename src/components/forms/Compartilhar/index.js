@@ -41,7 +41,7 @@ function Compartilhar() {
 
       try {
         // console.log('buscando historico')
-        const response = await axios.get(`${apiUrl}/card/compartilhar/${currentCardData.id}`);
+        const response = await axios.get(`${apiUrl}/card/compartilhar/${currentCardData.card_id}`);
         setEmails(response.data);
         //console.log('History:', response.data);
 
@@ -51,7 +51,7 @@ function Compartilhar() {
     };
 
     fetchCompartilhar();
-  }, [currentCardData.id, user.id]);
+  }, [currentCardData.card_id, user.id]);
 
 
   const getEmailById = (idShared) => {
@@ -71,7 +71,7 @@ function Compartilhar() {
     try {
       const payload = {
         owner_user_id: user.id, // ID do usuário logado, obtido do contexto
-        card_id: currentCardData.id,       // ID do card atual
+        card_id: currentCardData.card_id,       // ID do card atual
         email: email           // E-mail para o qual o card será compartilhado
       };
       const response = await axios.post(`${apiUrl}/card/add-compartilhar`, payload);
@@ -81,7 +81,7 @@ function Compartilhar() {
       setEmails(prevEmails => [...prevEmails, emailsData]); // Atualiza a lista usando callback
       setEmail(''); // Limpa o campo de entrada após o envio
 
-      addHistoricoCardContext(`Card Compartilhado com ${email}`, currentCardData.id, user.id)
+      addHistoricoCardContext(`Card Compartilhado com ${email}`, currentCardData.card_id, user.id)
 
 
     } catch (error) {
@@ -97,25 +97,11 @@ function Compartilhar() {
       setEmails(prevEmails => prevEmails.filter(item => item.id !== idShared));
       
       const emailToRemove = getEmailById(idShared);  // Pega o e-mail antes de ser removido
-      addHistoricoCardContext(`Compartilhamento Removido! ${emailToRemove}`, currentCardData.id, user.id);
+      addHistoricoCardContext(`Compartilhamento Removido! ${emailToRemove}`, currentCardData.card_id, user.id);
     } catch (error) {
       console.error('Error deleting compartilhamento:', error);
     }
   };
-
-
-
-
-
-  function formatDate(dateString) {
-    const date = parseISO(dateString);
-    return format(date, 'dd/MM/yyyy - HH:mm:ss');
-  }
-
-  function formatDateSimple(dateString) {
-    const date = parseISO(dateString);
-    return format(date, 'dd/MM/yyyy');
-  }
 
 
   const containerRef = useRef(null);
@@ -133,6 +119,9 @@ function Compartilhar() {
     <div className='compartilhar-card-modal'>
       <div className='compartilhar-card-container'>
         <div className='compartilhar-card-footer'>
+        <div className='header-update-card-container'>
+          <label>Compartilhamento</label>
+        </div>
           <button className="compartilhar-card-close-button" onClick={() => setOpenCloseCompartilharModal(false)}>X</button>
         </div>
         <div className="compartilhar-card-form-container">

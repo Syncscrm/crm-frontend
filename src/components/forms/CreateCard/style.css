@@ -157,4 +157,36 @@
 }
 
 
+.select-estado-cidade {
+    width: 100%;
+    min-height: 48px;
+    background-color: rgb(255, 255, 255);
+    color: #ffffff;
+    height: 21px;
+    font-size: 13px;
+    border-radius: 5px;
+    border: none;
+    background-color: #C4C4C4;
+    padding-inline: 2px;
+    margin-bottom: 8px;
+}
+
+.select-estado-cidade:focus {
+    background-color: rgb(121, 121, 121);
+    color: white;
+    outline: none;
+    border-color: initial;
+    box-shadow: none;
+}
+
+.select-cidade-estado-container {
+    display: flex;    
+    width: calc(100% - 80px);
+    margin-bottom: 5px;
+    justify-content:space-around;
+    flex-wrap: wrap;
+}
+
+
+
 

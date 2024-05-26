@@ -45,6 +45,8 @@ function ModuloEsquadrias({ idCard }) {
   const [quantidadeQuadros, setQuantidadeQuadros] = useState(0);
   const [metrosQuadrados, setMetrosQuadrados] = useState(0);
 
+  const [cor, setCor] = useState('');
+
 
   const handleSaveEsquadrias = async (e) => {
     e.preventDefault();
@@ -72,7 +74,8 @@ function ModuloEsquadrias({ idCard }) {
       horas_producao: horasProducao,
       quantidade_esquadrias: quantidadeEsquadrias,
       quantidade_quadros: quantidadeQuadros,
-      metros_quadrados: metrosQuadrados
+      metros_quadrados: metrosQuadrados,
+      cor: cor,
     };
 
     try {
@@ -81,7 +84,7 @@ function ModuloEsquadrias({ idCard }) {
         // Atualiza o card no estado global
 
         setCards((prevCards) => prevCards.map(card => {
-          if (card.id === idCard) {
+          if (card.card_id === idCard) {
             return { ...card, nome_obra: response.data[0].nome_obra };
           }
           return card;
@@ -135,6 +138,7 @@ function ModuloEsquadrias({ idCard }) {
     setQuantidadeEsquadrias(esquadriasData.quantidade_esquadrias);
     setQuantidadeQuadros(esquadriasData.quantidade_quadros);
     setMetrosQuadrados(esquadriasData.metros_quadrados);
+    setCor(esquadriasData.cor ? esquadriasData.cor : "");
   }, [esquadriasData]);
 
 
@@ -143,7 +147,7 @@ function ModuloEsquadrias({ idCard }) {
       try {
         const response = await axios.get(`${apiUrl}/card/${idCard}/esquadrias`);
         setEsquadriasData(response.data[0]);
-        console.log(response.data[0]);
+       // console.log(response.data[0]);
       } catch (error) {
         console.error('Erro ao buscar as informações do módulo de esquadrias:', error);
       }
@@ -153,9 +157,13 @@ function ModuloEsquadrias({ idCard }) {
   }, [idCard]);
 
 
+
   return (
     <div className='modulo-esquadrias-modal'>
       <div className='modulo-esquadrias-container'>
+        <div className='header-update-card-container'>
+          <label>Módulo de Produção</label>
+        </div>
         <div className="modulo-esquadrias-form-container">
           <form className="modulo-esquadrias-form">
 
@@ -173,9 +181,9 @@ function ModuloEsquadrias({ idCard }) {
               <div className='module-esquadrias-column'>
                 <label htmlFor="statusMedicao" className='modulo-esquadrias-label-input'>Status:</label>
                 <select id="statusMedicao" className="modulo-esquadrias-input" name="statusMedicao" value={statusMedicao} onChange={(e) => setStatusMedicao(e.target.value)}>
-                  <option value="parado">Parado</option>
-                  <option value="emAndamento">Em Andamento</option>
-                  <option value="pronto">Pronto</option>
+                  <option value="Parado">Parado</option>
+                  <option value="EmAndamento">Em Andamento</option>
+                  <option value="Pronto">Pronto</option>
                 </select>
               </div>
             </div>
@@ -188,9 +196,9 @@ function ModuloEsquadrias({ idCard }) {
               <div className='module-esquadrias-column'>
                 <label htmlFor="statusProducao" className='modulo-esquadrias-label-input'>Status:</label>
                 <select id="statusProducao" className="modulo-esquadrias-input" name="statusProducao" value={statusProducao} onChange={(e) => setStatusProducao(e.target.value)}>
-                  <option value="parado">Parado</option>
-                  <option value="emAndamento">Em Andamento</option>
-                  <option value="pronto">Pronto</option>
+                  <option value="Parado">Parado</option>
+                  <option value="EmAndamento">Em Andamento</option>
+                  <option value="Pronto">Pronto</option>
                 </select>
               </div>
             </div>
@@ -203,9 +211,9 @@ function ModuloEsquadrias({ idCard }) {
               <div className='module-esquadrias-column'>
                 <label htmlFor="statusEntregaVidro" className='modulo-esquadrias-label-input'>Status:</label>
                 <select id="statusEntregaVidro" className="modulo-esquadrias-input" name="statusEntregaVidro" value={statusEntregaVidro} onChange={(e) => setStatusEntregaVidro(e.target.value)}>
-                  <option value="parado">Parado</option>
-                  <option value="emAndamento">Em Andamento</option>
-                  <option value="pronto">Pronto</option>
+                  <option value="Parado">Parado</option>
+                  <option value="EmAndamento">Em Andamento</option>
+                  <option value="Pronto">Pronto</option>
                 </select>
               </div>
             </div>
@@ -218,9 +226,9 @@ function ModuloEsquadrias({ idCard }) {
               <div className='module-esquadrias-column'>
                 <label htmlFor="statusVistoriaPre" className='modulo-esquadrias-label-input'>Status:</label>
                 <select id="statusVistoriaPre" className="modulo-esquadrias-input" name="statusVistoriaPre" value={statusVistoriaPre} onChange={(e) => setStatusVistoriaPre(e.target.value)}>
-                  <option value="parado">Parado</option>
-                  <option value="emAndamento">Em Andamento</option>
-                  <option value="pronto">Pronto</option>
+                  <option value="Parado">Parado</option>
+                  <option value="EmAndamento">Em Andamento</option>
+                  <option value="Pronto">Pronto</option>
                 </select>
               </div>
             </div>
@@ -233,9 +241,9 @@ function ModuloEsquadrias({ idCard }) {
               <div className='module-esquadrias-column'>
                 <label htmlFor="statusEntregaObra" className='modulo-esquadrias-label-input'>Status:</label>
                 <select id="statusEntregaObra" className="modulo-esquadrias-input" name="statusEntregaObra" value={statusEntregaObra} onChange={(e) => setStatusEntregaObra(e.target.value)}>
-                  <option value="parado">Parado</option>
-                  <option value="emAndamento">Em Andamento</option>
-                  <option value="pronto">Pronto</option>
+                  <option value="Parado">Parado</option>
+                  <option value="EmAndamento">Em Andamento</option>
+                  <option value="Pronto">Pronto</option>
                 </select>
               </div>
             </div>
@@ -248,9 +256,9 @@ function ModuloEsquadrias({ idCard }) {
               <div className='module-esquadrias-column'>
                 <label htmlFor="statusInstalacao" className='modulo-esquadrias-label-input'>Status:</label>
                 <select id="statusInstalacao" className="modulo-esquadrias-input" name="statusInstalacao" value={statusInstalacao} onChange={(e) => setIstatusInstalacao(e.target.value)}>
-                  <option value="parado">Parado</option>
-                  <option value="emAndamento">Em Andamento</option>
-                  <option value="pronto">Pronto</option>
+                  <option value="Parado">Parado</option>
+                  <option value="EmAndamento">Em Andamento</option>
+                  <option value="Pronto">Pronto</option>
                 </select>
               </div>
             </div>
@@ -263,9 +271,9 @@ function ModuloEsquadrias({ idCard }) {
               <div className='module-esquadrias-column'>
                 <label htmlFor="statusVistoriaPos" className='modulo-esquadrias-label-input'>Status:</label>
                 <select id="statusVistoriaPos" className="modulo-esquadrias-input" name="statusVistoriaPos" value={statusVistoriaPos} onChange={(e) => setStatusVistoriaPos(e.target.value)}>
-                  <option value="parado">Parado</option>
-                  <option value="emAndamento">Em Andamento</option>
-                  <option value="pronto">Pronto</option>
+                  <option value="Parado">Parado</option>
+                  <option value="EmAndamento">Em Andamento</option>
+                  <option value="Pronto">Pronto</option>
                 </select>
               </div>
             </div>
@@ -278,9 +286,9 @@ function ModuloEsquadrias({ idCard }) {
               <div className='module-esquadrias-column'>
                 <label htmlFor="statusAssistencia" className='modulo-esquadrias-label-input'>Status:</label>
                 <select id="statusAssistencia" className="modulo-esquadrias-input" name="statusAssistencia" value={statusAssistencia} onChange={(e) => setStatusAssistencia(e.target.value)}>
-                  <option value="parado">Parado</option>
-                  <option value="emAndamento">Em Andamento</option>
-                  <option value="pronto">Pronto</option>
+                  <option value="Parado">Parado</option>
+                  <option value="EmAndamento">Em Andamento</option>
+                  <option value="Pronto">Pronto</option>
                 </select>
               </div>
             </div>

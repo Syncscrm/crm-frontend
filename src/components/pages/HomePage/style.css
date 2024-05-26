@@ -59,6 +59,28 @@
     border-bottom-right-radius: 5px;
 }
 
+.search-icon:hover {
+    background-color: deepskyblue;
+}
+
+
+.search-icon-open-close {
+    background-color: rgb(199, 199, 199);
+    width: 30px;
+    height: 30px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border-radius: 5px;
+    margin-left: 14px;
+}
+
+.search-icon-open-close:hover {
+    background-color: deepskyblue;
+}
+
 
 .btn-clear-search {
     min-width: 30px;
@@ -67,7 +89,7 @@
     color: white;
     border: none;
     border-radius: 5px;
-    margin-left: 3px;   
+    margin-left: 3px;
     font-size: 15px;
 }
 
@@ -96,7 +118,7 @@
 }
 
 .search-result-container {
-    width: 360px;
+    width: 340px;
     min-height: 200px;
     max-height: calc(100vh - 113px);
     position: fixed;
@@ -139,4 +161,153 @@
     margin-left: 3px;
     padding-inline: 5px;
     margin-left: 5px;
+}
+
+.loading-container-search {
+    width: 130px;
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    background-color: white;
+}
+
+
+
+
+
+
+
+
+
+
+.select-filter {
+    position: fixed;
+    top: 70px;
+    left: 38px;
+    min-width: 200px;
+    max-height: calc(100vh - 200px);
+    color: #ffffff;
+    font-size: 13px;
+    border: none;
+    background-color: #C4C4C4;
+    margin-left: 10px;
+    z-index: 100;
+    border-radius: 8px;
+    padding-inline: 5px;
+    overflow:hidden;
+}
+
+.list-afilhados-container {
+    display: flex;
+    
+    flex-direction: column;
+
+}
+
+.list-afilhados-container::-webkit-scrollbar {
+    width: 7px;
+}
+
+.list-afilhados-container::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 5px;
+}
+
+.select-filter-option {
+    min-height: 23px;
+    margin-bottom: 3px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #acacac;
+}
+
+.afilhados-icon-open-close {
+    background-color: rgb(199, 199, 199);
+    width: 30px;
+    height: 30px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.afilhados-icon-open-close:hover {
+    background-color: deepskyblue;
+}
+
+.title-label-afilhados {
+    width: 100%;
+    min-height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    color: #727272;
+    font-weight: 800;
+}
+
+.date-filter-container {
+    position: fixed;
+    top: 70px;
+    left: 82px;
+    width: 280px;
+    height: 100px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    background-color: rgb(199, 199, 199);
+    flex-direction: column;
+}
+
+.date-filter-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-inline: 10px;
+}
+
+.date-filter-row {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.date-filter-label {
+    font-size: 13px;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.date-filter-date {
+    min-height: 30px;
+    border-radius: 5px;
+    border: none;
+    width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-update-date-filter {
+    min-height: 30px;
+    width: calc(100% - 20px);
+    border-radius: 5px;
+    border: none;
+    background-color: dodgerblue;
+    color: white;
+    
+}
+
+.btn-update-date-filter:hover {
+    background-color: rgb(109, 109, 109);
+    
 }

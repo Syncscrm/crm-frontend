@@ -6,7 +6,7 @@ import { format, parseISO } from 'date-fns';
 
 // ICONS
 import { GrTask } from "react-icons/gr";
-import {MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
+import { MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
 
 import './style.css';
 
@@ -17,24 +17,32 @@ import { apiUrl } from '../../config/apiConfig';
 import { differenceInCalendarDays } from 'date-fns';
 
 import { Draggable } from 'react-beautiful-dnd';
+import VendaPerdida from '../VendaPerdida';
+
 
 function PreviewCard({ cardData, index }) {
 
-  const { user, afilhadosList } = useUser();
+  const { user, afilhadosList, listAllUsers } = useUser();
   const { setOpenCloseUpdateCard, setCurrentCardData,
     setCards, setPreviewSearchCards,
     setListNotifications,
     setOpenCloseHistoricModal,
     setOpenCloseTarefasModal,
     setOpenCloseCompartilharModal,
-    setOpenCloseModuloEsquadriasModal
+    setOpenCloseModuloEsquadriasModal,
+    addHistoricoCardContext,
+    cards,
+    currentCardIdMessage, setCurrentCardIdMessage,
+    openCloseModalMessenger, setOpenCloseModalMessenger
   } = useCard();
-  const { columnsUser } = useColumns();
+  const { columnsUser, columns } = useColumns();
 
   const [potencialVenda, setPotencialVenda] = useState(1)
   const [showCard, setShowCard] = useState(false);
   const [statusCard, setStatusCard] = useState('');
   const [openCloseEditStatusModal, setOpenCloseEditStatusModal] = useState(false)
+  const [selectedColumnId, setSelectedColumnId] = useState(cardData.column_id);
+  const [showConfirmButton, setShowConfirmButton] = useState(false);
 
   useEffect(() => {
     setPotencialVenda(cardData.potencial_venda)
@@ -67,6 +75,10 @@ function PreviewCard({ cardData, index }) {
 
   const viewCard = (e) => {
     e.stopPropagation();
+
+    console.log(cardData)
+
+
     setShowCard(!showCard)
   }
 
@@ -81,7 +93,7 @@ function PreviewCard({ cardData, index }) {
       return 'Erro: Dados necessários não estão disponíveis.';
     }
 
-    const entidade = afilhadosList.find(afilhado => afilhado.id === entityId);
+    const entidade = listAllUsers.find(afilhado => afilhado.id === entityId);
     if (entidade && entidade.username) {
       return entidade.username;
     }
@@ -100,18 +112,28 @@ function PreviewCard({ cardData, index }) {
   }
 
   const handleUpdatePotencialVenda = async (potencial) => {
+
+    const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
+    if (!userConfirmed) {
+      return;
+    }
+
     const currentCard = {
-      id: cardData.id,
+      id: cardData.card_id,
       potencial_venda: potencial,
     };
 
     try {
+      setModalLoading(true)
       const response = await axios.post(`${apiUrl}/card/update-potencial-venda`, currentCard);
-      setCards(prevCards => prevCards.map(card => card.id === currentCard.id ? { ...card, ...response.data } : card));
-      setPreviewSearchCards(prevCards => prevCards.map(card => card.id === currentCard.id ? { ...card, ...response.data } : card));
-      setListNotifications(prevCards => prevCards.map(card => card.id === currentCard.id ? { ...card, ...response.data } : card));
+      setCards(prevCards => prevCards.map(card => card.card_id === currentCard.card_id ? { ...card, ...response.data } : card));
+      setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === currentCard.card_id ? { ...card, ...response.data } : card));
+      setListNotifications(prevCards => prevCards.map(card => card.card_id === currentCard.card_id ? { ...card, ...response.data } : card));
+      addHistoricoCardContext(`Potencial de Venda alterado para ${potencial} estrelas`, cardData.card_id, user.id)
+      setModalLoading(false)
     } catch (error) {
       console.error('Erro ao Atualizar potencial de venda:', error);
+      setMensagemLoading('Erro ao Salvar Status!')
     }
   };
 
@@ -137,17 +159,52 @@ function PreviewCard({ cardData, index }) {
 
   const updateCardStatus = async (id, status, event) => {
     event.stopPropagation();
+
+    const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
+    if (!userConfirmed) {
+      return;
+    }
+
+
+    // Verificar se existe uma coluna com o nome 'Vendidos' e obter seu ID
+    const vendidosColumn = columns.find(column => column.name === 'Vendidos');
+    if (!vendidosColumn) {
+      console.error("Coluna 'Vendidos' não encontrada");
+      return;
+    }
+
+    // Definir o ID da coluna para 'Vendidos' se o status for 'Vendido'
+    const columnId = status === 'Vendido' ? vendidosColumn.id : null;
+
     try {
-      const response = await axios.post(`${apiUrl}/card/update-status`, { id, status });
+      setModalLoading(true);
+      const response = await axios.post(`${apiUrl}/card/update-status`, { id, status, columnId });
       console.log(response.data);
       setStatusCard(response.data.status);
-      setCards(prevCards => prevCards.map(card => card.id === id ? { ...card, ...response.data } : card));
-      setPreviewSearchCards(prevCards => prevCards.map(card => card.id === id ? { ...card, ...response.data } : card));
-      setListNotifications(prevCards => prevCards.map(card => card.id === id ? { ...card, ...response.data } : card));
+      setCards(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));
+      setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));
+      setListNotifications(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));
       openCloseEditEstatusCard(event);
+      addHistoricoCardContext(`Status alterado de ${cardData.status} para ${status != null ? status : 'Sem Status'}`, cardData.card_id, user.id);
+      setModalLoading(false);
     } catch (error) {
       console.error('Erro ao atualizar o cartão:', error);
+      setMensagemLoading('Erro ao Salvar Status!');
     }
+  };
+
+
+  const [openCloseModalVendaPerdida, setOpenCloseModalVendaPerdida] = useState(false)
+
+  const closeVendaPerdidaModal = () => {
+    setOpenCloseModalVendaPerdida(false);
+  };
+
+  const updateCardStatusPerdido = async (id, status, event) => {
+    event.stopPropagation();
+    setCurrentCardData(cardData)
+    setOpenCloseEditStatusModal(false)
+    setOpenCloseModalVendaPerdida(true)
   };
 
   function abrirWhatsApp(fone) {
@@ -156,54 +213,118 @@ function PreviewCard({ cardData, index }) {
       const numeroLimpo = fone.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
       const codigoPais = '+55'; // Código do país (Brasil)
       const numeroTelefone = codigoPais + numeroLimpo;
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
+
+      // Preparando uma mensagem padrão
+      const mensagemPadrao = encodeURIComponent(`Olá, gostaria de discutir mais sobre a oportunidade: ${cardData.name}, ${cardData.city}/${cardData.state}. Meu nome é ${user.username}`);
+
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       if (isMobile) {
-        window.location.href = `https://api.whatsapp.com/send?phone=${numeroTelefone}`;
+        window.location.href = `https://api.whatsapp.com/send?phone=${numeroTelefone}&text=${mensagemPadrao}`;
       } else {
-        window.open(`https://web.whatsapp.com/send?phone=${numeroTelefone}`, '_blank');
+        window.open(`https://web.whatsapp.com/send?phone=${numeroTelefone}&text=${mensagemPadrao}`, '_blank');
       }
+      addHistoricoCardContext(`Conversa iniciada pelo WhatsApp ${cardData.fone}`, cardData.card_id, user.id)
+
     }
   }
 
   const getNameColumnCard = (idColumn) => {
 
-    console.log('id column', idColumn)
-
-    console.log('columns', columnsUser)
-
-
     if (!columnsUser) {
-      console.log("columnsUser is not available.");
       return 'Dados ainda estão carregando...';
     }
-  
-    console.log(idColumn);
+
     const nameColumn = columnsUser.find((item) => item.id === idColumn);
-    console.log('name',nameColumn)
-    
+
     return nameColumn ? nameColumn.name : 'Nome não encontrado';
   };
-  
+
+  const [modalLoading, setModalLoading] = useState(false)
+  const [mensagemLoading, setMensagemLoading] = useState('Salvando...')
+
+
+
+
+
+
+  // ------------- ALTERAR COLUNA DO CARD -------------
+
+  const updateCardColumn = async (newColumnId) => {
+    const currentCardId = cardData.card_id;
+
+    const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
+    if (!userConfirmed) {
+      return;
+    }
+
+
+    try {
+      setModalLoading(true);
+      setShowConfirmButton(true);
+      setMensagemLoading('Alterando Coluna...');
+      const response = await axios.post(`${apiUrl}/card/update-column`, {
+        cardId: currentCardId,
+        columnId: newColumnId
+      });
+
+      if (response.data) {
+        addHistoricoCardContext(`Coluna alterada para ${getNameColumnCard(newColumnId)}`, currentCardId, user.id);
+      } else {
+        throw new Error('No data returned');
+      }
+
+      setCards(prevCards => prevCards.map(card => card.card_id === currentCardId ? { ...card, ...response.data } : card));
+      setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === currentCardId ? { ...card, ...response.data } : card));
+
+      setModalLoading(false);
+      setMensagemLoading('');
+      setShowConfirmButton(false);
+    } catch (error) {
+      setMensagemLoading('Erro ao alterar Card de Coluna!');
+      console.error('Failed to update card column:', error);
+      setCards(prevCards => prevCards.map(card => card.card_id === currentCardId ? { ...card, column_id: cardData.column_id } : card));
+      alert('Failed to move card, please try again.');
+      setShowConfirmButton(false);
+    }
+  };
+
+
+  const shareCard = (cardId, event) => {
+    event.stopPropagation();
+    setCurrentCardIdMessage(cardId);
+    setOpenCloseModalMessenger(true)
+  }
+
+
+
 
   return (
+
         <div
           className='card-container'
+
           onClick={(e) => viewCard(e)}
         >
+
+          {
+            modalLoading &&
+            <>
+              <div className='card-loading'>{mensagemLoading}<button onClick={() => setModalLoading(false)} className='btn-close-loading-card'>x</button></div>
+            </>
+          }
+
           {
             openCloseEditStatusModal && (
               <div className='edit-status-footer-container'>
                 <div className='update-card-status-container'>
 
-                  <div onClick={(event) => updateCardStatus(cardData.id, null, event)} className='icon-edit-status-card-container' >
+                  <div onClick={(event) => updateCardStatus(cardData.card_id, null, event)} className='icon-edit-status-card-container' >
                     <Md360 style={{ color: statusCard === null || statusCard === '' ? '' : '#9c9c9c' }} className='icon-status-card-vendido' />
                   </div>
-                  <div onClick={(event) => updateCardStatus(cardData.id, 'Vendido', event)} className='icon-edit-status-card-container' >
+                  <div onClick={(event) => updateCardStatus(cardData.card_id, 'Vendido', event)} className='icon-edit-status-card-container' >
                     <MdThumbUp style={{ color: statusCard === 'Vendido' ? '' : '#9c9c9c' }} className='icon-status-card-vendido' />
                   </div>
-                  <div onClick={(event) => updateCardStatus(cardData.id, 'Perdido', event)} className='icon-edit-status-card-container' >
+                  <div onClick={(event) => updateCardStatusPerdido(cardData.card_id, 'Perdido', event)} className='icon-edit-status-card-container' >
                     <MdThumbDown style={{ color: statusCard === 'Perdido' ? '' : '#9c9c9c' }} className='icon-status-card-perdido' />
                   </div>
                 </div>
@@ -211,7 +332,9 @@ function PreviewCard({ cardData, index }) {
             )
           }
           <div className='card-header'>
-            <label className='card-title'>{cardData.name.toUpperCase()}</label>
+            <label className='card-title'>{cardData.name.toUpperCase().substring(0, 29)}</label>
+            <MdShare className='icons-shared-card' onClick={(event) => shareCard(cardData.card_id, event)} />
+
           </div>
           <div className='card-body'>
 
@@ -259,8 +382,29 @@ function PreviewCard({ cardData, index }) {
                     <MdAnalytics className='card-icon-item' />{cardData.status_date ? formatDate(cardData.status_date) : ''}
                   </label>
 
-                  <label className='card-body-item'>
+                  <label style={{ display: 'none' }} className='card-body-item'>
                     <MdViewColumn className='card-icon-item' />{cardData.column_id ? getNameColumnCard(cardData.column_id) : '---'}
+                  </label>
+
+                  <label className='card-body-item-select-column'>
+                    <MdViewColumn className='card-icon-item' />
+                    <select
+                      className="select-column-card"
+                      value={selectedColumnId}
+                      onChange={(e) => {
+                        setSelectedColumnId(e.target.value);
+                        updateCardColumn(e.target.value);
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      {columnsUser.map(column => (
+                        <option key={column.id} value={column.id}>
+                          {column.name}
+                        </option>
+                      ))}
+                    </select>
                   </label>
 
                   <div className='btns-card-container'>
@@ -279,6 +423,9 @@ function PreviewCard({ cardData, index }) {
                     <button onClick={openModuloEsquadriasModal} className='btn-update-card'>
                       <MdWindow className='icons-btns-update-card' />
                     </button>
+                    <button className='btn-update-card'>
+                      <MdAttachFile className='icons-btns-update-card' />
+                    </button>
                   </div>
 
                 </>
@@ -288,8 +435,18 @@ function PreviewCard({ cardData, index }) {
             {
               true && !showCard && (
                 <>
-                  <label className='card-body-item-separate'>
-                    <label className='card-valor-item-separate'>R$ {cardData.cost_value ? cardData.cost_value : 0}</label>
+                  <label className='card-body-item-separate-container'>
+
+                    <label className='card-body-item-separate-value'>
+                      <label style={{fontSize: '15px'}} className='card-valor-item'>R$ {cardData.cost_value ? cardData.cost_value : 0}</label>
+                    </label>
+
+                    <label className='card-body-item-separate'>
+                      {cardData.city + '/' + cardData.state}
+                    </label>
+
+                    <label style={{ display: 'none' }} className='card-id-item-separate'>ID: {cardData.card_id}</label>
+
                   </label>
                 </>
               )
@@ -331,12 +488,20 @@ function PreviewCard({ cardData, index }) {
               <Md360 onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === null || statusCard === '' ? '' : 'none' }} className='card-icon-em-andamento' />
               <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Vendido' ? '' : 'none' }} className='card-icon-vendido' />
               <MdThumbDown onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Perdido' ? '' : 'none' }} className='card-icon-perdido' />
+              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Entregue' ? '' : 'none' }} className='card-icon-vendido' />
+              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'InstalacaoExt' ? '' : 'none' }} className='card-icon-vendido' />
+              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Assistencia' ? '' : 'none' }} className='card-icon-vendido' />
+              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'AssistenciaExt' ? '' : 'none' }} className='card-icon-vendido' />
 
             </div>
 
           </div>
-
+          {
+            openCloseModalVendaPerdida &&
+            <VendaPerdida cardData={cardData} closeModal={closeVendaPerdidaModal} />
+          }
         </div>
+
   );
 }
 

@@ -2,11 +2,15 @@
     position: relative;
 
     width: 100%;
+    min-width: 275px;
+
+    max-width: 320px;
     display: flex;
     border-radius: 8px;
     background-color: white;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
+    margin-top: 6px;
     flex-direction: column;
 }
 
@@ -41,13 +45,32 @@
     color: #82839E;
 }
 
+.card-body-item-separate-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    color: #82839E;
+    flex-direction: column;
+}
+
+.card-body-item-separate-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 18px;
+    font-size: 13px;
+    color: #82839E;
+}
+
 .card-body-item-separate {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 20px;
-    font-size: 13px;
+    height: 15px;
+    font-size: 12px;
     color: #82839E;
 }
 
@@ -232,4 +255,74 @@
     justify-content: center;
     font-size: 30px;
     margin-inline: 5px;
+}
+
+
+.card-loading {
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    background-color: #2c2c2cd2;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    border-radius: 5px; 
+    color: white;  
+}
+
+.btn-close-loading-card {
+    top: 5px;
+    right: 5px;
+    position:absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #ff4573;
+    border-radius: 5px;   
+    color: white;
+    border: none;
+    font-size: 12px;
+}
+
+.select-column-card {
+    background-color: rgb(255, 255, 255);
+    color: #ffffff;
+    height: 21px;
+    font-size: 13px;
+    border-radius: 5px;
+    border: none;
+    background-color: #C4C4C4;
+    padding-inline: 2px;
+}
+
+.select-column-card:focus {
+    background-color: rgb(121, 121, 121);
+    color: white;
+    outline: none;
+    border-color: initial;
+    box-shadow: none;
+}
+
+.card-body-item-select-column {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 5px;
+    height: 23px;
+}
+
+.icons-shared-card {
+    position: absolute;
+    right: 6px;
+    width: 20px;
+    height: 20px;
+    color: rgb(172, 172, 172);
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.icons-shared-card:hover {
+    color: rgb(255, 255, 255);
+    background-color:dodgerblue;
+    cursor:default;
 }

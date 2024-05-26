@@ -42,9 +42,9 @@ function Tarefas() {
 
       try {
         // console.log('buscando historico')
-        const response = await axios.get(`${apiUrl}/card/tarefas/${user.id}/${currentCardData.id}`);
+        const response = await axios.get(`${apiUrl}/card/tarefas/${user.id}/${currentCardData.card_id}`);
         setTarefas(response.data);
-        console.log('tarefas:', response.data);
+        //console.log('tarefas:', response.data);
 
       } catch (error) {
         console.error('Error fetching tarefas:', error);
@@ -52,7 +52,7 @@ function Tarefas() {
     };
 
     fetchTarefas();
-  }, [currentCardData.id, user.id]);
+  }, [currentCardData.card_id, user.id]);
 
   // Historic Component in React
 
@@ -68,7 +68,7 @@ function Tarefas() {
     try {
       const payload = {
         user_id: user.id, // from useUser context
-        card_id: currentCardData.id, // or any other type depending on the context
+        card_id: currentCardData.card_id, // or any other type depending on the context
         description: currentTarefa,
         task_type: 'Card',
         due_date: dueDate,
@@ -147,6 +147,9 @@ function Tarefas() {
     <div className='tarefa-card-modal'>
       <div className='tarefa-card-container'>
         <div className='tarefa-card-footer'>
+        <div className='header-update-card-container'>
+          <label>Tarefas</label>
+        </div>
           <button className="tarefa-card-close-button" onClick={() => setOpenCloseTarefasModal(false)}>X</button>
         </div>
         <div className="tarefa-card-form-container">

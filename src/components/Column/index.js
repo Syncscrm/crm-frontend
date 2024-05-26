@@ -4,7 +4,8 @@ import Card from '../../components/Card';
 import CreateCard from '../../components/forms/CreateCard';
 
 import { useUser } from '../../contexts/userContext';
-import { useCard } from '../../contexts/cardContext'
+import { useCard } from '../../contexts/cardContext';
+import { useColumns } from '../../contexts/columnsContext';
 
 import axios from 'axios';
 import { apiUrl } from '../../config/apiConfig';
@@ -14,13 +15,17 @@ import './style.css';
 import { Droppable } from 'react-beautiful-dnd';
 
 function Column(props) {
-
   const { user } = useUser();
   const { cards, setCards } = useCard();
+  const { setLoadingResult, setLoadingModal, selectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal } = useColumns();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [totalCostValue, setTotalCostValue] = useState(0);
   const [cardCount, setCardCount] = useState(0);
+  const [filteredCards, setFilteredCards] = useState([]);
+  const [displayedCards, setDisplayedCards] = useState(14);
+
+  const columnBodyRef = useRef(null);
 
   const handleAddCardClick = () => {
     setIsModalOpen(true);
@@ -32,35 +37,72 @@ function Column(props) {
 
 
   const fetchCards = async () => {
+    //console.log('dataInicial', dataInicial)
+    //console.log('dataFinal', dataFinal)
+
     try {
-      const response = await axios.get(`${apiUrl}/card/find/${user.id}/${user.empresa_id}`);
+      setLoadingModal(true);
+      setLoadingResult('Carregando...');
+      const response = await axios.get(`${apiUrl}/card/find/${user.id}/${user.empresa_id}`, {
+        params: {
+          dataInicial,
+          dataFinal,
+        },
+      });
       setCards(response.data);
-      const fetchedCards = response.data.filter(card => card.column_id === props.columnData.id);
-      setFilteredCards(fetchedCards);
-      //const fetchedCards = response.data;
-      const totals = calculateTotals(fetchedCards, props.columnData.id);
-      setTotalCostValue(totals.totalCost);
-      setCardCount(totals.cardCount);
-      //console.log(response.data)
+      setLoadingModal(false);
+      setLoadingResult('');
     } catch (error) {
       console.error('Erro ao buscar cards:', error);
+      setLoadingResult('Erro ao Carregar Cards!');
     }
   };
 
   useEffect(() => {
-    const totals = calculateTotals(cards, props.columnData.id);
-    setTotalCostValue(totals.totalCost);
-    setCardCount(totals.cardCount);
-  }, [cards]);
+
+    fetchCards();
+
+  }, [dataInicial, dataFinal]);
+
+
+  // useEffect(() => {
+  //   const totals = calculateTotals(cards, props.columnData.id);
+  //   setTotalCostValue(totals.totalCost);
+  //   setCardCount(totals.cardCount);
+  // }, [cards, props.columnData.id]);
 
   useEffect(() => {
-    if (user) {
-      fetchCards();
-    }
-  }, [user, props.columnData.id]);
+    const totals = calculateTotals(filteredCards);  // Use filteredCards
+    setTotalCostValue(totals.totalCost);
+    setCardCount(totals.cardCount);
+  }, [filteredCards]);
 
-  const calculateTotals = (cards, columnId) => {
-    const filteredCards = cards.filter(card => card.column_id === columnId);
+  useEffect(() => {
+    let filteredCards = [];
+
+    //console.log('selectedAfilhados', selectedAfilhados);
+
+    if (selectedAfilhados.length > 0) {
+      filteredCards = cards.filter(card =>
+        card.column_id === props.columnData.id &&
+        (selectedAfilhados.includes(card.entity_id) || card.compartilhamento === true)
+      );
+    }
+
+    setFilteredCards(filteredCards);
+  }, [cards, props.columnData.id, selectedAfilhados]);
+
+
+  // const calculateTotals = (cards, columnId) => {
+  //   const filteredCards = cards.filter(card => card.column_id === columnId);
+  //   const totalCost = filteredCards.reduce((acc, card) => acc + parseFloat(card.cost_value || 0), 0);
+  //   return {
+  //     totalCost,
+  //     cardCount: filteredCards.length
+  //   };
+  // };
+
+  const calculateTotals = (filteredCards) => {
     const totalCost = filteredCards.reduce((acc, card) => acc + parseFloat(card.cost_value || 0), 0);
     return {
       totalCost,
@@ -69,70 +111,34 @@ function Column(props) {
   };
 
   useEffect(() => {
-    const filteredCards = cards.filter(card => card.column_id === props.columnData.id);
-    setFilteredCards(filteredCards);
-  }, [cards, props.columnData.id]);
-
-
-
-  // ---------- SCROLL -------------
-
-  const [filteredCards, setFilteredCards] = useState([]);
-
-  const columnBodyRef = useRef(null);
-
-  const [displayedCards, setDisplayedCards] = useState(14);
-
-  useEffect(() => {
-    function handleScrollMobile() {
+    function handleScroll() {
       const { scrollTop, clientHeight, scrollHeight } = columnBodyRef.current;
       if (scrollTop + clientHeight >= scrollHeight - 10) {
-        setDisplayedCards((prevDisplayed) => prevDisplayed + 10);
-      }
-    }
-
-    function handleScrollDesktop() {
-      if (columnBodyRef.current.offsetHeight + columnBodyRef.current.scrollTop >= columnBodyRef.current.scrollHeight - 10) {
-        setDisplayedCards((prevDisplayed) => prevDisplayed + 10);
+        setDisplayedCards(prevDisplayed => prevDisplayed + 10);
       }
     }
 
     const columnBodyElement = columnBodyRef.current;
 
     if (columnBodyElement) {
-      if ('ontouchstart' in window) {
-        // Dispositivo móvel
-        columnBodyElement.addEventListener('scroll', handleScrollMobile);
-      } else {
-        // Navegador de computador
-        columnBodyElement.addEventListener('scroll', handleScrollDesktop);
-      }
+      columnBodyElement.addEventListener('scroll', handleScroll);
     }
 
     return () => {
       if (columnBodyElement) {
-        if ('ontouchstart' in window) {
-          // Dispositivo móvel
-          columnBodyElement.removeEventListener('scroll', handleScrollMobile);
-        } else {
-          // Navegador de computador
-          columnBodyElement.removeEventListener('scroll', handleScrollDesktop);
-        }
+        columnBodyElement.removeEventListener('scroll', handleScroll);
       }
     };
   }, []);
 
-  // --------- FIM SCROLL
-
   return (
-
     <Droppable droppableId={String(props.columnData.id)}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
           {...provided.droppableProps}
           style={{
-            backgroundColor: snapshot.isDraggingOver ? '#c8f3bf' : '#F0F2F5', // Muda a cor de fundo conforme o card é arrastado sobre
+            backgroundColor: snapshot.isDraggingOver ? '#c8f3bf' : '#F0F2F5',
           }}
           className='column-container'
         >
@@ -147,11 +153,9 @@ function Column(props) {
             </div>
           </div>
           <div className='column-body' ref={columnBodyRef}>
-            {
-              filteredCards.slice(0, displayedCards).map((card, index) => (
-                <Card key={card.id} cardData={card} index={index} />
-              ))
-            }
+            {filteredCards.slice(0, displayedCards).map((card, index) => (
+              <Card key={card.card_id} cardData={card} index={index} />
+            ))}
             {provided.placeholder}
           </div>
           <div style={{ display: '' }} className='column-footer'>{props.columnData.id}</div>
@@ -159,9 +163,7 @@ function Column(props) {
         </div>
       )}
     </Droppable>
-
   );
 }
 
 export default Column;
-

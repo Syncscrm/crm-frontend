@@ -30,8 +30,12 @@ export const CardProvider = ({ children }) => {
   const [openCloseCompartilharModal, setOpenCloseCompartilharModal] = useState(false)
   const [openCloseModuloEsquadriasModal, setOpenCloseModuloEsquadriasModal] = useState(false)
 
-
   const [tarefas, setTarefas] = useState([]);
+
+  const [currentCardIdMessage, setCurrentCardIdMessage] = useState(null)
+  const [openCloseModalMessenger, setOpenCloseModalMessenger] = useState(false);
+
+
 
   const addHistoricoCardContext = async (currentHistoric, cardId, userId) => {
 
@@ -75,7 +79,9 @@ export const CardProvider = ({ children }) => {
     openCloseCompartilharModal, setOpenCloseCompartilharModal,
     tarefas, setTarefas,
     openCloseModuloEsquadriasModal, setOpenCloseModuloEsquadriasModal,
-    addHistoricoCardContext
+    addHistoricoCardContext,
+    currentCardIdMessage, setCurrentCardIdMessage,
+    openCloseModalMessenger, setOpenCloseModalMessenger,
   };
 
   return (

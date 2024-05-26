@@ -43,9 +43,11 @@ function Historic() {
   useEffect(() => {
     const fetchHistory = async () => {
 
+      //console.log('currentCardData.id', currentCardData.id)
+
       try {
         // console.log('buscando historico')
-        const response = await axios.get(`${apiUrl}/card/history/${currentCardData.id}`);
+        const response = await axios.get(`${apiUrl}/card/history/${currentCardData.card_id}`);
         setHistory(response.data);
         //console.log('History:', response.data);
 
@@ -66,7 +68,7 @@ function Historic() {
 
     try {
       const payload = {
-        card_id: currentCardData.id, // assuming idCard is available in the component's props
+        card_id: currentCardData.card_id, // assuming idCard is available in the component's props
         user_id: user.id, // from useUser context
         action_type: 'Update', // or any other type depending on the context
         description: currentHistoric,
@@ -109,6 +111,9 @@ function Historic() {
     <div className='history-card-modal'>
       <div className='history-card-container'>
         <div className='history-card-footer'>
+        <div className='header-update-card-container'>
+          <label>Histórico</label>
+        </div>
           <button className="history-card-close-button" onClick={() => { setOpenCloseHistoricModal(false) }}>X</button>
         </div>
         <div className="history-card-form-container">
@@ -117,7 +122,7 @@ function Historic() {
 
 
             {history.map((item) => (
-              <div className='history-item-container' key={item.hitory_id}>
+              <div className='history-item-container' key={item.history_id}>
                 <div className='history-mensagem-container'>
                   <div className='user-logo-history-container'>
                     <img src={getUserData(item.user_id)?.avatar || Logo} alt={getUserData(item.user_id)?.username || 'User'} className='user-logo-history' />

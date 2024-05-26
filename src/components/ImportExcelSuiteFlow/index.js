@@ -13,7 +13,8 @@ import { apiUrl } from '../../config/apiConfig';
 
 function ImportExcelSuiteFlow() {
 
-  const { columns } = useColumns();
+  const { columns, loadingResult, setLoadingResult,
+    loadingModal, setLoadingModal } = useColumns();
 
   const { user, listAllUsers, setOpenCloseImportExcelSuiteFlow } = useUser();
 
@@ -238,6 +239,8 @@ function ImportExcelSuiteFlow() {
         }
 
         try {
+          setLoadingModal(true)
+          setLoadingResult('Importando Card...')
 
           function parseCurrency(value) {
             // Remove o 'R$' e todos os espaços em branco
@@ -294,118 +297,126 @@ function ImportExcelSuiteFlow() {
           };
 
           const response = await axios.post(`${apiUrl}/card/import-suiteflow`, cardData);
-          const cardId = response.data.id; // Acessando o ID do card a partir da resposta, assumindo que o servidor retorna um JSON com o ID em 'id'
+          const cardId = response.data.card_id; // Acessando o ID do card a partir da resposta, assumindo que o servidor retorna um JSON com o ID em 'id'
 
 
           setNumCardsLoaded(currentNumCardsLoaded + 1);
 
-          //setOpenCloseImportExcelSuiteFlow(false)
-
-          // CRIAR TABELA DE PRODUÇÃO
+          //CRIAR TABELA DE PRODUÇÃO
 
           try {
 
+            setLoadingResult('Importando Módulo de Produção...')
+            setLoadingModal(true)
+            console.log('conclusao_producao', conclusao_producao ? 'não null' : 'null')
+
             const esquadriaData = {
               card_id: cardId,
-              nome_obra: nome_obra,
-              contato_obra: contato_responsavel,
-              previsao_medicao: recebimento_medidas ? recebimento_medidas : new Date(),
+              nome_obra: nome_obra ? nome_obra : 'Não Informado!',
+              contato_obra: contato_responsavel ? contato_responsavel : 'Não Informado!',
+              previsao_medicao: recebimento_medidas ? new Date(recebimento_medidas) : new Date(),
               status_medicao: 'Parado',
-              previsao_producao: previsao_producao ? previsao_producao : new Date(),
-              status_producao: 'Parado',
-              previsao_entrega_vidro: entrega_vidro ? entrega_vidro : new Date(),
-              status_entrega_vidro: 'Parado',
-              previsao_vistoria_pre: null,
+              previsao_producao: previsao_producao ? new Date(previsao_producao) : new Date(),
+              status_producao:  conclusao_producao ? 'Pronto' :  'Parado',
+              previsao_entrega_vidro: entrega_vidro ? new Date(entrega_vidro) : new Date(),
+              status_entrega_vidro: !status_vidro ? 'Parado' : status_vidro == 'Entregue' ? 'Pronto' : (status_vidro == 'Solicitado' ? 'Em Andamento' : 'Parado'),
+              previsao_vistoria_pre: new Date(),
               status_vistoria_pre: 'Parado',
-              previsao_entrega_obra: prazo_entrega ? prazo_entrega : new Date(),
+              previsao_entrega_obra: prazo_entrega ? new Date(prazo_entrega) : new Date(),
               status_entrega_obra: 'Parado',
-              previsao_instalacao: previsao_instalacao ? previsao_instalacao : new Date(),
+              previsao_instalacao: previsao_instalacao ? new Date(previsao_instalacao) : new Date(),
               status_instalacao: 'Parado',
-              previsao_vistoria_pos: null,
+              previsao_vistoria_pos: new Date(),
               status_vistoria_pos: 'Parado',
-              previsao_assistencia: previsao_assistencia ? previsao_assistencia : new Date(),
+              previsao_assistencia: previsao_assistencia ? new Date(previsao_assistencia) : new Date(),
               status_assistencia: 'Parado',
-              horas_producao: horas_producao,
-              quantidade_esquadrias: quantidade_esquadrias,
-              quantidade_quadros: numero_quadros,
-              metros_quadrados: metros_quadrados
+              horas_producao: horas_producao ? horas_producao : 0,
+              quantidade_esquadrias: quantidade_esquadrias ? quantidade_esquadrias : 0,
+              quantidade_quadros: numero_quadros ? numero_quadros : 0,
+              metros_quadrados: metros_quadrados ? metros_quadrados : 0,
+              cor: cor ? cor : '',
             };
 
             const response = await axios.post(`${apiUrl}/card/upsert`, esquadriaData);
 
 
-            // CRIAR TABELA DE HISTORICO
+            // // CRIAR TABELA DE HISTORICO
             try {
+
+              setLoadingResult('Importando Historico...')
+              setLoadingModal(true)
+
               const historicos = JSON.parse(lista_historico);
 
               function parseDateString(dateStr) {
-                const parts = dateStr.split('/'); // Divide a string pela barra
+                const parts = dateStr.split('/');
                 if (parts.length === 3) {
-                  const formattedDateStr = `${parts[1]}/${parts[0]}/${parts[2]}`; // Reordena para MM/DD/YYYY
-                  return new Date(formattedDateStr).toISOString(); // Cria um objeto Date e converte para ISO string
+                  const formattedDateStr = `${parts[1]}/${parts[0]}/${parts[2]}`;
+                  return new Date(formattedDateStr).toISOString();
                 }
                 throw new Error('Data inválida: ' + dateStr);
               }
 
-              // Processar cada histórico individualmente
               for (const historico of historicos) {
                 const historyData = {
-                  card_id: cardId, // assuming idCard is available in the component's props
-                  user_id: buscarIdReferencia(entidade), // from useUser context
-                  action_type: 'Update', // or any other type depending on the context
-                  description: historico.title,
-                  card_status: status, // assuming 'status' is available
-                  create_at: parseDateString(historico.date) // Converte a data para ISO string
+                  card_id: cardId,
+                  user_id: buscarIdReferencia(entidade),
+                  action_type: 'Update',
+                  description: historico.title ? historico.title : '',
+                  card_status: status ? status : false,
+                  create_at: parseDateString(historico.date) ? parseDateString(historico.date) : new Date(),
                 };
 
-                // Envia cada histórico individualmente para a API
+
                 const response = await axios.post(`${apiUrl}/card/add-history-import-suiteflow`, historyData);
                 console.log(`Histórico adicionado com sucesso: ${response.data}`);
               }
 
-              // CRIAR TABELA DE HISTORICO
-            try {
+              //   // CRIAR TABELA DE TAREFAS
+              try {
 
-              const tarefas = JSON.parse(lista_de_tarefas);
+                setLoadingResult('Importando Tarefas...')
+                setLoadingModal(true)
 
-              // Processar cada histórico individualmente
-              for (const tarefa of tarefas) {
-                const tasksData = {
-                  user_id: buscarIdReferencia(entidade), // from useUser context
-                  card_id: cardId, // or any other type depending on the context
-                  description: tarefa.title,
-                  task_type: 'Card',
-                  due_date: parseDateString(tarefa.date),
-                  completed: tarefa.status,
-                };
+                const tarefas = JSON.parse(lista_de_tarefas);
 
-                const response = await axios.post(`${apiUrl}/card/add-tarefa`, tasksData);
-                console.log(`Tarefa adicionado com sucesso: ${response.data}`);
+                for (const tarefa of tarefas) {
+                  const tasksData = {
+                    user_id: buscarIdReferencia(entidade),
+                    card_id: cardId,
+                    description: tarefa.title ? tarefa.title : '',
+                    task_type: 'Card',
+                    due_date: parseDateString(tarefa.date),
+                    completed: tarefa.status ? tarefa.status : false,
+                  };
+
+                  const response = await axios.post(`${apiUrl}/card/add-tarefa`, tasksData);
+                  console.log(`Tarefa adicionado com sucesso: ${response.data}`);
+                }
+
+                
+                setLoadingResult('')
+
+              } catch (error) {
+                setLoadingResult('Erro...')
+                console.error('Erro ao analisar a lista de tarefas ou ao salvar no banco:', error);
               }
 
             } catch (error) {
-              console.error('Erro ao analisar a lista de tarefas ou ao salvar no banco:', error);
-            }
-
-
-
-            } catch (error) {
+              setLoadingResult('Erro...')
               console.error('Erro ao analisar a lista de tarefas ou ao salvar no banco:', error);
             }
 
           } catch (error) {
+            setLoadingResult('Erro...')
             console.error('Erro ao salvar as informações do módulo de esquadrias:', error);
           }
 
-
-
-
-
-
-
+          setLoadingModal(false)
 
 
         } catch (error) {
+          setLoadingResult('Erro...')
           console.error(error);
           console.error('ERRO AO IMPORTAR');
         }

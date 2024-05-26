@@ -1,0 +1,235 @@
+/* ----------- PCP ---------------------*/
+.pcp-modal {
+    width: calc(100vw);
+    height: calc(100vh);
+    display: flex;
+    flex-direction: column;
+}
+
+.pcp-tools-container {
+    width: 100vw;
+    max-height: 35px;
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.pcp-container {
+    width: calc(100vw - 10px);
+    height: calc(100vh - 65px);
+    margin-left: 5px;
+    z-index: 0;
+    flex-wrap: wrap;
+
+    overflow-y: auto;
+}
+
+.pcp-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.pcp-container::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 5px;
+}
+
+
+.pcp-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #d1d1d1;
+    
+}
+
+.pcp-table th,
+.pcp-table td {
+    border: 1px solid #d1d1d1;
+    padding: 3px;
+    text-align: center;
+    /* Centralize o texto nas células */
+    
+}
+
+/* Estilize as células do cabeçalho da tabela */
+.pcp-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Estilize as células de dados alternadas */
+.pcp-table tr:nth-child(even) {
+    background-color: #f5f5f5;
+}
+
+/* Estilize as células de dados quando passa o mouse sobre elas */
+.pcp-table tr:hover {
+    background-color: #e0e0e0;
+    
+}
+
+.icon-grid-pcp {
+    min-width: 35px;
+    min-height: 35px;
+    font-size: 22px;
+    border: none;
+    color: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5px;
+    position: fixed;
+    right: 25px;
+    bottom: 135px;
+    background-color:deepskyblue;
+    border-radius: 30px;
+}
+
+.icon-grid-pcp:hover {
+    background-color: rgb(65, 65, 65);
+    border-radius: 5px;
+    color: white;
+}
+
+
+.icon-venda-efetuada-pcp {
+    color:dodgerblue;
+    width: 20px;
+    height: 20px;
+    margin-left: 0;
+}
+
+.icon-venda-verdida-pcp {
+    color:deeppink;
+    width: 20px;
+    height: 20px;
+}
+
+.icon-card-arquivado-pcp {
+    color:rgb(158, 158, 158);
+    width: 20px;
+    height: 20px;
+}
+
+.icon-card-entregue-pcp {
+    color:#9862FF;
+    width: 20px;
+    height: 20px;
+}
+
+.icon-card-entregue-pcp {
+    color:#9862FF;
+    width: 20px;
+    height: 20px;
+}
+
+.icon-card-ext-pcp {
+    color: #ffc862;
+    width: 20px;
+    height: 20px;
+}
+
+.horas-totais-label {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.semana-container {
+    background-color:rgba(51, 51, 51, 0.459);
+    color: white;
+}
+
+.semana-label {
+    font-size: 14px;
+    font-weight: 700;
+}   
+
+.btn-programacao-producao {
+    background-color:rgb(114, 114, 114);
+    color: white;
+    height: 25px;
+    border-radius: 5px;
+    border: none;
+    margin-left: 5px;
+    padding-inline: 5px;
+    font-size: 12px;
+}
+
+.btn-programacao-producao:focus {
+    outline: none;
+    border-color: initial;
+    box-shadow: none;
+  }
+
+.header-semana-title {
+    background-color: #9862FF;
+
+}
+
+.linha-vazia-programacao {
+    background-color: white;
+    min-height: 10px;
+    display: flex;
+}
+
+.color-container-ref {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.color-ref {
+    min-width: 20px;
+    min-height: 20px;
+    border-radius: 15px;
+    display: flex;
+    background-color: #9862FF;
+    margin-right: 8px;
+    border: 1px solid #333333;
+    box-shadow: -0px 0px 10px rgba(2, 2, 2, 0.3);
+}
+
+.vidro-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.status-vidro {
+    margin-right: 3px;
+}
+
+.icon-status-vidro-comprar {
+    width: 18px;
+    height: 18px;
+    color: rgb(245, 74, 74);
+}
+
+.icon-status-vidro-comprado {
+    width: 20px;
+    height: 20px;
+    color:deepskyblue;
+}
+
+.icon-status-vidro-entergue {
+    width: 20px;
+    height: 20px;
+    color: rgb(6, 180, 30);
+}
+
+.icon-status-controle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+
+
+
+
+
+
+
+
+

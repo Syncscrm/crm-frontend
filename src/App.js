@@ -9,6 +9,7 @@ import { UserProvider } from './contexts/userContext';
 import { ColumnsProvider } from './contexts/columnsContext';
 import { CardProvider } from './contexts/cardContext';
 import ColumnsPage from './components/pages/ColumnsPage';
+import PCP from './components/pages/PCP';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
                 <Route path="/home" element={<HomePage />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/process" element={<ColumnsPage />} />
+                <Route path="/pcp" element={<PCP />} />
                 {/* Aqui você pode adicionar mais rotas que deseja proteger */}
               </Route>
               {/* Outras rotas conforme necessário */}
