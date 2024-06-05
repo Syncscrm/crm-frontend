@@ -6,7 +6,7 @@ import { format, parseISO } from 'date-fns';
 
 // ICONS
 import { GrTask } from "react-icons/gr";
-import { MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
+import {MdBookmark,  MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdColorLens, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
 
 import './style.css';
 
@@ -33,7 +33,9 @@ function Card({ cardData, index }) {
     addHistoricoCardContext,
     cards,
     currentCardIdMessage, setCurrentCardIdMessage,
-    openCloseModalMessenger, setOpenCloseModalMessenger
+    openCloseModalMessenger, setOpenCloseModalMessenger,
+    openCloseAnexosModal, setOpenCloseAnexosModal,
+    listaEtiquetas
   } = useCard();
   const { columnsUser, columns } = useColumns();
 
@@ -43,6 +45,10 @@ function Card({ cardData, index }) {
   const [openCloseEditStatusModal, setOpenCloseEditStatusModal] = useState(false)
   const [selectedColumnId, setSelectedColumnId] = useState(cardData.column_id);
   const [showConfirmButton, setShowConfirmButton] = useState(false);
+
+
+  const [selectedEtiquetaId, setSelectedEtiquetaId] = useState(null);
+
 
   useEffect(() => {
     setPotencialVenda(cardData.potencial_venda)
@@ -60,6 +66,13 @@ function Card({ cardData, index }) {
     setCurrentCardData(cardData)
     setOpenCloseModuloEsquadriasModal(true)
   };
+
+  const openAnexosModal = (e) => {
+    e.stopPropagation();
+    setCurrentCardData(cardData)
+    setOpenCloseAnexosModal(true)
+  };
+
 
   const openHistoricModal = (e) => {
     e.stopPropagation();
@@ -179,7 +192,7 @@ function Card({ cardData, index }) {
     try {
       setModalLoading(true);
       const response = await axios.post(`${apiUrl}/card/update-status`, { id, status, columnId });
-      console.log(response.data);
+      //console.log(response.data);
       setStatusCard(response.data.status);
       setCards(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));
       setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));
@@ -297,6 +310,52 @@ function Card({ cardData, index }) {
 
 
 
+  function getEtiquetaColorById(id) {
+    const etiqueta = listaEtiquetas.find(etiqueta => etiqueta.id === id);
+    return etiqueta ? etiqueta.color : '';
+  }
+
+
+
+  const updateCardEtiqueta = async (etiqueta) => {
+    const currentCardId = cardData.card_id;
+
+    const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
+    if (!userConfirmed) {
+      return;
+    }
+
+
+    try {
+      setModalLoading(true);
+      setShowConfirmButton(true);
+      setMensagemLoading('Alterando Etiqueta...');
+      const response = await axios.post(`${apiUrl}/card/update-etiqueta`, {
+        cardId: currentCardId,
+        etiqueta_id: etiqueta,
+      });
+
+      if (response.data) {
+        addHistoricoCardContext(`Etiqueta alterada`, currentCardId, user.id);
+      } else {
+        throw new Error('No data returned');
+      }
+
+      setCards(prevCards => prevCards.map(card => card.card_id === currentCardId ? { ...card, ...response.data } : card));
+      setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === currentCardId ? { ...card, ...response.data } : card));
+
+      setModalLoading(false);
+      setMensagemLoading('');
+      setShowConfirmButton(false);
+    } catch (error) {
+      setMensagemLoading('Erro ao alterar Etiqueta!');
+      setShowConfirmButton(false);
+    }
+  };
+
+
+  const sortedEtiquetas = [...listaEtiquetas].sort((a, b) => a.order - b.order);
+
 
   return (
 
@@ -310,6 +369,8 @@ function Card({ cardData, index }) {
           {...provided.dragHandleProps}
           onClick={(e) => viewCard(e)}
         >
+
+          <div className='rotulo-container' style={{backgroundColor: getEtiquetaColorById(cardData.etiqueta_id)}}></div>
 
           {
             modalLoading &&
@@ -337,7 +398,7 @@ function Card({ cardData, index }) {
             )
           }
           <div className='card-header'>
-            <label className='card-title'>{cardData.name.toUpperCase().substring(0, 29)}</label>
+            <label className='card-title'>{cardData.name.toUpperCase().substring(0, 28)}</label>
             <MdShare className='icons-shared-card' onClick={(event) => shareCard(cardData.card_id, event)} />
 
           </div>
@@ -346,8 +407,39 @@ function Card({ cardData, index }) {
             {
               showCard && (
                 <>
+
+                  <label className='card-body-item-select-column'>
+                    <MdBookmark className='card-icon-item' />
+                    <select
+                      className="select-etiqueta-card"
+                      value={cardData.etiqueta_id ? cardData.etiqueta_id : null}
+                      onChange={(e) => {
+                        setSelectedEtiquetaId(e.target.value);
+                        updateCardEtiqueta(e.target.value);
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      style={{ backgroundColor: getEtiquetaColorById(cardData.etiqueta_id) }}
+                    >
+                      <option value={0}>Sem Etiqueta</option>
+                      {sortedEtiquetas.map(etiqueta => (
+                        <option key={etiqueta.id} value={etiqueta.id}>
+                          {etiqueta.description}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+
                   <label className='card-body-item'>
                     <MdArticle className='card-icon-item' />{cardData.document_number}
+                  </label>
+                  <label className='card-body-item'>
+                    <MdAssignment className='card-icon-item' />{cardData.second_document_number ? cardData.second_document_number : 'Não Informado'}
+                  </label>
+                  <label className='card-body-item'>
+                    <MdAssignmentTurnedIn className='card-icon-item' />{cardData.pedido_number ? cardData.pedido_number : 'Sem Pedido'}
                   </label>
                   {cardData && cardData.nome_obra && cardData.nome_obra != '' &&
                     <label className='card-body-item'>
@@ -364,7 +456,7 @@ function Card({ cardData, index }) {
                     <MdAlternateEmail className='card-icon-item' />{cardData.email}
                   </label>
                   <label className='card-body-item'>
-                    <MdAccountBox className='card-icon-item' />{getUsernameById(cardData.entity_id)}
+                    <MdAccountBox className='card-icon-item' />{getUsernameById(cardData.entity_id).substring(0, 28)}
                   </label>
                   <label className='card-body-item'>
                     <MdRoom className='card-icon-item' /> {cardData.city + '/' + cardData.state}
@@ -387,9 +479,18 @@ function Card({ cardData, index }) {
                     <MdAnalytics className='card-icon-item' />{cardData.status_date ? formatDate(cardData.status_date) : ''}
                   </label>
 
+                  <label className='card-body-item'>
+                    <MdAdsClick className='card-icon-item' />{cardData.origem ? cardData.origem : 'Não informado'}
+                  </label>
+
+                  <label className='card-body-item'>
+                    <MdColorLens className='card-icon-item' />{cardData.produto ? cardData.produto : 'Não informado'}
+                  </label>
+
                   <label style={{ display: 'none' }} className='card-body-item'>
                     <MdViewColumn className='card-icon-item' />{cardData.column_id ? getNameColumnCard(cardData.column_id) : '---'}
                   </label>
+
 
                   <label className='card-body-item-select-column'>
                     <MdViewColumn className='card-icon-item' />
@@ -412,6 +513,8 @@ function Card({ cardData, index }) {
                     </select>
                   </label>
 
+
+
                   <div className='btns-card-container'>
                     <button onClick={(e) => getCardData(e)} className='btn-update-card'>
                       <MdEdit className='icons-btns-update-card' />
@@ -428,7 +531,7 @@ function Card({ cardData, index }) {
                     <button onClick={openModuloEsquadriasModal} className='btn-update-card'>
                       <MdWindow className='icons-btns-update-card' />
                     </button>
-                    <button className='btn-update-card'>
+                    <button onClick={openAnexosModal} className='btn-update-card'>
                       <MdAttachFile className='icons-btns-update-card' />
                     </button>
                   </div>
@@ -443,7 +546,9 @@ function Card({ cardData, index }) {
                   <label className='card-body-item-separate-container'>
 
                     <label className='card-body-item-separate-value'>
-                      <label style={{fontSize: '15px'}} className='card-valor-item'>R$ {cardData.cost_value ? cardData.cost_value : 0}</label>
+                      <label style={{ fontSize: '15px' }} className='card-valor-item'>
+                        {cardData.cost_value ? parseFloat(cardData.cost_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '0,00'}
+                      </label>
                     </label>
 
                     <label className='card-body-item-separate'>
@@ -451,6 +556,8 @@ function Card({ cardData, index }) {
                     </label>
 
                     <label style={{ display: 'none' }} className='card-id-item-separate'>ID: {cardData.card_id}</label>
+
+
 
                   </label>
                 </>
@@ -460,7 +567,7 @@ function Card({ cardData, index }) {
           </div>
           <div className='card-footer'>
 
-            <label className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)} dias</label>
+            <label className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label>
             <label className='card-star-container'>
               <MdGrade
                 onClick={(event) => updatePotencialVenda(event, 1)}

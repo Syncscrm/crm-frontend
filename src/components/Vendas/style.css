@@ -1,0 +1,128 @@
+.notification-admin {
+    position: fixed;
+    bottom: 30px;
+    left: calc(0px);
+    width: 500px;
+    border-radius: 10px;
+    background-color: #72727200;
+    z-index: 2000;
+}
+
+.header-notification-adm {
+    width: 100%;
+    height: 55px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.sino-container {
+    min-width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(92, 92, 92);
+    border-radius: 5px;
+    margin-left: 5px;
+    padding: 10px;
+    box-shadow: rgba(128, 128, 128, 0.25) 0px 2px 5px -2px, rgba(70, 70, 70, 0.3) 0px 3px 7px -3px;
+
+}
+
+.notification-admin-icon-sino {
+    color: rgb(255, 230, 0);
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(1px 1px 3px rgba(255, 230, 0, 0.829));
+}
+
+.novas-vendas-container {
+    width: 100%;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 20px;
+    padding: 10px;
+    
+}
+
+.nova-venda-adm-row {
+    min-width: 440px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    max-height: 80px;
+    
+}
+
+.nova-venda-adm {
+    width: calc(100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(92, 92, 92);
+    margin-bottom: 5px;
+    margin-top: 5px;
+    border-radius: 5px;
+    min-height: 70px;
+    box-shadow: rgba(128, 128, 128, 0.25) 0px 2px 5px -2px, rgba(70, 70, 70, 0.3) 0px 3px 7px -3px;
+
+}
+
+.logo-afilhado-lista-vendas {
+    width: 70px;
+    height: 70px;
+    margin-right: 10px;
+    border-radius: 5px;
+    padding: 1px;
+    object-fit: contain;
+
+    background-color: white;
+    box-shadow: rgba(128, 128, 128, 0.25) 0px 2px 5px -2px, rgba(70, 70, 70, 0.3) 0px 3px 7px -3px;
+
+}
+
+.nova-venda-name {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 25px;
+    font-size: 16px;
+    color: white;
+}
+
+.nova-venda-valor {
+    min-height: 30px;
+    font-size: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.notification-admin-icon-sino {
+    display: inline-block;
+    position: relative;
+    animation: bell-animation 0.3s infinite alternate;
+}
+
+
+@keyframes bell-animation {
+    0% {
+        transform: rotate(-15deg);
+    }
+
+    100% {
+        transform: rotate(15deg);
+    }
+}

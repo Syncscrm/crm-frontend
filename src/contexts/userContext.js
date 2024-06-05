@@ -17,6 +17,14 @@ export const UserProvider = ({ children }) => {
 
   const [listAllUsers, setListAllUsers] = useState([]); // Estado para armazenar todos os usuários
 
+  const [theme, setTheme] = useState({
+    primaryColor: '#3e3e42',
+    secondaryColor: '#007acc',
+    backgroundColor: '#1e1e1e',
+    textColor: 'white'
+  });
+
+
   const fetchUsersByCompany = async () => {
     if (user && user.empresa_id) {
       try {
@@ -101,7 +109,8 @@ export const UserProvider = ({ children }) => {
     afilhadosList,
     listAllUsers,
     openCloseImportExcelEntidades, setOpenCloseImportExcelEntidades,
-    openCloseImportExcelSuiteFlow, setOpenCloseImportExcelSuiteFlow
+    openCloseImportExcelSuiteFlow, setOpenCloseImportExcelSuiteFlow,
+    theme, setTheme
   };
 
   useEffect(() => {

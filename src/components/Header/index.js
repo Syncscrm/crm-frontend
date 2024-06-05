@@ -30,9 +30,11 @@ import Compartilhar from '../forms/Compartilhar';
 import ModuloEsquadrias from '../forms/ModuloEsquadrias';
 import Loading from '../Loading';
 import Messenger from '../Messenger';
+import Anexos from '../Anexos';
 
 function Header() {
-  const { user, clearUserContext, setOpenCloseImportExcelEntidades, setOpenCloseImportExcelSuiteFlow } = useUser();
+
+  const { user, clearUserContext, setOpenCloseImportExcelEntidades, setOpenCloseImportExcelSuiteFlow, themeDark, setThemeDark } = useUser();
   const { setColumns, setColumnsUser, setSelectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal } = useColumns();
 
   const { setCurrentCardData, openCloseUpdateCard,
@@ -43,7 +45,8 @@ function Header() {
     openCloseCompartilharModal, setOpenCloseCompartilharModal,
     tarefas, setTarefas,
     openCloseModuloEsquadriasModal, setCards, setPreviewSearchCards, setOpenCloseModalVendaPerdida,
-    openCloseModalMessenger, setOpenCloseModalMessenger
+    openCloseModalMessenger, setOpenCloseModalMessenger,
+    openCloseAnexosModal, setOpenCloseAnexosModal
   } = useCard();
 
   const [showMenuUser, setShowMenuUser] = useState(false);
@@ -59,6 +62,54 @@ function Header() {
   const [itemsToRender, setItemsToRender] = useState(15);
   const notificationsRef = useRef(null);
   const navigate = useNavigate();
+
+
+
+
+
+
+
+
+
+
+  /// ---------------- messenger ----------------
+
+  // Adicione um estado para armazenar a quantidade de mensagens não lidas
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+
+
+  const fetchUnreadMessagesCount = async () => {
+    //console.log('Header - Buscando mensagens não lidas')
+    try {
+      const response = await axios.get(`${apiUrl}/card/total-unread-messages-count/${user.id}`);
+      setUnreadMessagesCount(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar contagem de mensagens não lidas', error);
+    }
+  };
+
+  useEffect(() => {
+
+    if(!user)
+      return
+
+    let interval;
+    if (!openCloseModalMessenger) {
+      fetchUnreadMessagesCount();
+      interval = setInterval(() => {
+        fetchUnreadMessagesCount();
+      }, 3000);
+    }
+
+    return () => clearInterval(interval);
+  }, [user, openCloseModalMessenger]);
+
+
+
+
+
+
+
 
 
   const closeModal = () => {
@@ -86,6 +137,10 @@ function Header() {
 
   function usersPage() {
     navigate('/users');
+  }
+
+  function dashboardPage() {
+    navigate('/dashboard');
   }
 
   function pipelinePage() {
@@ -199,9 +254,10 @@ function Header() {
     }
   }, [showNotifications, allNotifications, itemsToRender]);
 
+
   return (
 
-    <header className="header-container">
+    <header className="header-container" >
       <div className='header-menu-left' onClick={() => openLeftMenu()}>
         <FaBars />
       </div>
@@ -220,9 +276,10 @@ function Header() {
           <button className='left-menu-button' onClick={() => pipelinePage()}>Home</button>
           <button className='left-menu-button' onClick={() => usersPage()}>Usuários</button>
           <button className='left-menu-button' onClick={() => PCP()}>PCP</button>
-          <button className='left-menu-button' onClick={() => processColumnsPage()}>Colunas</button>
-          <button className='left-menu-button' onClick={() => setOpenCloseImportExcelEntidades(true)}>Import Excel</button>
-          <button className='left-menu-button' onClick={() => setOpenCloseImportExcelSuiteFlow(true)}>Import SuiteFlow</button>
+          <button className='left-menu-button' onClick={() => dashboardPage()}>Dashboard</button>
+          <button style={{display: user.access_level === 5 ? '' :  ''}} className='left-menu-button' onClick={() => processColumnsPage()}>Colunas</button>
+          <button style={{display: user.access_level === 5 ? '' :  ''}} className='left-menu-button' onClick={() => setOpenCloseImportExcelEntidades(true)}>Import Excel</button>
+          <button style={{display: user.access_level === 5 ? '' :  ''}} className='left-menu-button' onClick={() => setOpenCloseImportExcelSuiteFlow(true)}>Import SuiteFlow</button>
         </div>
       )}
 
@@ -311,13 +368,20 @@ function Header() {
         <ModuloEsquadrias idCard={currentCardData.card_id} />
       )}
 
+      {openCloseAnexosModal && (
+        <Anexos idCard={currentCardData.card_id} />
+      )}
+
       <Loading />
 
       <TbMessageDots onClick={() => setOpenCloseModalMessenger(true)} className='icon-messenger-flutuante' />
 
       {openCloseModalMessenger &&
-        <Messenger closeModal={closeModal}/>
+        <Messenger closeModal={closeModal} />
       }
+
+      {unreadMessagesCount > 0 && <span className="badge">{unreadMessagesCount}</span>}
+      {openCloseModalMessenger && <Messenger closeModal={closeModal} />}
 
     </header>
   );

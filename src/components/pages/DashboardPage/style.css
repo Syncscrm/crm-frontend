@@ -1,0 +1,201 @@
+.dashboard-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-header {
+    width: 100vw;
+    min-height: 80px;
+    max-height: 80px;
+    display: flex;
+    align-items: center;
+    padding-inline: 20px;
+    margin-top: 5px;
+}
+
+.dashboard-total-sales {
+    width: 240px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: rgb(231, 231, 231);
+    border-radius: 8px;
+    color: rgb(116, 116, 116);
+    font-size: 14px;
+    margin-left: 20px;
+}
+
+.dashboard-body {
+    width: 100vw;
+    display: flex;
+    padding: 5px;
+    overflow-y: hidden;
+    justify-content: center;
+}
+
+.dashboard-afilhados-list,
+.dashboard-states-list,
+.dashboard-cities-list,
+.dashboard-origins-list {
+    height: calc(100vh - 150px);
+    background-color: #e7e7e7;
+    border-radius: 8px;
+    padding: 8px;
+    overflow-y: auto;
+    font-size: 14px;
+    margin-right: 5px;
+    overflow-x: auto;
+    display: block;
+}
+
+.dashboard-afilhados-list::-webkit-scrollbar,
+.dashboard-states-list::-webkit-scrollbar,
+.dashboard-cities-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dashboard-afilhados-list::-webkit-scrollbar-thumb,
+.dashboard-states-list::-webkit-scrollbar-thumb,
+.dashboard-cities-list::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 5px;
+}
+
+.table-dashboard {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    color: white;
+}
+
+th {
+    padding: 0 10px; /* Remover padding vertical e manter padding horizontal */
+    text-align: center; /* Centralizar texto */
+    border-bottom: 1px solid #ddd;
+    height: 30px; /* Definir altura fixa */
+    white-space: nowrap; /* Impedir quebra de linha */
+    overflow: hidden; /* Esconder texto excedente */
+    text-overflow: ellipsis; /* Adicionar reticências ao texto excedente */
+    background-color: #6c757d;
+}
+
+.td-dashboard{
+    padding: 0 10px; /* Remover padding vertical e manter padding horizontal */
+    text-align: center; /* Centralizar texto */
+    border-bottom: 1px solid #ddd;
+    height: 30px;
+    white-space: nowrap; /* Impedir quebra de linha */
+    overflow: hidden; /* Esconder texto excedente */
+    text-overflow: ellipsis; /* Adicionar reticências ao texto excedente */
+}
+
+tr:nth-child(even) {
+    background-color: #f0f0f0;
+}
+
+tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+tr:hover {
+    background-color: #b6dcff;
+}
+
+.bar-container {
+    width: 220px;
+    overflow: hidden;
+}
+
+.bar {
+    height: 22px;
+    background-color: #ff2a4e;
+    border-radius: 5px;
+}
+
+.date-filters-dashboard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+    background-color: #e7e7e7;
+    border-radius: 8px;
+    margin-left: 10px;
+}
+
+.date-column-dashboard {
+    display: flex;
+    flex-direction: column;
+    min-height: 70px;
+    justify-content: center;
+    align-items: center;
+    padding-inline: 15px;
+}
+
+.input-date-dashboard {
+    min-height: 30px;
+    border-radius: 5px;
+    border: none;
+    width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.label-date-dashboard {
+    font-size: 13px;
+    color: rgb(92, 92, 92);
+    font-weight: 700;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+}
+
+.logo-dashboard {
+    /* Ajusta a largura máxima para 100% do container */
+    max-height: 95%;
+    /* Ajusta a altura máxima para 100% do container */
+    object-fit: contain;
+    /* Mantém a proporção sem cortar a imagem */
+    margin: 0;
+    /* Centraliza a imagem no container */
+    border-radius: 10px;
+}
+
+.status-container-dashboard {
+    width: 30px;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.icon-perdido-dashboard {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    background-color: #e7e7e7;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: #ff2a4e;
+}
+
+
+.icon-vendido-dashboard {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    background-color: #e7e7e7;
+    border-radius: 5px;
+    color: dodgerblue;
+}
+

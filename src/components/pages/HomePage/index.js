@@ -21,6 +21,8 @@ import ImportExcelSuiteFlow from '../../ImportExcelSuiteFlow';
 
 import { BsCalendarDate } from "react-icons/bs";
 
+import logoDefault from '../../../assets/logo-suite-flow.ico'
+import Vendas from '../../Vendas';
 
 function HomePage() {
 
@@ -91,7 +93,7 @@ function HomePage() {
       return;
     }
 
-    
+
     try {
       setLoadingModal(true);
       setLoadingResult('Alterando Coluna...');
@@ -184,9 +186,14 @@ function HomePage() {
   }, []);
 
 
+
+
+
+
   return (
     <div className='home-page-container'>
       <Header />
+      <Vendas />
       <div className='tools-container'>
         <MdOutlineSearch onClick={() => setOpenCloseSearchModal(true)} style={{ display: !openCloseSearchModal ? '' : 'none', cursor: 'pointer' }} className='search-icon-open-close' />
 
@@ -231,18 +238,23 @@ function HomePage() {
                 style={{ backgroundColor: selectedAfilhados.includes(user.id) ? 'dodgerblue' : '' }}
                 onClick={() => handleSelectChange(user.id)}
               >
-                {user.username}
+                <img className='logo-afilhado-lista' src={user.avatar ? user.avatar : logoDefault} />
+                <label className='label-afilhados-lista'>{user.username}</label>
               </div>
-              {afilhadosList.map(afilhado => (
-                <div
-                  key={afilhado.id}
-                  className={`select-filter-option ${selectedAfilhados.includes(afilhado.id) ? 'selected' : ''}`}
-                  style={{ backgroundColor: selectedAfilhados.includes(afilhado.id) ? 'dodgerblue' : '' }}
-                  onClick={() => handleSelectChange(afilhado.id)}
-                >
-                  {afilhado.username}
-                </div>
-              ))}
+              {afilhadosList
+                .sort((a, b) => a.username.localeCompare(b.username))
+                .map(afilhado => (
+                  <div
+                    key={afilhado.id}
+                    className={`select-filter-option ${selectedAfilhados.includes(afilhado.id) ? 'selected' : ''}`}
+                    style={{ backgroundColor: selectedAfilhados.includes(afilhado.id) ? 'dodgerblue' : '' }}
+                    onClick={() => handleSelectChange(afilhado.id)}
+                  >
+                    <img className='logo-afilhado-lista' src={afilhado.avatar ? afilhado.avatar : logoDefault} />
+                    <label className='label-afilhados-lista'>{afilhado.username}</label>
+                  </div>
+                ))}
+
             </div>
           </div>
         )}

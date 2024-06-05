@@ -1,51 +1,35 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import './style.css';
 
 import { ExcelRenderer } from 'react-excel-renderer';
 
 // CONTEXT API
-import { useUser } from '../../contexts/userContext';
+import { useUser } from '../../contexts/userContext'
 import { useColumns } from '../../contexts/columnsContext';
 
 import axios from 'axios';
 import { apiUrl } from '../../config/apiConfig';
 
+
 function ImportExcelSuiteFlow() {
-  const { columns } = useColumns();
+
+  const { columns, loadingResult, setLoadingResult,
+    loadingModal, setLoadingModal } = useColumns();
+
   const { user, listAllUsers, setOpenCloseImportExcelSuiteFlow } = useUser();
 
   const [loading, setLoading] = useState(false);
-  const [idColunaExcel, setIdColunaExcel] = useState('');
-  const [idColunaSistema, setIdColunaSistema] = useState('');
-  const [numRowsLoaded, setNumRowsLoaded] = useState(0);
-  const [numCardsLoaded, setNumCardsLoaded] = useState(0);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [estimatedTime, setEstimatedTime] = useState(0);
-  const intervalRef = useRef(null);
 
   useEffect(() => {
     console.log(listAllUsers)
-  }, [listAllUsers]);
+  }, [listAllUsers])
 
   useEffect(() => {
-    if (loading) {
-      intervalRef.current = setInterval(() => {
-        setElapsedTime((prevTime) => prevTime + 1);
-      }, 1000);
-    } else {
-      clearInterval(intervalRef.current);
-    }
-  }, [loading]);
+    console.log(columns)
+  }, [columns])
 
-  useEffect(() => {
-    if (numCardsLoaded > 0 && numRowsLoaded > 0) {
-      const remainingCards = numRowsLoaded - numCardsLoaded;
-      const averageTimePerCard = elapsedTime / numCardsLoaded;
-      const estimatedTimeRemaining = Math.round(averageTimePerCard * remainingCards);
-      setEstimatedTime(estimatedTimeRemaining);
-    }
-  }, [numCardsLoaded, numRowsLoaded, elapsedTime]);
+  const [idColunaExcel, setIdColunaExcel] = useState()
+  const [idColunaSistema, setIdColunaSistema] = useState()
 
   const handleIdColunaExcelChange = (event) => {
     setIdColunaExcel(event.target.value);
@@ -58,24 +42,32 @@ function ImportExcelSuiteFlow() {
   function buscarIdReferencia(entidade) {
     const listaFiltrada = listAllUsers.filter((item) => item.entidade === entidade);
     const id = listaFiltrada.map((item) => item.id);
+
     return id.toString();
   }
+
+  { loading && <label className='infos-import-excel'>Carregando...</label> }
 
   function buscarEstadoReferencia(entidade) {
     const listaFiltrada = listAllUsers.filter((item) => item.entidade === entidade);
     const estado = listaFiltrada.map((item) => item.state);
+
     return estado.toString();
   }
 
   function buscarCidadeReferencia(entidade) {
     const listaFiltrada = listAllUsers.filter((item) => item.entidade === entidade);
     const city = listaFiltrada.map((item) => item.city);
+
     return city.toString();
   }
 
+  const [numRowsLoaded, setNumRowsLoaded] = useState(0);
+  const [numCardsLoaded, setNumCardsLoaded] = useState(0);
+
   const handleFileUpload = (event) => {
+
     setLoading(true);
-    setElapsedTime(0);
 
     const fileObj = event.target.files[0];
 
@@ -97,7 +89,7 @@ function ImportExcelSuiteFlow() {
       const dataRows = rows.slice(1);
       setNumRowsLoaded(dataRows.length);
 
-      const batchSize = 100; // Tamanho do lote
+      const batchSize = 20; // Tamanho do lote
       let currentNumCardsLoaded = 0;
 
       const processBatch = async (batch) => {
@@ -113,7 +105,7 @@ function ImportExcelSuiteFlow() {
           const batch = dataRows.slice(i, i + batchSize);
           await processBatch(batch);
           // Pausa entre os lotes
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
         }
         setLoading(false);
       };
@@ -185,18 +177,32 @@ function ImportExcelSuiteFlow() {
       return;
     }
 
+    if (versao != 'Versão 1' && versao != 1) {
+      console.log('A versão do documento não corresponde a Versão 1');
+      return;
+    }
+
     if (entidade === '') {
-      console.log('Referência da Entidade Vazia - name_create_by', name_create_by);
+      console.log('Referência da Entidade Vazia');
       return;
     }
 
     if (buscarIdReferencia(entidade) === "") {
-      console.log('Não existem entidade!!!', entidade);
+      console.log('Não existem entidade!!!');
       return;
     }
 
-    try {
+    if (buscarCidadeReferencia(entidade) === "") {
+      console.log('Usuário sem a Cidade no cadastro!!!');
+    }
 
+    if (buscarEstadoReferencia(entidade) === "") {
+      console.log('Usuário sem o Estado no cadastro!!!');
+    }
+
+    try {
+      setLoadingModal(true)
+      setLoadingResult('Importando Card...')
 
       function parseCurrency(value) {
         let numericString = value.replace('R$', '').replace(/\s/g, '');
@@ -253,7 +259,8 @@ function ImportExcelSuiteFlow() {
       setNumCardsLoaded(currentNumCardsLoaded + 1);
 
       try {
-
+        setLoadingResult('Importando Módulo de Produção...')
+        setLoadingModal(true)
 
         const esquadriaData = {
           card_id: cardId,
@@ -285,8 +292,8 @@ function ImportExcelSuiteFlow() {
         const response = await axios.post(`${apiUrl}/card/upsert`, esquadriaData);
 
         try {
-          //setLoadingResult('Importando Histórico...');
-          //setLoadingModal(true);
+          setLoadingResult('Importando Historico...')
+          setLoadingModal(true)
 
           const historicos = JSON.parse(lista_historico);
 
@@ -310,12 +317,12 @@ function ImportExcelSuiteFlow() {
             };
 
             const response = await axios.post(`${apiUrl}/card/add-history-import-suiteflow`, historyData);
-            //console.log(`Histórico adicionado com sucesso: ${response.data}`);
+            console.log(`Histórico adicionado com sucesso: ${response.data}`);
           }
 
           try {
-            //setLoadingResult('Importando Tarefas...');
-            //setLoadingModal(true);
+            setLoadingResult('Importando Tarefas...')
+            setLoadingModal(true)
 
             const tarefas = JSON.parse(lista_de_tarefas);
 
@@ -330,29 +337,36 @@ function ImportExcelSuiteFlow() {
               };
 
               const response = await axios.post(`${apiUrl}/card/add-tarefa`, tasksData);
-              //console.log(`Tarefa adicionado com sucesso: ${response.data}`);
+              console.log(`Tarefa adicionado com sucesso: ${response.data}`);
             }
 
+            setLoadingResult('')
 
           } catch (error) {
-
-            console.error('Erro tarefas', error);
+            setLoadingResult('Erro...')
+            console.error('Erro ao analisar a lista de tarefas ou ao salvar no banco:', error);
           }
+
         } catch (error) {
-
-          console.error('Erro history', error);
+          setLoadingResult('Erro...')
+          console.error('Erro ao analisar a lista de tarefas ou ao salvar no banco:', error);
         }
-      } catch (error) {
 
-        console.error('Erro módulo de esquadrias:', error);
+      } catch (error) {
+        setLoadingResult('Erro...')
+        console.error('Erro ao salvar as informações do módulo de esquadrias:', error);
       }
 
+      setLoadingModal(false)
 
     } catch (error) {
-
-      console.error('Erro Card');
+      setLoadingResult('Erro...')
+      console.error(error);
+      console.error('ERRO AO IMPORTAR');
     }
   };
+
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const handleInputChange = (event) => {
     const file = event.target.files[0];
@@ -363,20 +377,13 @@ function ImportExcelSuiteFlow() {
     if (selectedFile) {
       const fakeEvent = {
         target: {
-          files: [selectedFile],
-        },
+          files: [selectedFile]
+        }
       };
       handleFileUpload(fakeEvent);
     } else {
       console.error('Nenhum arquivo selecionado.');
     }
-  };
-
-  const formatTime = (seconds) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs}h ${mins}m ${secs}s`;
   };
 
   return (
@@ -387,6 +394,7 @@ function ImportExcelSuiteFlow() {
         </div>
         <div className='import-body'>
           <input className='input-import-file' type='file' onChange={handleInputChange} />
+
           <input
             className='input-id-coluna-excel'
             placeholder='ID da Coluna do Excel'
@@ -401,31 +409,27 @@ function ImportExcelSuiteFlow() {
           />
 
           {loading && <label className='infos-import-excel'>Carregando...</label>}
-          {numRowsLoaded > 0 && <label className='infos-import-excel'>Linhas no arquivo: {numRowsLoaded}</label>}
-          {numCardsLoaded > 0 && <label className='title-table'>Cards carregados: {numCardsLoaded}</label>}
+
+          {
+            numRowsLoaded > 0 ? <label className='infos-import-excel'>Linhas no arquivo: {numRowsLoaded}</label> : <></>
+          }
+
+          {
+            numCardsLoaded > 1000000000 ? <label className='title-table'>Cards carregados: {numCardsLoaded}</label> : <></>
+          }
+
         </div>
 
         <div className='import-footer'>
-          <button className='btn-close-import' disabled={loading} style={{ background: loading ? "rgba(0, 0, 0, 0.05)" : '' }} onClick={() => setOpenCloseImportExcelSuiteFlow(false)}>
+          <button className='btn-close-import' disabled={loading} style={{ background: loading ? "rgba(0, 0, 0, 0.05)" : '' }} onClick={() => setOpenCloseImportExcelSuiteFlow(false)} >
             Fechar
           </button>
           <button className='btn-send-import' disabled={loading} style={{ background: loading ? "rgba(0, 0, 0, 0.05)" : '' }} onClick={handleUploadButtonClick}>
             Enviar
           </button>
+
         </div>
       </div>
-
-      {loading && (
-        <div className="loading-modal">
-          <div className="loading-content">
-            <label  className="infos-import-excel">Carregando...</label>
-            <p style={{color: 'white'}}>Tempo decorrido: {formatTime(elapsedTime)}</p>
-            {numCardsLoaded > 0 && (
-              <p style={{color: 'white'}}>Estimativa de tempo restante: {formatTime(estimatedTime)}</p>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

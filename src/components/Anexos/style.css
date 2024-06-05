@@ -1,0 +1,30 @@
+.anexos-modal {
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0000002a;
+    z-index: 1010;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.anexos-container {
+    position: fixed;
+    left: auto;
+    top: 40px;
+    width: 700px;
+    max-width: calc(100vw - 10px);
+    height: calc(100vh - 70px);
+    max-height: calc(100vh - 70px);
+    background-color: white;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: center;
+    border-radius: 10px;
+    padding-inline: 10px;
+    margin-inline: 5px;
+}

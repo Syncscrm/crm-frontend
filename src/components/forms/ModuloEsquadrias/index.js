@@ -45,6 +45,10 @@ function ModuloEsquadrias({ idCard }) {
   const [quantidadeQuadros, setQuantidadeQuadros] = useState(0);
   const [metrosQuadrados, setMetrosQuadrados] = useState(0);
 
+  const [obsObra, setObsObra] = useState('');
+
+  const [listCor, setListCor] = useState([]);
+
   const [cor, setCor] = useState('');
 
 
@@ -76,6 +80,7 @@ function ModuloEsquadrias({ idCard }) {
       quantidade_quadros: quantidadeQuadros,
       metros_quadrados: metrosQuadrados,
       cor: cor,
+      obs: obsObra,
     };
 
     try {
@@ -139,6 +144,9 @@ function ModuloEsquadrias({ idCard }) {
     setQuantidadeQuadros(esquadriasData.quantidade_quadros);
     setMetrosQuadrados(esquadriasData.metros_quadrados);
     setCor(esquadriasData.cor ? esquadriasData.cor : "");
+    setObsObra(esquadriasData.obs ? esquadriasData.obs : "");
+
+    buscarCores()
   }, [esquadriasData]);
 
 
@@ -147,7 +155,7 @@ function ModuloEsquadrias({ idCard }) {
       try {
         const response = await axios.get(`${apiUrl}/card/${idCard}/esquadrias`);
         setEsquadriasData(response.data[0]);
-       // console.log(response.data[0]);
+        // console.log(response.data[0]);
       } catch (error) {
         console.error('Erro ao buscar as informações do módulo de esquadrias:', error);
       }
@@ -157,6 +165,15 @@ function ModuloEsquadrias({ idCard }) {
   }, [idCard]);
 
 
+
+  const buscarCores = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/card/cor/${user.empresa_id}`);
+      setListCor(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar cores:', error);
+    }
+  };
 
   return (
     <div className='modulo-esquadrias-modal'>
@@ -208,6 +225,10 @@ function ModuloEsquadrias({ idCard }) {
                 <label htmlFor="previsaoEntregaVidro" className='modulo-esquadrias-label-input'>Previsão de Entrega de Vidros:</label>
                 <input id="previsaoEntregaVidro" className="modulo-esquadrias-input" type="date" name="previsaoEntregaVidro" value={previsaoEntregaVidro} onChange={(e) => setPrevisaoEntregaVidro(e.target.value)} />
               </div>
+
+
+
+
               <div className='module-esquadrias-column'>
                 <label htmlFor="statusEntregaVidro" className='modulo-esquadrias-label-input'>Status:</label>
                 <select id="statusEntregaVidro" className="modulo-esquadrias-input" name="statusEntregaVidro" value={statusEntregaVidro} onChange={(e) => setStatusEntregaVidro(e.target.value)}>
@@ -294,6 +315,8 @@ function ModuloEsquadrias({ idCard }) {
             </div>
 
 
+
+
             <label htmlFor="address" className='modulo-esquadrias-label-input'>Total em Horas necessárias para Produção:</label>
             <input id="username" className="modulo-esquadrias-input" type="text" placeholder="" value={horasProducao} onChange={(e) => setHorasProducao(e.target.value)} />
 
@@ -305,6 +328,24 @@ function ModuloEsquadrias({ idCard }) {
 
             <label htmlFor="address" className='modulo-esquadrias-label-input'>Quantidade de Metros Quadrados:</label>
             <input id="username" className="modulo-esquadrias-input" type="text" placeholder="" value={metrosQuadrados} onChange={(e) => setMetrosQuadrados(e.target.value)} />
+
+
+
+            <label htmlFor="city-state" className='update-card-label-input'>Cor:</label>
+
+            <div className='select-cidade-estado-container'>
+              <select id="cor" className="select-estado-cidade" value={cor} onChange={(e) => setCor(e.target.value)} >
+                <option value="">Selecione a cor</option>
+                {listCor.map(origem => (
+                  <option key={origem.id} value={origem.name}>{origem.name}</option>
+                ))}
+              </select>
+            </div>
+
+                <label htmlFor="obs" className='modulo-esquadrias-label-input'>Observações:</label>
+                <input id="obs" className="modulo-esquadrias-input" type="text" name="nomeObra" value={obsObra} onChange={(e) => setObsObra(e.target.value)} />
+
+
 
           </form>
         </div>

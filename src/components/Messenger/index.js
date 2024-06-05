@@ -3,15 +3,18 @@ import { useUser } from '../../contexts/userContext';
 import { useCard } from '../../contexts/cardContext';
 import { useColumns } from '../../contexts/columnsContext';
 import { format, parseISO } from 'date-fns';
-import { MdOutlineArrowBackIos, MdSend } from "react-icons/md";
+import { MdOutlineArrowBackIos, MdSend, MdCheck } from "react-icons/md";
 import PreviewCard from '../PreviewCard';
 import './style.css';
 import axios from 'axios';
 import { apiUrl } from '../../config/apiConfig';
 
+import { TbCheck, TbChecks } from "react-icons/tb";
+
+
 function Messenger({ closeModal }) {
   const { user, listAllUsers } = useUser();
-  const { currentCardIdMessage, setCurrentCardIdMessage } = useCard();
+  const { currentCardIdMessage, setCurrentCardIdMessage, openCloseModalMessenger } = useCard();
   const { columnsUser, columns } = useColumns();
   const [openCloseModalMessage, setOpenCloseModalMessage] = useState(false);
   const [destinatarioName, setDestinatarioName] = useState('');
@@ -20,6 +23,9 @@ function Messenger({ closeModal }) {
   const [message, setMessage] = useState('');
   const [listMessages, setListMessages] = useState([]);
   const messagesEndRef = useRef(null);
+
+  const [loadingMessage, setLoadingMessage] = useState(false);
+
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -34,25 +40,29 @@ function Messenger({ closeModal }) {
     }
   }, [currentCardIdMessage, destinatarioId]);
 
+
   async function openMessage(item) {
+    setListMessages([]);
     setDestinatarioName(item.username);
     setDestinatarioAvatar(item.avatar);
     setDestinatarioId(item.id);
     setOpenCloseModalMessage(true);
     await fetchMessages(item.id);
+    await markMessagesAsRead(user.id, item.id); // Mover esta linha para o final de fetchMessages
   }
+
 
   const sendMessage = async (mensagem) => {
     if (mensagem.trim() === '') return;
-  
+
     const isCardMessage = mensagem.includes('card_id:');
     let cardData = null;
-  
+
     if (isCardMessage) {
       const cardId = mensagem.split('card_id:')[1].trim();
       cardData = await fetchCardById(cardId);
     }
-  
+
     // Atualização otimista da interface do usuário
     const tempMessage = {
       id: `temp-${new Date().getTime()}`,
@@ -74,25 +84,25 @@ function Messenger({ closeModal }) {
         read: false,
         card_id: isCardMessage ? cardData.card_id : null,
       };
-  
+
       const response = await axios.post(`${apiUrl}/card/add-messenger`, dados);
-  
+
       // Atualiza a mensagem otimista com os dados reais do servidor
       setListMessages(prev => prev.map(msg => msg.id === tempMessage.id ? {
         ...msg,
         id: response.data.id,
         created_at: response.data.created_at,
       } : msg));
-  
+
       setCurrentCardIdMessage(null);
-  
+
     } catch (error) {
       console.error('Erro', error);
       // Remove a mensagem otimista em caso de erro
       setListMessages(prev => prev.filter(msg => msg.id !== tempMessage.id));
     }
   };
-  
+
   function handleKeyPress(event) {
     if (event.key === 'Enter') {
       sendMessage(message);
@@ -105,6 +115,7 @@ function Messenger({ closeModal }) {
   }
 
   const fetchMessages = async (destinoId) => {
+    setLoadingMessage(true)
     if (destinoId) {
       try {
         const response = await axios.get(`${apiUrl}/card/fetch-messages/${user.id}/${destinoId}`);
@@ -119,10 +130,13 @@ function Messenger({ closeModal }) {
           })
         );
         setListMessages(messagesWithCards);
+        setLoadingMessage(false)
+        await markMessagesAsRead(user.id, destinoId);
       } catch (error) {
         console.error('Erro', error);
       }
     }
+
   };
 
   const fetchCardById = async (cardId) => {
@@ -148,12 +162,96 @@ function Messenger({ closeModal }) {
   useEffect(() => {
     let interval;
     if (destinatarioId) {
+      fetchMessages(destinatarioId);
       interval = setInterval(() => {
         fetchMessages(destinatarioId);
       }, 2000);
     }
     return () => clearInterval(interval);
   }, [destinatarioId]);
+
+
+
+  // ---------------- mensagens não lidas -----------
+
+  const markMessagesAsRead = async (userId, destinatarioId) => {
+    //console.log('userId',userId,'destinatarioId',destinatarioId)
+    // if (user.id === destinatarioId)
+    // return
+    if(openCloseModalMessage){
+      try {
+        await axios.put(`${apiUrl}/card/mark-messages-as-read/${userId}/${destinatarioId}`);
+      } catch (error) {
+        console.error('Erro ao marcar mensagens como lidas', error);
+      }
+    }
+  };
+
+
+  const [userUnreadMessages, setUserUnreadMessages] = useState({});
+
+
+  useEffect(() => {
+    let intervalMessage;
+    if (openCloseModalMessenger  ) {
+      fetchUnreadMessagesForUsers();
+      intervalMessage = setInterval(() => {
+        fetchUnreadMessagesForUsers();
+      }, 3000);
+    }
+
+    return () => clearInterval(intervalMessage);
+  }, [openCloseModalMessenger ]);
+
+
+
+  const fetchUnreadMessagesForUsers = async () => {
+    if (openCloseModalMessenger) {
+
+      console.log('fetchUnreadMessagesForUsers')
+      try {
+        const responses = await Promise.all(
+          listAllUsers.map(async (item) => {
+            const response = await axios.get(`${apiUrl}/card/unread-messages-count/${user.id}/${item.id}`);
+            return { userId: item.id, unreadCount: response.data };
+          })
+        );
+        const unreadMessagesMap = {};
+        responses.forEach(res => {
+          unreadMessagesMap[res.userId] = res.unreadCount;
+        });
+        setUserUnreadMessages(unreadMessagesMap);
+      } catch (error) {
+        console.error('Erro ao buscar contagem de mensagens não lidas por usuário', error);
+      }
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+  function getUserName(userId) {
+    const user = listAllUsers.find(user => user.id === userId);
+    return user ? user.username : 'Unknown';
+  }
+
+  async function closeMessageContainer() {
+    setCurrentCardIdMessage(null);
+    await markMessagesAsRead(user.id, destinatarioId);
+    setListMessages([]);
+    setOpenCloseModalMessage(false);
+  }
+
+
 
   return (
     <div className='messenger-container'>
@@ -164,11 +262,16 @@ function Messenger({ closeModal }) {
       <div className='messenger-body'>
         {listAllUsers &&
           listAllUsers.map((item) => (
-            <div key={item.id} className='item-list-messenger' onClick={() => openMessage(item)}>
+            <div key={item.id} className='item-list-messenger' onClick={() => { openMessage(item) }}>
               <div className='user-logo-messenger-container'>
                 <img src={item.avatar} className='messenger-logo-user' alt={`${item.username}'s avatar`} />
               </div>
-              <label className='messenger-username-label'>{item.username}</label>
+              <label className='messenger-username-label'>
+                {item.username}
+                {userUnreadMessages[item.id] > 0 && (
+                  <span className="mensagens-nao-lidas">{userUnreadMessages[item.id]}</span>
+                )}
+              </label>
             </div>
           ))}
       </div>
@@ -179,8 +282,7 @@ function Messenger({ closeModal }) {
             <MdOutlineArrowBackIos
               className='icons-back-message'
               onClick={() => {
-                setOpenCloseModalMessage(false);
-                setListMessages([]);
+                closeMessageContainer()
               }}
             />
             <div className='user-logo-message-container'>
@@ -192,15 +294,27 @@ function Messenger({ closeModal }) {
             {listMessages.map((item) => (
               <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: item.id_remetente === user.id ? 'flex-end' : 'flex-start' }} className='item-list-message'>
                 {!item.cardData &&
-                  <label style={{ backgroundColor: item.id_remetente === user.id ? 'deepskyblue' : '' }} className='message-label'>
+                  <label style={{ backgroundColor: item.id_remetente === user.id ? '' : 'deepskyblue' }} className='message-label'>
                     {item.message}
                   </label>
                 }
 
                 {item.cardData && <PreviewCard cardData={item.cardData} />}
-                <label className='date-message-label'>{formatDate(item.created_at)}</label>
+                <label className='date-message-label'>
+                  {getUserName(item.id_remetente)} - {formatDate(item.created_at)}
+                  {item.read ? (
+                    user.id === item.id_remetente && <TbChecks className='icone-check-message' />
+                  ) : (
+                    user.id === item.id_remetente && <TbCheck className='icone-check-message' />
+                  )}
+                </label>
               </div>
             ))}
+
+            {loadingMessage &&
+              <label>Carregando...</label>
+            }
+
             <div ref={messagesEndRef}></div>
           </div>
 

@@ -14,6 +14,8 @@ import Logo from '../../../assets/logo-suite-flow.ico';
 // CONTEXT API
 import { useUser } from '../../../contexts/userContext';
 import { useColumns } from '../../../contexts/columnsContext';
+import { useCard } from '../../../contexts/cardContext'
+
 
 // COMPONENTS
 
@@ -22,6 +24,8 @@ function UpdateUser({ user: propUser }) {
   // CONTEXT API
   const { user, updateUser, openModalUpdateUser } = useUser(); // Acesso ao estado global do usuário
   const { columns } = useColumns();
+  const { listaEtiquetas} = useCard();
+
 
   // ESTADOS LOCAL
   const [selectedColumnsContainer, setSelectedColumnsContainer] = useState(false);
@@ -45,6 +49,7 @@ function UpdateUser({ user: propUser }) {
   const [error, setError] = useState('');
   const [afilhadosList, setAfilhadosList] = useState([]);
   const [selectedColumns, setSelectedColumns] = useState([]);
+
 
   // SET
   useEffect(() => {
@@ -296,7 +301,7 @@ function UpdateUser({ user: propUser }) {
             <div onClick={() => setAccessLevel(2)} className="btn-nivel-acess" style={{ background: accessLevel === 2 ? 'dodgerblue' : '#aaaaaa' }}>Nível 2</div>
             <div onClick={() => setAccessLevel(3)} className="btn-nivel-acess" style={{ background: accessLevel === 3 ? 'dodgerblue' : '#aaaaaa' }}>Nível 3</div>
             <div onClick={() => setAccessLevel(4)} className="btn-nivel-acess" style={{ background: accessLevel === 4 ? 'dodgerblue' : '#aaaaaa' }}>Nível 4</div>
-            <div onClick={() => setAccessLevel(5)} className="btn-nivel-acess" style={{ background: accessLevel === 5 ? 'dodgerblue' : '#aaaaaa' }}>Nível 5</div>
+            <div onClick={() => setAccessLevel(5)} className="btn-nivel-acess" style={{ background: accessLevel === 5 ? 'dodgerblue' : '#aaaaaa' }}>ADM</div>
           </div>
 
           <label htmlFor="address" className='update-user-label-input'>Status:</label>

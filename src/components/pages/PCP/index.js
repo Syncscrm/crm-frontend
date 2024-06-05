@@ -17,7 +17,7 @@ import Header from '../../Header';
 import PreviewCard from '../../PreviewCard';
 
 function PCP() {
-  const { user } = useUser();
+  const { user, listAllUsers } = useUser();
   const { columns, setLoadingResult, setLoadingModal } = useColumns();
 
   const [allCards, setAllCards] = useState([]);
@@ -268,7 +268,7 @@ function PCP() {
                   <td style={{ fontSize: '12px' }}>{getColumnName(item.column_id)}</td>
                   <td style={{ fontSize: '12px' }}>{item.numero_pedido ? item.numero_pedido : ''}</td>
                   <td style={{ fontSize: '12px', color: controlePlanejamento === 'producao' ? 'red' : 'none' }}>{item.previsao_producao ? formatDate(item.previsao_producao) : ''}</td>
-                  <td style={{ fontSize: '12px' }}>{item.entity_id}</td>
+                  <td style={{ fontSize: '12px' }}>{getUsernameById(item.entity_id).substring(0, 15)}</td>
                   <td style={{ fontSize: '12px' }}>{`${item.city} / ${item.state}`}</td>
                   <td style={{ fontSize: '12px', display: 'none' }}>{item.previsao_medicao ? formatDate(item.previsao_medicao) : ''}</td>
                   <td style={{ fontSize: '12px' }}>{parseFloat(item.cost_value ? item.cost_value : 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
@@ -323,6 +323,11 @@ function PCP() {
       }
     }
     return rows;
+  };
+
+  const getUsernameById = (id) => {
+    const user = listAllUsers.find(user => user.id === id);
+    return user ? user.username : 'Usuário não encontrado';
   };
 
   return (

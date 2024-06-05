@@ -33,7 +33,7 @@
     display: flex;
     flex-direction: column;
     padding-inline: 5px;
-    padding-left: 8px;
+
 }
 
 .card-body-item {
@@ -138,20 +138,18 @@
 }
 
 .card-n-dias {
-    min-width: 32px;
-    max-width: 32px;
-    height: 20px;
+    min-width: 50px;
+    max-width: 50px;
+    height: 22px;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: dodgerblue;
     color: white;
     border-radius: 5px;
-    font-size: 10px;
+    font-size: 11px;
     padding-inline: 3px;
-    margin-left: 4px;
 }
-
 
 .card-star-container {
     width: 100%;
@@ -222,7 +220,7 @@
     margin-bottom: 3px;
     background-color: #a7a7a7;
     color: white;
-    margin-inline: 2px;
+    margin-inline: 5px;
 }
 
 .btn-update-card:hover {
@@ -327,34 +325,4 @@
     color: rgb(255, 255, 255);
     background-color:dodgerblue;
     cursor:default;
-}
-
-.select-etiqueta-card {
-    color: #ffffff;
-    height: 20px;
-    font-size: 12px;
-    border-radius: 5px;
-    border: none;
-    background-color: #C4C4C4;
-    padding-inline: 2px;
-}
-
-.select-etiqueta-card:focus {
-    background-color: rgb(121, 121, 121);
-    color: white;
-    outline: none;
-    border-color: initial;
-    box-shadow: none;
-}
-
-.rotulo-container {
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: flex;
-    width: 5px;
-    height: 100%;
-    background-color: #7e7e7e;
-    border-bottom-left-radius: 5px;
-    border-top-left-radius: 8px;
 }

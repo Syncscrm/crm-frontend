@@ -4,15 +4,21 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { apiUrl } from '../config/apiConfig';
 
+import { useUser } from '../contexts/userContext';
+
+
 const CardContext = createContext();
 
 export const useCard = () => useContext(CardContext);
 
 export const CardProvider = ({ children }) => {
 
+  const { user } = useUser();
+
+
   const [openCloseCreateCard, setOpenCloseCreateCard] = useState(false)
   const openModalCreateCard = () => setOpenCloseCreateCard(!openCloseCreateCard);
-  const [ listCardsFiltereds, setListCardsFiltereds ] = useState([])
+  const [listCardsFiltereds, setListCardsFiltereds] = useState([])
   const [searchTerm, setSearchTerm] = useState('');
   const [openCloseUpdateUserModal, setOpenCloseUpdateUserModal] = useState(false)
   const [currentCardData, setCurrentCardData] = useState()
@@ -29,11 +35,16 @@ export const CardProvider = ({ children }) => {
   const [openCloseTarefasModal, setOpenCloseTarefasModal] = useState(false)
   const [openCloseCompartilharModal, setOpenCloseCompartilharModal] = useState(false)
   const [openCloseModuloEsquadriasModal, setOpenCloseModuloEsquadriasModal] = useState(false)
+  const [openCloseAnexosModal, setOpenCloseAnexosModal] = useState(false)
+
 
   const [tarefas, setTarefas] = useState([]);
 
   const [currentCardIdMessage, setCurrentCardIdMessage] = useState(null)
   const [openCloseModalMessenger, setOpenCloseModalMessenger] = useState(false);
+
+  const [listaEtiquetas, setListaEtiquetas] = useState([]);
+
 
 
 
@@ -58,11 +69,24 @@ export const CardProvider = ({ children }) => {
   };
 
 
+  const buscarEtiquetas = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/card/etiquetas/${user.empresa_id}`);
+      setListaEtiquetas(response.data);
+      console.log(response.data)
+    } catch (error) {
+      console.error('Erro ao buscar etiquetas:', error);
+    }
+  };
+
+
 
 
   useEffect(() => {
-   // console.log(listCardsFiltereds)
-  }, [listCardsFiltereds])
+    if (!user)
+      return
+    buscarEtiquetas()
+  }, [user])
 
   const contextValue = {
     openCloseCreateCard,
@@ -82,6 +106,8 @@ export const CardProvider = ({ children }) => {
     addHistoricoCardContext,
     currentCardIdMessage, setCurrentCardIdMessage,
     openCloseModalMessenger, setOpenCloseModalMessenger,
+    openCloseAnexosModal, setOpenCloseAnexosModal,
+    listaEtiquetas
   };
 
   return (

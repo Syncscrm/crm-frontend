@@ -122,8 +122,8 @@
 
 
 .number-notifications-header {
-    width: 15px;
-    height: 15px;
+    min-height: 16px;
+    height: 16px;
     background-color: rgb(255, 0, 0);
     color: white;
     position: fixed;
@@ -132,10 +132,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 10px;
+    font-size: 8px;
     border: none;
-    border-radius: 50%;
+    border-radius: 3px;
     z-index: 100;
+    padding-inline: 2px;
 }
 
 .total-mensagens-text {
@@ -418,17 +419,48 @@
     width: 38px;
     height: 38px;
     z-index: 1000;
-    background-color: #9555e4;
+    background-color: dodgerblue;
     border-radius: 50px;
     padding: 7px;
     color: white;
 }
 
 .icon-messenger-flutuante:hover {
-    background-color:dodgerblue;
+    background-color:#9555e4;
     width: 42px;
     height: 42px;
     right: 13px;
     bottom: 38px;
+}
+
+.badge {
+    position: fixed;
+    right: 10px;
+    bottom: 65px;
+    z-index: 1001;
+    min-width: 20px;
+    border-radius: 4px;
+    background-color: rgb(253, 40, 40);
+    color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    padding: 4px;
+}
+
+.mensagens-nao-lidas{
+    z-index: 1001;
+    min-width: 20px;
+    border-radius: 4px;
+    background-color: rgb(253, 40, 40);
+    color: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    margin-left: 10px;
+    padding: 4px;
 }
 
