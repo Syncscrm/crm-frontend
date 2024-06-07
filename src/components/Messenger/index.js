@@ -11,6 +11,8 @@ import { apiUrl } from '../../config/apiConfig';
 
 import { TbCheck, TbChecks } from "react-icons/tb";
 
+import logo from '../../assets/logo-suite-flow.ico'
+
 
 function Messenger({ closeModal }) {
   const { user, listAllUsers } = useUser();
@@ -253,6 +255,12 @@ function Messenger({ closeModal }) {
 
 
 
+  const sortedUsers = [...listAllUsers].sort((a, b) => {
+    const unreadA = userUnreadMessages[a.id] || 0;
+    const unreadB = userUnreadMessages[b.id] || 0;
+    return unreadB - unreadA;
+  });
+
   return (
     <div className='messenger-container'>
       <div className='header-messenger'>
@@ -260,11 +268,11 @@ function Messenger({ closeModal }) {
         <button onClick={clearIdCardMessage} className='close-messenger-modal'>X</button>
       </div>
       <div className='messenger-body'>
-        {listAllUsers &&
-          listAllUsers.map((item) => (
+        {sortedUsers &&
+          sortedUsers.map((item) => (
             <div key={item.id} className='item-list-messenger' onClick={() => { openMessage(item) }}>
               <div className='user-logo-messenger-container'>
-                <img src={item.avatar} className='messenger-logo-user' alt={`${item.username}'s avatar`} />
+                <img src={item.avatar ? item.avatar : logo} className='messenger-logo-user' alt={`${item.username}'s avatar`} />
               </div>
               <label className='messenger-username-label'>
                 {item.username}

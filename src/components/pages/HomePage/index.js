@@ -15,7 +15,7 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import PreviewCard from '../../PreviewCard';
 import Select from '../../Select';
 
-import { MdGroups, MdOutlineSearch } from "react-icons/md";
+import { MdOutlineFilterList, MdGroups, MdOutlineSearch } from "react-icons/md";
 import ImportExcel from '../../ImportExcel';
 import ImportExcelSuiteFlow from '../../ImportExcelSuiteFlow';
 
@@ -26,13 +26,14 @@ import Vendas from '../../Vendas';
 
 function HomePage() {
 
-  const { user, openCloseImportExcelEntidades, openCloseImportExcelSuiteFlow, afilhadosList } = useUser();
-  const { columnsUser, setLoadingResult, setLoadingModal, selectedAfilhados, setSelectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal } = useColumns();
+  const { user, openCloseImportExcelEntidades, openCloseImportExcelSuiteFlow, afilhadosList, editableColumns, getAccessLevel } = useUser();
+  const { columnsUser, setLoadingResult, setLoadingModal, selectedAfilhados, setSelectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal, orderBy, setOrderBy, isAscending, setIsAscending } = useColumns();
   const { addHistoricoCardContext, cards, setCards, previewSearchCards, setPreviewSearchCards, searchTerm, setSearchTerm, setCurrentCardData, setOpenCloseUpdateCard, openCloseModalVendaPerdida, setOpenCloseModalVendaPerdida, currentCardData } = useCard();
 
   const [openCloseSearchModal, setOpenCloseSearchModal] = useState(false);
   const [openCloseSelectAfilhadosModal, setOpenCloseSelectAfilhadosModal] = useState(false);
   const [openCloseSelectDateModal, setOpenCloseSelectDateModal] = useState(false);
+  const [openCloseFilterModal, setOpenCloseFilterModal] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
 
   // Estados temporários para dataInicial e dataFinal
@@ -81,12 +82,48 @@ function HomePage() {
 
     const startCards = [...cards];
 
+
     if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) {
       return; // Não faz nada se não há destino ou se o card foi largado na mesma posição
     }
 
-    const currentCardId = parseInt(draggableId, 10);
+    const { cardData, block_column } = JSON.parse(draggableId);
+    const currentCardId = cardData.card_id;
+    const currentColumnId = parseInt(source.droppableId, 10);
     const newColumnId = parseInt(destination.droppableId, 10);
+
+
+
+    if(!getAccessLevel('coluna')){
+      const confirmDelete = window.alert('Não autorizado pelo Administrador!');
+      return
+    }
+
+
+    if (block_column) {
+      alert('Você não pode mover este card.');
+      return;
+    }
+
+
+
+    // Verifica se a coluna de destino está na lista de colunas editáveis
+    const editableColumnIds = editableColumns.map(column => column.columnId);
+
+    // Verifica se a coluna atual do card está na lista de colunas editáveis
+    if (!editableColumnIds.includes(currentColumnId)) {
+      alert('Você não tem permissão para mover o card a partir desta coluna.');
+      return;
+    }
+
+    // Verifica se a coluna de destino está na lista de colunas editáveis
+    if (!editableColumnIds.includes(newColumnId)) {
+      alert('Você não tem permissão para mover o card para esta coluna.');
+      return;
+    }
+
+
+
 
     const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
     if (!userConfirmed) {
@@ -288,7 +325,53 @@ function HomePage() {
             <button className='btn-update-date-filter' onClick={handleUpdateDates}>Atualizar Datas</button>
           </div>
         )}
+
+
+
+        <MdOutlineFilterList style={{ background: openCloseFilterModal ? 'dodgerblue' : '' }} onClick={() => setOpenCloseFilterModal(!openCloseFilterModal)} className='afilhados-icon-open-close' />
+        {openCloseFilterModal && (
+          <div className='filter-filter-container'>
+
+            <div className='date-filter-row'>
+
+              <div className='date-filter-column'>
+
+                <label htmlFor="tempDataInicial" className='date-filter-label'>Ordenar por:</label>
+
+                <div className='order-by-order'>
+                  <button style={{ backgroundColor: isAscending ? 'dodgerblue' : '' }} className='btn-filter-tools-order' onClick={() => setIsAscending(!isAscending)}>
+                    Crescente
+                  </button>
+
+                  <button style={{ backgroundColor: !isAscending ? 'dodgerblue' : '' }} className='btn-filter-tools-order' onClick={() => setIsAscending(!isAscending)}>
+                    Decrescente
+                  </button>
+                </div>
+
+
+
+                <button style={{ backgroundColor: orderBy === 'nome' ? 'dodgerblue' : '' }} className='btn-filter-tools' onClick={() => setOrderBy('nome')}>Nome</button>
+                <button style={{ backgroundColor: orderBy === 'dataStatus' ? 'dodgerblue' : '' }} className='btn-filter-tools' onClick={() => setOrderBy('dataStatus')}>Data de status</button>
+                <button style={{ backgroundColor: orderBy === 'dataCreate' ? 'dodgerblue' : '' }} className='btn-filter-tools' onClick={() => setOrderBy('dataCreate')}>Data de criação</button>
+                <button style={{ backgroundColor: orderBy === 'dataUpdate' ? 'dodgerblue' : '' }} className='btn-filter-tools' onClick={() => setOrderBy('dataUpdate')}>Data de atualização</button>
+                <button style={{ backgroundColor: orderBy === 'value' ? 'dodgerblue' : '' }} className='btn-filter-tools' onClick={() => setOrderBy('value')}>Valor</button>
+
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
+
+
       </div>
+
+
+
+
+
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <div className='home-container'>
           {columnsUser ? (

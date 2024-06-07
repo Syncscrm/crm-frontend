@@ -17,7 +17,7 @@ import Header from '../../Header';
 import PreviewCard from '../../PreviewCard';
 
 function PCP() {
-  const { user, listAllUsers } = useUser();
+  const { user, listAllUsers, getAccessLevel } = useUser();
   const { columns, setLoadingResult, setLoadingModal } = useColumns();
 
   const [allCards, setAllCards] = useState([]);
@@ -250,7 +250,9 @@ function PCP() {
                     <th>Produção</th>
                     <th>Representante</th>
                     <th>Cidade/Estado</th>
-                    <th>Valor</th>
+                    {getAccessLevel('valor') &&
+                      <th>Valor</th>
+                    }
                     <th>Horas</th>
                     <th>Esquadrias</th>
                     <th>Quadros</th>
@@ -271,7 +273,11 @@ function PCP() {
                   <td style={{ fontSize: '12px' }}>{getUsernameById(item.entity_id).substring(0, 15)}</td>
                   <td style={{ fontSize: '12px' }}>{`${item.city} / ${item.state}`}</td>
                   <td style={{ fontSize: '12px', display: 'none' }}>{item.previsao_medicao ? formatDate(item.previsao_medicao) : ''}</td>
-                  <td style={{ fontSize: '12px' }}>{parseFloat(item.cost_value ? item.cost_value : 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+
+                  {getAccessLevel('valor') &&
+                    <td style={{ fontSize: '12px' }}>{parseFloat(item.cost_value ? item.cost_value : 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                  }
+
                   <td style={{ fontSize: '12px' }}>{item.horas_producao ? item.horas_producao : 0}</td>
                   <td style={{ fontSize: '12px' }}>{item.quantidade_esquadrias ? item.quantidade_esquadrias : 0}</td>
                   <td style={{ fontSize: '12px' }}>{item.quantidade_quadros ? item.quantidade_quadros : 0}</td>
@@ -306,7 +312,12 @@ function PCP() {
               <td style={{ backgroundColor: 'white', color: 'white' }} ></td>
               <td style={{ backgroundColor: 'white', color: 'white' }} ></td>
               <td style={{ backgroundColor: 'white', color: 'white' }} ></td>
-              <td style={{ backgroundColor: '#9862FF', color: 'white' }}><label className='horas-totais-label'>{parseFloat(totalValue ? totalValue : 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</label></td>
+
+              {getAccessLevel('valor') &&
+                <td style={{ backgroundColor: '#9862FF', color: 'white' }}><label className='horas-totais-label'>{parseFloat(totalValue ? totalValue : 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</label></td>
+              }
+
+
               <td style={{ backgroundColor: '#9820FF', color: 'white' }} ><label className='horas-totais-label'>{totalHorasProducao.toFixed(0)}</label></td>
               <td style={{ backgroundColor: '#9862FF', color: 'white' }}><label className='horas-totais-label'>{totalEsquadrias.toFixed(0)}</label></td>
               <td style={{ backgroundColor: '#9820FF', color: 'white' }} ><label className='horas-totais-label'>{totalQuadros.toFixed(0)}</label></td>
@@ -334,7 +345,7 @@ function PCP() {
     <div className='pcp-modal'>
       <Header />
       <div className='pcp-tools-container'>
-      <select
+        <select
           className='btn-programacao-producao'
           value={controlePlanejamento}
           onChange={e => selectPlanejamentoControle(e.target.value)}

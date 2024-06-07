@@ -34,7 +34,7 @@ import Anexos from '../Anexos';
 
 function Header() {
 
-  const { user, clearUserContext, setOpenCloseImportExcelEntidades, setOpenCloseImportExcelSuiteFlow, themeDark, setThemeDark } = useUser();
+  const { user, clearUserContext, setOpenCloseImportExcelEntidades, setOpenCloseImportExcelSuiteFlow, themeDark, getAccessLevel } = useUser();
   const { setColumns, setColumnsUser, setSelectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal } = useColumns();
 
   const { setCurrentCardData, openCloseUpdateCard,
@@ -90,7 +90,7 @@ function Header() {
 
   useEffect(() => {
 
-    if(!user)
+    if (!user)
       return
 
     let interval;
@@ -272,14 +272,32 @@ function Header() {
 
       {showLeftMenu && (
         <div className='left-menu-container'>
+
           <div className='left-menu-title'>Menu</div>
+
           <button className='left-menu-button' onClick={() => pipelinePage()}>Home</button>
-          <button className='left-menu-button' onClick={() => usersPage()}>Usuários</button>
+          {getAccessLevel('dashboard') &&
+            <button className='left-menu-button' onClick={() => dashboardPage()}>Dashboard</button>
+          }
+
           <button className='left-menu-button' onClick={() => PCP()}>PCP</button>
-          <button className='left-menu-button' onClick={() => dashboardPage()}>Dashboard</button>
-          <button style={{display: user.access_level === 5 ? '' :  ''}} className='left-menu-button' onClick={() => processColumnsPage()}>Colunas</button>
-          <button style={{display: user.access_level === 5 ? '' :  ''}} className='left-menu-button' onClick={() => setOpenCloseImportExcelEntidades(true)}>Import Excel</button>
-          <button style={{display: user.access_level === 5 ? '' :  ''}} className='left-menu-button' onClick={() => setOpenCloseImportExcelSuiteFlow(true)}>Import SuiteFlow</button>
+
+          {getAccessLevel('adm') &&
+            <button className='left-menu-button' onClick={() => usersPage()}>Usuários</button>
+          }
+
+          {getAccessLevel('adm') &&
+            <button className='left-menu-button' onClick={() => processColumnsPage()}>Colunas</button>
+          }
+
+          {getAccessLevel('adm') &&
+            <button className='left-menu-button' onClick={() => setOpenCloseImportExcelEntidades(true)}>Import Excel</button>
+          }
+
+          {getAccessLevel('adm') &&
+            <button className='left-menu-button' onClick={() => setOpenCloseImportExcelSuiteFlow(true)}>Import SuiteFlow</button>
+          }
+
         </div>
       )}
 

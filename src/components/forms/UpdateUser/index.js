@@ -24,12 +24,13 @@ function UpdateUser({ user: propUser }) {
   // CONTEXT API
   const { user, updateUser, openModalUpdateUser } = useUser(); // Acesso ao estado global do usuário
   const { columns } = useColumns();
-  const { listaEtiquetas} = useCard();
+  const { listaEtiquetas } = useCard();
 
 
   // ESTADOS LOCAL
   const [selectedColumnsContainer, setSelectedColumnsContainer] = useState(false);
   const [selectedAfilhadosContainer, setSelectedAfilhadosContainer] = useState(false);
+  const [selectedColumnsPermissionsContainer, setSelectedColumnsPermissionsContainer] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const fileInputRef = useRef(null);
   const [avatarPreview, setAvatarPreview] = useState(Logo);
@@ -211,9 +212,56 @@ function UpdateUser({ user: propUser }) {
   });
 
 
+
+
+  const [accessibleColumns, setAccessibleColumns] = useState([]);
+  const [editableColumns, setEditableColumns] = useState([]);
+
+
+
+  const toggleEditableColumnsContainer = async () => {
+    setSelectedColumnsPermissionsContainer(!selectedColumnsPermissionsContainer);
+    if (!selectedColumnsPermissionsContainer) {
+      try {
+        const response = await axios.get(`${apiUrl}/users/${user.id}/permissions`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        setEditableColumns(response.data); // Atualize o estado com as permissões recebidas
+
+        //console.log(response.data)
+      } catch (error) {
+        console.error('Erro ao buscar permissões de edição:', error);
+        setError('Falha ao carregar permissões.');
+      }
+    }
+  };
+
+  const handlePermissionToggle = async (event, columnId) => {
+    event.preventDefault();
+    const isSelected = editableColumns.some(col => col.columnId === columnId);
+
+    if (isSelected) {
+      // Remover permissão de edição
+      setEditableColumns(editableColumns.filter(col => col.columnId !== columnId));
+      await axios.delete(`${apiUrl}/users/${user.id}/permissions/${columnId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+
+      //console.log(editableColumns)
+    } else {
+      // Adicionar permissão de edição
+      setEditableColumns([...editableColumns, { columnId, canEdit: true }]);
+      await axios.post(`${apiUrl}/users/${user.id}/permissions`, { columnId, canEdit: true, empresaId: user.empresa_id }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      //console.log(editableColumns)
+    }
+  };
+
+
   return (
 
-    
+
     <div className='update-user-container'>
 
       <div className="update-user-form-container">
@@ -257,6 +305,9 @@ function UpdateUser({ user: propUser }) {
           <label htmlFor="city" className='update-user-label-input'>Entidade</label>
           <input id="city" className="update-user-input" type="text" value={entidade} onChange={(e) => setEntidade(e.target.value)} />
 
+
+
+
           <label htmlFor="state" className='update-user-label-input'>Afilhados</label>
           <input readOnly id="address" className="update-user-input" placeholder='Selecione os afilhados' onClick={toggleAfilhadosContainer} />
           {selectedAfilhadosContainer && (
@@ -293,6 +344,29 @@ function UpdateUser({ user: propUser }) {
               }
             </div>
           )}
+
+
+          <label htmlFor="editableColumns" className='update-user-label-input'>Permissões de Edição</label>
+          <input readOnly id="editableColumns" className="update-user-input" placeholder='Selecione as colunas para editar' onClick={toggleEditableColumnsContainer} />
+          {selectedColumnsPermissionsContainer && (
+            <div className='select-columns-container'>
+              {
+                columns.map((column) => (
+                  <div key={column.id} className="column-item-container">
+                    <button
+                      onClick={(event) => handlePermissionToggle(event, column.id)}
+                      className={`column-item ${editableColumns.some(col => col.columnId === column.id) ? 'selected' : ''}`}
+                    >
+                      {column.name}
+                    </button>
+                  </div>
+                ))
+              }
+            </div>
+          )}
+
+
+
 
           <label htmlFor="address" className='update-user-label-input'>Nível de Acesso:</label>
 

@@ -22,6 +22,9 @@ export const ColumnsProvider = ({ children }) => {
   const [dataInicial, setDataInicial] = useState(null);
   const [dataFinal, setDataFinal] = useState(null);
 
+  const [orderBy, setOrderBy] = useState(null);
+  const [isAscending, setIsAscending] = useState(true);
+
 
   useEffect(() => {
     const fetchColumns = async () => {
@@ -89,6 +92,8 @@ export const ColumnsProvider = ({ children }) => {
     setDataInicial,
     dataFinal,
     setDataFinal,
+    orderBy, setOrderBy,
+    isAscending, setIsAscending
   };
 
 

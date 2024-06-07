@@ -331,3 +331,62 @@
 
 }
 
+.filter-filter-container {
+    position: fixed;
+    top: 70px;
+    left: 14px;
+
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    background-color: rgb(199, 199, 199);
+    flex-direction: column;
+    padding: 8px;
+}
+
+.btn-filter-tools {
+    padding-inline: 2px;
+    border: none;
+    height: 23px;
+    border-radius: 5px;
+    margin-bottom: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: calc(143px);
+    background-color: #727272;
+    color: white;
+    font-size: 11px;
+}
+
+.btn-filter-tools:hover {
+    background-color:dodgerblue;
+}
+
+.order-by-order {
+    display: flex;
+    align-items: center;
+}
+
+.btn-filter-tools-order {
+    margin-inline: 2px;
+
+    padding-inline: 2px;
+    border: none;
+    height: 23px;
+    border-radius: 5px;
+    margin-bottom: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: calc(70px);
+    background-color: #727272;
+    color: white;
+    font-size: 11px;
+}
+
+.btn-filter-tools-order:hover {
+    background-color:dodgerblue;
+}

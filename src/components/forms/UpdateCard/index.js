@@ -64,7 +64,7 @@ function UpdateCard({ idCard, cardData }) {
       setColumnId(cardData.column_id);
       setEntityId(cardData.entity_id);
       setStatusCard(cardData.status);
-      setOrigemCard(cardData.origem);
+      setOrigemCard(cardData.origem ? cardData.origem : 'Sem Origem');
       setProdutoCard(cardData.produto);
       setStatusDateCard(cardData.status_date ? new Date(cardData.status_date).toISOString().split('T')[0] : ''); // Formate a data aqui
       setSecondDocumentNumber(cardData.second_document_number);
@@ -196,7 +196,7 @@ function UpdateCard({ idCard, cardData }) {
       cost_value: costValue,
       sale_value: saleValue,
       status: statusCard ? statusCard : '',
-      origem: origemCard ? origemCard : 'Não informado',
+      origem: origemCard ? origemCard : 'Sem Origem',
       produto: produtoCard ? produtoCard : 'Não informado',
       status_date: statusDateCard ? statusDateCard : null, // Envie sempre o status_date no formato correto
       second_document_number: secondDocumentoNumber ? secondDocumentoNumber : '',
@@ -343,7 +343,10 @@ function UpdateCard({ idCard, cardData }) {
             <label htmlFor="saleValue" className='update-card-label-input'>Valor de Venda:</label>
             <input id="saleValue" className="update-card-input" type="text" value={saleValue} onChange={(e) => setSaleValue(e.target.value)} />
 
-            <label htmlFor="city-state" className='update-card-label-input'>Etiqueta:</label>
+
+
+
+            {/* <label htmlFor="city-state" className='update-card-label-input'>Etiqueta:</label>
             <div className='select-cidade-estado-container'>
               <select id="etiqueta" className="select-estado-cidade" value={idEtiqueta} onChange={(e) => setIdEtiqueta(e.target.value)}  >
                 <option value="">Selecione uma Etiqueta</option>
@@ -351,12 +354,12 @@ function UpdateCard({ idCard, cardData }) {
                   <option key={etiqueta.id} value={etiqueta.id}>{etiqueta.description}</option>
                 ))}
               </select>
-            </div>
+            </div> */}
 
 
             <label htmlFor="city-state" className='update-card-label-input'>Origem:</label>
             <div className='select-cidade-estado-container'>
-              <select id="origem" className="select-estado-cidade" value={origemCard} onChange={(e) => setOrigemCard(e.target.value)} disabled={!state} >
+              <select id="origem" className="select-estado-cidade" value={origemCard} onChange={(e) => setOrigemCard(e.target.value)}  >
                 <option value="">Selecione a origem</option>
                 {listOrigens.map(origem => (
                   <option key={origem.id} value={origem.name}>{origem.name}</option>
@@ -367,7 +370,7 @@ function UpdateCard({ idCard, cardData }) {
             <label htmlFor="city-state" className='update-card-label-input'>Produto:</label>
 
             <div className='select-cidade-estado-container'>
-              <select id="produto" className="select-estado-cidade" value={produtoCard} onChange={(e) => setProdutoCard(e.target.value)} disabled={!state} >
+              <select id="produto" className="select-estado-cidade" value={produtoCard} onChange={(e) => setProdutoCard(e.target.value)}  >
                 <option value="">Selecione o produto</option>
                 {listProdutos.map(produto => (
                   <option key={produto.id} value={produto.name}>{produto.name}</option>

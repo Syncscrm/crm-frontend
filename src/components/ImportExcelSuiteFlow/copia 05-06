@@ -24,33 +24,6 @@ function ImportExcelSuiteFlow() {
   const [estimatedTime, setEstimatedTime] = useState(0);
   const intervalRef = useRef(null);
 
-
-
-    // --------- RELAÇÃO DE COLUNAS 
-
-    // Import	9	42414
-    // Link Patrocinado	29	42453
-    // Potenciais Clientes	6	42415
-    // Em Orçamento	7	42416
-    // Em Negociação	30	42417
-    // Em Fechamento	16	42418
-    // Vendidos	17	42419
-    // Solicitação de pedidos	28	42430
-    // Análise Financeira	27	42431
-    // Análise Técnica	22	42432
-    // Analise Comercial	31	42433
-    // Implantação de Pedidos	21	42434
-    // Liberação do Financeiro	32	42442
-    // PCP	14	42441
-    // Aguardando Medidas	33	42444
-    // Projetos	13	42445
-    // Produção	34	42457
-    // Expedição	25	42452
-    // Entregues	23	42421
-    // Finalizados	20	42420
-    
-
-
   useEffect(() => {
     console.log(listAllUsers)
   }, [listAllUsers]);
@@ -149,287 +122,6 @@ function ImportExcelSuiteFlow() {
     });
   };
 
-
-
-
-
-
-
-
-  const columnMapping = {
-    42414: 9,
-    42453: 29,
-    42415: 6,
-    42416: 7,
-    42417: 30,
-    42418: 16,
-    42419: 17,
-    42430: 28,
-    42431: 27,
-    42432: 22,
-    42433: 31,
-    42434: 21,
-    42442: 32,
-    42441: 14,
-    42444: 33,
-    42445: 13,
-    42457: 34,
-    42452: 25,
-    42421: 23,
-    42420: 20
-  };
-  
-  const getMappedColumnId = (excelColumnId) => {
-    return columnMapping[excelColumnId] || null;
-  };
-
-  
-
-
-
-  // const addCardFirestore = async (row, currentNumCardsLoaded) => {
-  //   const [
-  //     numero_orcamento_1,
-  //     versao,
-  //     nome_cliente_1,
-  //     date,
-  //     valor,
-  //     entidade,
-  //     origem,
-  //     id_card,
-  //     id_column,
-  //     pedido_orcamento_2,
-  //     nome_cliente_2,
-  //     nome_obra,
-  //     valor_2,
-  //     valor_venda,
-  //     cidade,
-  //     estado,
-  //     fone,
-  //     email,
-  //     previsao_de_venda,
-  //     origem_2,
-  //     date_2,
-  //     potencial_de_venda,
-  //     etiqueta,
-  //     data_de_modificacao,
-  //     lista_de_tarefas,
-  //     lista_historico,
-  //     produto,
-  //     status,
-  //     id_create_by,
-  //     name_create_by,
-  //     parceiro_indicador_2,
-  //     contato_responsavel,
-  //     motivo_venda_perdida,
-  //     lista_anexos,
-  //     previsao_entrega,
-  //     horas_producao,
-  //     previsao_instalacao,
-  //     previsao_assistencia,
-  //     etapa_producao,
-  //     lista_compartilhamento,
-  //     cor,
-  //     data_de_modificacao_2,
-  //     prioridade,
-  //     previsao_producao,
-  //     recebimento_medidas,
-  //     prazo_entrega,
-  //     numero_pedido,
-  //     numero_quadros,
-  //     metros_quadrados,
-  //     quantidade_esquadrias,
-  //     entrega_vidro,
-  //     status_vidro,
-  //     fornecedor_vidro,
-  //     conclusao_producao
-  //   ] = row;
-
-
-  //   const mappedColumnId = getMappedColumnId(id_column);
-
-
-  //   if (!mappedColumnId) {
-  //     console.log('Coluna do Excel não corresponde a nenhuma coluna do sistema!');
-  //     return;
-  //   }
-
-
-  //   // if (!id_column || id_column != idColunaExcel) {
-  //   //   console.log('Coluna Não corresponde ao informado!');
-  //   //   return;
-  //   // }
-
-  //   if (entidade === '') {
-  //     console.log('Referência da Entidade Vazia - name_create_by', name_create_by);
-  //     return;
-  //   }
-
-  //   if (buscarIdReferencia(entidade) === "") {
-  //     console.log('Não existem entidade!!!', entidade);
-  //     return;
-  //   }
-
-  //   try {
-
-
-  //     function parseCurrency(value) {
-  //       let numericString = value.replace('R$', '').replace(/\s/g, '');
-  //       numericString = numericString.replace(',', '.');
-
-  //       const parts = numericString.split('.');
-  //       if (parts.length > 2) {
-  //         numericString = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1];
-  //       }
-
-  //       return parseFloat(numericString);
-  //     }
-
-  //     function convertISOToJavaScriptDate(isoDateString) {
-  //       if (typeof isoDateString !== 'string' || isoDateString.trim() === '') {
-  //         console.error('Entrada fornecida não é uma string válida:', isoDateString);
-  //         return null;
-  //       }
-
-  //       const dateObject = new Date(isoDateString);
-  //       if (isNaN(dateObject.getTime())) {
-  //         console.error('A string ISO fornecida não é uma data válida:', isoDateString);
-  //         return null;
-  //       }
-
-  //       return dateObject;
-  //     }
-
-  //     const cardData = {
-  //       name: nome_cliente_1 ? nome_cliente_1 : 'Não Informado',
-  //       document_number: numero_orcamento_1 ? numero_orcamento_1 : 'Não Informado',
-  //       cost_value: valor ? parseCurrency(valor) : 0,
-  //       column_id: mappedColumnId,
-  //       entity_id: buscarIdReferencia(entidade),
-  //       empresa_id: user.empresa_id,
-  //       origem: origem,
-  //       sale_value: valor_venda ? parseCurrency(valor_venda) : 0,
-  //       potencial_venda: potencial_de_venda,
-  //       produto: produto,
-  //       status: status,
-  //       motivo_venda_perdida: motivo_venda_perdida,
-  //       nivel_prioridade: prioridade,
-  //       status_date: convertISOToJavaScriptDate(data_de_modificacao),
-  //       updated_at: convertISOToJavaScriptDate(date),
-  //       email: email ? email : '',
-  //       fone: fone ? fone : '',
-  //       state: estado ? estado : '',
-  //       city: cidade ? cidade : '',
-  //     };
-
-  //     const response = await axios.post(`${apiUrl}/card/import-suiteflow`, cardData);
-  //     const cardId = response.data.card_id;
-
-  //     setNumCardsLoaded(currentNumCardsLoaded + 1);
-
-  //     try {
-
-
-  //       const esquadriaData = {
-  //         card_id: cardId,
-  //         nome_obra: nome_obra ? nome_obra : 'Não Informado!',
-  //         contato_obra: contato_responsavel ? contato_responsavel : 'Não Informado!',
-  //         previsao_medicao: recebimento_medidas ? new Date(recebimento_medidas) : new Date(),
-  //         status_medicao: 'Parado',
-  //         previsao_producao: previsao_producao ? new Date(previsao_producao) : new Date(),
-  //         status_producao: conclusao_producao ? 'Pronto' : 'Parado',
-  //         previsao_entrega_vidro: entrega_vidro ? new Date(entrega_vidro) : new Date(),
-  //         status_entrega_vidro: !status_vidro ? 'Parado' : status_vidro == 'Entregue' ? 'Pronto' : (status_vidro == 'Solicitado' ? 'Em Andamento' : 'Parado'),
-  //         previsao_vistoria_pre: new Date(),
-  //         status_vistoria_pre: 'Parado',
-  //         previsao_entrega_obra: prazo_entrega ? new Date(prazo_entrega) : new Date(),
-  //         status_entrega_obra: 'Parado',
-  //         previsao_instalacao: previsao_instalacao ? new Date(previsao_instalacao) : new Date(),
-  //         status_instalacao: 'Parado',
-  //         previsao_vistoria_pos: new Date(),
-  //         status_vistoria_pos: 'Parado',
-  //         previsao_assistencia: previsao_assistencia ? new Date(previsao_assistencia) : new Date(),
-  //         status_assistencia: 'Parado',
-  //         horas_producao: horas_producao ? horas_producao : 0,
-  //         quantidade_esquadrias: quantidade_esquadrias ? quantidade_esquadrias : 0,
-  //         quantidade_quadros: numero_quadros ? numero_quadros : 0,
-  //         metros_quadrados: metros_quadrados ? metros_quadrados : 0,
-  //         cor: cor ? cor : '',
-  //       };
-
-  //       const response = await axios.post(`${apiUrl}/card/upsert`, esquadriaData);
-
-  //       try {
-  //         //setLoadingResult('Importando Histórico...');
-  //         //setLoadingModal(true);
-
-  //         const historicos = JSON.parse(lista_historico);
-
-  //         function parseDateString(dateStr) {
-  //           const parts = dateStr.split('/');
-  //           if (parts.length === 3) {
-  //             const formattedDateStr = `${parts[1]}/${parts[0]}/${parts[2]}`;
-  //             return new Date(formattedDateStr).toISOString();
-  //           }
-  //           throw new Error('Data inválida: ' + dateStr);
-  //         }
-
-  //         for (const historico of historicos) {
-  //           const historyData = {
-  //             card_id: cardId,
-  //             user_id: buscarIdReferencia(entidade),
-  //             action_type: 'Update',
-  //             description: historico.title ? historico.title : '',
-  //             card_status: status ? status : false,
-  //             create_at: parseDateString(historico.date) ? parseDateString(historico.date) : new Date(),
-  //           };
-
-  //           const response = await axios.post(`${apiUrl}/card/add-history-import-suiteflow`, historyData);
-  //           //console.log(`Histórico adicionado com sucesso: ${response.data}`);
-  //         }
-
-  //         try {
-  //           //setLoadingResult('Importando Tarefas...');
-  //           //setLoadingModal(true);
-
-  //           const tarefas = JSON.parse(lista_de_tarefas);
-
-  //           for (const tarefa of tarefas) {
-  //             const tasksData = {
-  //               user_id: buscarIdReferencia(entidade),
-  //               card_id: cardId,
-  //               description: tarefa.title ? tarefa.title : '',
-  //               task_type: 'Card',
-  //               due_date: parseDateString(tarefa.date),
-  //               completed: tarefa.status ? tarefa.status : false,
-  //             };
-
-  //             const response = await axios.post(`${apiUrl}/card/add-tarefa`, tasksData);
-  //             //console.log(`Tarefa adicionado com sucesso: ${response.data}`);
-  //           }
-
-
-  //         } catch (error) {
-
-  //           console.error('Erro tarefas', error);
-  //         }
-  //       } catch (error) {
-
-  //         console.error('Erro history', error);
-  //       }
-  //     } catch (error) {
-
-  //       console.error('Erro módulo de esquadrias:', error);
-  //     }
-
-
-  //   } catch (error) {
-
-  //     console.error('Erro Card');
-  //   }
-  // };
-
-
   const addCardFirestore = async (row, currentNumCardsLoaded) => {
     const [
       numero_orcamento_1,
@@ -487,57 +179,57 @@ function ImportExcelSuiteFlow() {
       fornecedor_vidro,
       conclusao_producao
     ] = row;
-  
-    const mappedColumnId = getMappedColumnId(id_column);
-  
-    if (!mappedColumnId) {
-      console.log('Coluna do Excel não corresponde a nenhuma coluna do sistema!');
+
+    if (!id_column || id_column != idColunaExcel) {
+      console.log('Coluna Não corresponde ao informado!');
       return;
     }
-  
+
     if (entidade === '') {
       console.log('Referência da Entidade Vazia - name_create_by', name_create_by);
       return;
     }
-  
+
     if (buscarIdReferencia(entidade) === "") {
       console.log('Não existem entidade!!!', entidade);
       return;
     }
-  
+
     try {
+
+
       function parseCurrency(value) {
         let numericString = value.replace('R$', '').replace(/\s/g, '');
         numericString = numericString.replace(',', '.');
-  
+
         const parts = numericString.split('.');
         if (parts.length > 2) {
           numericString = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1];
         }
-  
+
         return parseFloat(numericString);
       }
-  
+
       function convertISOToJavaScriptDate(isoDateString) {
         if (typeof isoDateString !== 'string' || isoDateString.trim() === '') {
           console.error('Entrada fornecida não é uma string válida:', isoDateString);
           return null;
         }
-  
+
         const dateObject = new Date(isoDateString);
         if (isNaN(dateObject.getTime())) {
           console.error('A string ISO fornecida não é uma data válida:', isoDateString);
           return null;
         }
-  
+
         return dateObject;
       }
-  
+
       const cardData = {
         name: nome_cliente_1 ? nome_cliente_1 : 'Não Informado',
         document_number: numero_orcamento_1 ? numero_orcamento_1 : 'Não Informado',
         cost_value: valor ? parseCurrency(valor) : 0,
-        column_id: mappedColumnId,
+        column_id: idColunaSistema,
         entity_id: buscarIdReferencia(entidade),
         empresa_id: user.empresa_id,
         origem: origem,
@@ -554,13 +246,15 @@ function ImportExcelSuiteFlow() {
         state: estado ? estado : '',
         city: cidade ? cidade : '',
       };
-  
+
       const response = await axios.post(`${apiUrl}/card/import-suiteflow`, cardData);
       const cardId = response.data.card_id;
-  
+
       setNumCardsLoaded(currentNumCardsLoaded + 1);
-  
+
       try {
+
+
         const esquadriaData = {
           card_id: cardId,
           nome_obra: nome_obra ? nome_obra : 'Não Informado!',
@@ -587,12 +281,15 @@ function ImportExcelSuiteFlow() {
           metros_quadrados: metros_quadrados ? metros_quadrados : 0,
           cor: cor ? cor : '',
         };
-  
+
         const response = await axios.post(`${apiUrl}/card/upsert`, esquadriaData);
-  
+
         try {
+          //setLoadingResult('Importando Histórico...');
+          //setLoadingModal(true);
+
           const historicos = JSON.parse(lista_historico);
-  
+
           function parseDateString(dateStr) {
             const parts = dateStr.split('/');
             if (parts.length === 3) {
@@ -601,7 +298,7 @@ function ImportExcelSuiteFlow() {
             }
             throw new Error('Data inválida: ' + dateStr);
           }
-  
+
           for (const historico of historicos) {
             const historyData = {
               card_id: cardId,
@@ -611,13 +308,17 @@ function ImportExcelSuiteFlow() {
               card_status: status ? status : false,
               create_at: parseDateString(historico.date) ? parseDateString(historico.date) : new Date(),
             };
-  
+
             const response = await axios.post(`${apiUrl}/card/add-history-import-suiteflow`, historyData);
+            //console.log(`Histórico adicionado com sucesso: ${response.data}`);
           }
-  
+
           try {
+            //setLoadingResult('Importando Tarefas...');
+            //setLoadingModal(true);
+
             const tarefas = JSON.parse(lista_de_tarefas);
-  
+
             for (const tarefa of tarefas) {
               const tasksData = {
                 user_id: buscarIdReferencia(entidade),
@@ -627,23 +328,31 @@ function ImportExcelSuiteFlow() {
                 due_date: parseDateString(tarefa.date),
                 completed: tarefa.status ? tarefa.status : false,
               };
-  
+
               const response = await axios.post(`${apiUrl}/card/add-tarefa`, tasksData);
+              //console.log(`Tarefa adicionado com sucesso: ${response.data}`);
             }
+
+
           } catch (error) {
+
             console.error('Erro tarefas', error);
           }
         } catch (error) {
+
           console.error('Erro history', error);
         }
       } catch (error) {
+
         console.error('Erro módulo de esquadrias:', error);
       }
+
+
     } catch (error) {
+
       console.error('Erro Card');
     }
   };
-  
 
   const handleInputChange = (event) => {
     const file = event.target.files[0];
@@ -678,7 +387,7 @@ function ImportExcelSuiteFlow() {
         </div>
         <div className='import-body'>
           <input className='input-import-file' type='file' onChange={handleInputChange} />
-          {/* <input
+          <input
             className='input-id-coluna-excel'
             placeholder='ID da Coluna do Excel'
             value={idColunaExcel}
@@ -689,7 +398,7 @@ function ImportExcelSuiteFlow() {
             placeholder='ID da Coluna do Sistema'
             value={idColunaSistema}
             onChange={handleIdColunaSistemaChange}
-          /> */}
+          />
 
           {loading && <label className='infos-import-excel'>Carregando...</label>}
           {numRowsLoaded > 0 && <label className='infos-import-excel'>Linhas no arquivo: {numRowsLoaded}</label>}

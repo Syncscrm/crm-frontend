@@ -6,7 +6,7 @@ import { format, parseISO } from 'date-fns';
 
 // ICONS
 import { GrTask } from "react-icons/gr";
-import {MdBookmark,  MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdColorLens, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
+import { MdOutlineSendToMobile, MdLockOpen, MdLockOutline, MdBookmark, MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdColorLens, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
 
 import './style.css';
 
@@ -22,7 +22,7 @@ import VendaPerdida from '../VendaPerdida';
 
 function PreviewCard({ cardData, index }) {
 
-  const { user, afilhadosList, listAllUsers } = useUser();
+  const { user, afilhadosList, listAllUsers, editableColumns, getAccessLevel } = useUser();
   const { setOpenCloseUpdateCard, setCurrentCardData,
     setCards, setPreviewSearchCards,
     setListNotifications,
@@ -45,6 +45,8 @@ function PreviewCard({ cardData, index }) {
   const [openCloseEditStatusModal, setOpenCloseEditStatusModal] = useState(false)
   const [selectedColumnId, setSelectedColumnId] = useState(cardData.column_id);
   const [showConfirmButton, setShowConfirmButton] = useState(false);
+
+  const [blockColumnCard, setBlockColumnCard] = useState(false);
 
 
   const [selectedEtiquetaId, setSelectedEtiquetaId] = useState(null);
@@ -163,6 +165,14 @@ function PreviewCard({ cardData, index }) {
   }
 
   function openCloseEditEstatusCard(event) {
+
+    if(!getAccessLevel('status')){
+      event.stopPropagation();
+      const confirmDelete = window.alert('Não autorizado pelo Administrador!');
+      return
+    }
+      
+
     event.stopPropagation();
     setStatusCard(cardData.status)
     console.log(cardData.status)
@@ -271,6 +281,9 @@ function PreviewCard({ cardData, index }) {
     }
 
 
+
+
+
     try {
       setModalLoading(true);
       setShowConfirmButton(true);
@@ -355,6 +368,109 @@ function PreviewCard({ cardData, index }) {
 
 
   const sortedEtiquetas = [...listaEtiquetas].sort((a, b) => a.order - b.order);
+  const editableColumnIds = editableColumns.map(column => column.columnId);
+
+  const canEditCurrentColumn = editableColumnIds.includes(cardData.column_id);
+
+
+
+
+
+
+
+  const updateBlockColumnCard = async (block) => {
+
+    if (user.access_level != 5) {
+      const userConfirmed = window.confirm(`Apenas Administrador!`);
+      return;
+    }
+
+
+
+    const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
+    if (!userConfirmed) {
+      return;
+    }
+
+    const currentCard = {
+      id: cardData.card_id,
+      block_column: block,
+    };
+
+    try {
+      setModalLoading(true)
+      const response = await axios.post(`${apiUrl}/card/update-block-column`, currentCard);
+      setCards(prevCards => prevCards.map(card => card.card_id === currentCard.card_id ? { ...card, ...response.data } : card));
+      setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === currentCard.card_id ? { ...card, ...response.data } : card));
+      setListNotifications(prevCards => prevCards.map(card => card.card_id === currentCard.card_id ? { ...card, ...response.data } : card));
+      setModalLoading(false)
+      setBlockColumnCard(block)
+    } catch (error) {
+      console.error('Erro ao Atualizar bloqueio de coluna:', error);
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+  // ---------------- Enviar whatsapp CHATBOT--------------------
+
+
+
+
+
+  function enviarMensagemPotencialCliente() {
+
+    const userConfirmed = window.confirm(`Emviar mensagem para Parceiro?`);
+    if (!userConfirmed) {
+      return;
+    }
+
+
+    sendMessage(
+      buscarFoneReferencia(cardData.entity_id),
+      '',
+      `${getUsernameById(cardData.entity_id)}\n \nCard com Link Patrocinado criado com sucesso no CRM! \n \nCliente: ${cardData.name} \nNúmero do orçamento: ${cardData.document_number} \nValor: ${cardData.sale_value ? parseFloat(cardData.sale_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '0,00'}\n\n Verifique as informações fornecidas!\n\nBazze PVC`
+    );
+  }
+
+  const sendMessage = async (numero, contato, mensagem) => {
+    try {
+
+      // Envie a mensagem
+      await axios.post(`${apiUrl}/card/enviar`, { numero, mensagem, contato });
+
+      const userConfirmed = window.confirm('Mensagem enviada!');
+
+      console.log('Mensagem enviada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error.message);
+    }
+  };
+
+
+
+  // PEGAR FONE CORRESPONDENTE PREFWEB / SUITEFLOW
+  function buscarFoneReferencia(entidade) {
+
+    const listaFiltrada = listAllUsers.filter((item) => item.id.toString() === entidade.toString());
+
+    const fone = listaFiltrada.map((item) => item.fone);
+
+    return fone.toString();
+  }
+
+
+
+
+
+
 
 
   return (
@@ -365,7 +481,7 @@ function PreviewCard({ cardData, index }) {
           onClick={(e) => viewCard(e)}
         >
 
-          <div className='rotulo-container' style={{backgroundColor: getEtiquetaColorById(cardData.etiqueta_id)}}></div>
+          <div className='rotulo-container' style={{ backgroundColor: getEtiquetaColorById(cardData.etiqueta_id) }}></div>
 
           {
             modalLoading &&
@@ -416,6 +532,8 @@ function PreviewCard({ cardData, index }) {
                         e.stopPropagation();
                       }}
                       style={{ backgroundColor: getEtiquetaColorById(cardData.etiqueta_id) }}
+                      disabled={!getAccessLevel('etiqueta')} // Adiciona o atributo disabled
+
                     >
                       <option value={0}>Sem Etiqueta</option>
                       {sortedEtiquetas.map(etiqueta => (
@@ -442,13 +560,15 @@ function PreviewCard({ cardData, index }) {
                     </label>
                   }
 
+
+
                   <label className='card-body-item-fone'>
                     <div className='card-body-item-fone-number'>
-                      <MdWhatsapp className='icons-whatsapp' onClick={() => abrirWhatsApp(cardData.fone)} />{cardData.fone}
+                      <MdWhatsapp className='icons-whatsapp' onClick={() => abrirWhatsApp(cardData.fone)} />{getAccessLevel('contato') && cardData.fone ? cardData.fone : '******'}
                     </div>
                   </label>
                   <label className='card-body-item'>
-                    <MdAlternateEmail className='card-icon-item' />{cardData.email}
+                    <MdAlternateEmail className='card-icon-item' />{getAccessLevel('contato') && cardData.email ? cardData.email : "******"}
                   </label>
                   <label className='card-body-item'>
                     <MdAccountBox className='card-icon-item' />{getUsernameById(cardData.entity_id).substring(0, 28)}
@@ -456,13 +576,14 @@ function PreviewCard({ cardData, index }) {
                   <label className='card-body-item'>
                     <MdRoom className='card-icon-item' /> {cardData.city + '/' + cardData.state}
                   </label>
+
                   <label className='card-body-item'>
                     <MdAccountBalance className='card-icon-item' />
-                    <label className='card-valor-item'>R$ {cardData.cost_value ? cardData.cost_value : 0}</label>
+                    <label className='card-valor-item'>{getAccessLevel('valor') && cardData.cost_value ? parseFloat(cardData.cost_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ ******'}</label>
                   </label>
                   <label className='card-body-item'>
                     <MdShoppingCart className='card-icon-item' />
-                    <label className='card-valor-item'>R$ {cardData.sale_value ? cardData.sale_value : 0}</label>
+                    <label className='card-valor-item'>{getAccessLevel('valor') && cardData.sale_value ? parseFloat(cardData.sale_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ ******'}</label>
                   </label>
                   <label className='card-body-item'>
                     <MdCreate className='card-icon-item' />{formatDate(cardData.created_at)}
@@ -474,9 +595,25 @@ function PreviewCard({ cardData, index }) {
                     <MdAnalytics className='card-icon-item' />{cardData.status_date ? formatDate(cardData.status_date) : ''}
                   </label>
 
-                  <label className='card-body-item'>
-                    <MdAdsClick className='card-icon-item' />{cardData.origem ? cardData.origem : 'Não informado'}
+
+
+                  <label className='row-column-container'>
+
+                    <label className='card-body-item-chat-bot'>
+                      <MdAdsClick className='card-icon-item' />{cardData.origem ? cardData.origem : 'Não informado'}
+                    </label>
+                    <MdOutlineSendToMobile
+                      className='lock-column' style={{ display: user.access_level === 5 ? '' : 'none' }}
+
+                      onClick={(e) => {
+                        enviarMensagemPotencialCliente();
+                        e.stopPropagation();
+                      }}
+                    />
+
                   </label>
+
+
 
                   <label className='card-body-item'>
                     <MdColorLens className='card-icon-item' />{cardData.produto ? cardData.produto : 'Não informado'}
@@ -487,50 +624,103 @@ function PreviewCard({ cardData, index }) {
                   </label>
 
 
-                  <label className='card-body-item-select-column'>
+
+                  <label className='row-column-container'>
                     <MdViewColumn className='card-icon-item' />
                     <select
                       className="select-column-card"
                       value={selectedColumnId}
                       onChange={(e) => {
-                        setSelectedColumnId(e.target.value);
-                        updateCardColumn(e.target.value);
+                        if (!blockColumnCard) {
+                          setSelectedColumnId(e.target.value);
+                          updateCardColumn(e.target.value);
+                        }
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
+                      disabled={blockColumnCard || !getAccessLevel('coluna')} // Adiciona o atributo disabled
                     >
-                      {columnsUser.map(column => (
-                        <option key={column.id} value={column.id}>
-                          {column.name}
-                        </option>
-                      ))}
+                      {canEditCurrentColumn
+                        ? columnsUser
+                          .filter(column => editableColumnIds.includes(column.id)) // Filtro aplicado aqui
+                          .map(column => (
+                            <option key={column.id} value={column.id}>
+                              {column.name}
+                            </option>
+                          ))
+                        : (
+                          <option >
+                            {getNameColumnCard(cardData.column_id)}
+                          </option>
+                        )
+                      }
                     </select>
+
+                    {
+                      blockColumnCard &&
+                      <MdLockOutline
+                        style={{ backgroundColor: 'red' }}
+                        className='lock-column'
+                        onClick={(e) => {
+                          updateBlockColumnCard(false);
+                          e.stopPropagation();
+                        }}
+                      />
+                    }
+                    {
+                      (!blockColumnCard || blockColumnCard == null) &&
+                      <MdLockOpen
+                        className='lock-column'
+                        onClick={(e) => {
+                          updateBlockColumnCard(true);
+                          e.stopPropagation();
+                        }}
+                      />
+                    }
+
                   </label>
 
 
-
                   <div className='btns-card-container'>
-                    <button onClick={(e) => getCardData(e)} className='btn-update-card'>
-                      <MdEdit className='icons-btns-update-card' />
-                    </button>
-                    <button onClick={openHistoricModal} className='btn-update-card'>
-                      <MdOutlineHistory className='icons-btns-update-card' />
-                    </button>
-                    <button onClick={openTarefasModal} className='btn-update-card'>
-                      <GrTask className='icons-btns-update-card' />
-                    </button>
-                    <button onClick={openCompartilharModal} className='btn-update-card'>
-                      <MdShare className='icons-btns-update-card' />
-                    </button>
-                    <button onClick={openModuloEsquadriasModal} className='btn-update-card'>
-                      <MdWindow className='icons-btns-update-card' />
-                    </button>
-                    <button onClick={openAnexosModal} className='btn-update-card'>
-                      <MdAttachFile className='icons-btns-update-card' />
-                    </button>
-                  </div>
 
+                    {getAccessLevel('editar') &&
+                      <button onClick={(e) => getCardData(e)} className='btn-update-card'>
+                        <MdEdit className='icons-btns-update-card' />
+                      </button>
+                    }
+
+                    {getAccessLevel('historico') &&
+                      <button onClick={openHistoricModal} className='btn-update-card'>
+                        <MdOutlineHistory className='icons-btns-update-card' />
+                      </button>
+                    }
+
+                    {getAccessLevel('tarefas') &&
+                      <button onClick={openTarefasModal} className='btn-update-card'>
+                        <GrTask className='icons-btns-update-card' />
+                      </button>
+                    }
+
+                    {getAccessLevel('compartilhar') &&
+                      <button onClick={openCompartilharModal} className='btn-update-card'>
+                        <MdShare className='icons-btns-update-card' />
+                      </button>
+                    }
+
+                    {getAccessLevel('producao') &&
+                      <button onClick={openModuloEsquadriasModal} className='btn-update-card'>
+                        <MdWindow className='icons-btns-update-card' />
+                      </button>
+                    }
+
+                    {getAccessLevel('anexos') &&
+                      <button onClick={openAnexosModal} className='btn-update-card'>
+                        <MdAttachFile className='icons-btns-update-card' />
+                      </button>
+                    }
+
+                  </div>
                 </>
               )
             }
@@ -540,11 +730,22 @@ function PreviewCard({ cardData, index }) {
                 <>
                   <label className='card-body-item-separate-container'>
 
-                    <label className='card-body-item-separate-value'>
-                      <label style={{ fontSize: '15px' }} className='card-valor-item'>
-                        {cardData.cost_value ? parseFloat(cardData.cost_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '0,00'}
+                    {getAccessLevel('valor') &&
+                      <label className='card-body-item-separate-value'>
+                        <label style={{ fontSize: '15px' }} className='card-valor-item'>
+                          {cardData.cost_value ? parseFloat(cardData.cost_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '0,00'}
+                        </label>
                       </label>
-                    </label>
+                    }
+
+                    {!getAccessLevel('valor') &&
+                      <label className='card-body-item-separate-value'>
+                        <label style={{ fontSize: '15px' }} className='card-valor-item'>
+                          {'R$ ******'}
+                        </label>
+                      </label>
+                    }
+
 
                     <label className='card-body-item-separate'>
                       {cardData.city + '/' + cardData.state}
@@ -563,33 +764,37 @@ function PreviewCard({ cardData, index }) {
           <div className='card-footer'>
 
             <label className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label>
-            <label className='card-star-container'>
-              <MdGrade
-                onClick={(event) => updatePotencialVenda(event, 1)}
-                className='card-icon-star'
-                style={{ color: potencialVenda > 1 || potencialVenda === 1 ? 'gold' : '' }}
-              />
-              <MdGrade
-                onClick={(event) => updatePotencialVenda(event, 2)}
-                className='card-icon-star'
-                style={{ color: potencialVenda > 2 || potencialVenda === 2 ? 'gold' : '' }}
-              />
-              <MdGrade
-                onClick={(event) => updatePotencialVenda(event, 3)}
-                className='card-icon-star'
-                style={{ color: potencialVenda > 3 || potencialVenda === 3 ? 'gold' : '' }}
-              />
-              <MdGrade
-                onClick={(event) => updatePotencialVenda(event, 4)}
-                className='card-icon-star'
-                style={{ color: potencialVenda > 4 || potencialVenda === 4 ? 'gold' : '' }}
-              />
-              <MdGrade
-                onClick={(event) => updatePotencialVenda(event, 5)}
-                className='card-icon-star'
-                style={{ color: potencialVenda > 5 || potencialVenda === 5 ? 'gold' : '' }}
-              />
-            </label>
+
+            {getAccessLevel('estrelas') &&
+              <label className='card-star-container'>
+                <MdGrade
+                  onClick={(event) => updatePotencialVenda(event, 1)}
+                  className='card-icon-star'
+                  style={{ color: potencialVenda > 1 || potencialVenda === 1 ? 'gold' : '' }}
+                />
+                <MdGrade
+                  onClick={(event) => updatePotencialVenda(event, 2)}
+                  className='card-icon-star'
+                  style={{ color: potencialVenda > 2 || potencialVenda === 2 ? 'gold' : '' }}
+                />
+                <MdGrade
+                  onClick={(event) => updatePotencialVenda(event, 3)}
+                  className='card-icon-star'
+                  style={{ color: potencialVenda > 3 || potencialVenda === 3 ? 'gold' : '' }}
+                />
+                <MdGrade
+                  onClick={(event) => updatePotencialVenda(event, 4)}
+                  className='card-icon-star'
+                  style={{ color: potencialVenda > 4 || potencialVenda === 4 ? 'gold' : '' }}
+                />
+                <MdGrade
+                  onClick={(event) => updatePotencialVenda(event, 5)}
+                  className='card-icon-star'
+                  style={{ color: potencialVenda > 5 || potencialVenda === 5 ? 'gold' : '' }}
+                />
+              </label>
+            }
+
 
             <div className='card-icons-status-container'>
               <Md360 onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === null || statusCard === '' ? '' : 'none' }} className='card-icon-em-andamento' />

@@ -69,7 +69,7 @@ export const UserProvider = ({ children }) => {
   const [openCloseImportExcelSuiteFlow, setOpenCloseImportExcelSuiteFlow] = useState(false)
 
 
-  
+
   const clearUserContext = () => {
     setUser(null);
   };
@@ -89,11 +89,124 @@ export const UserProvider = ({ children }) => {
     }
   }
 
-  useEffect(() => {
-    if(user){
-      getAfilhados();
+
+  const [editableColumns, setEditableColumns] = useState([]);
+
+  const toggleEditableColumnsContainer = async () => {
+
+    try {
+      const response = await axios.get(`${apiUrl}/users/${user.id}/permissions`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setEditableColumns(response.data); // Atualize o estado com as permissões recebidas
+
+      console.log('context user', response.data)
+    } catch (error) {
+      console.error('Erro ao buscar permissões de edição:', error);
+      
     }
-  },[user])
+  }
+
+
+  useEffect(() => {
+    if (user) {
+      getAfilhados();
+      toggleEditableColumnsContainer();
+    }
+  }, [user])
+
+
+
+
+  const getAccessLevel = (tipo) => {
+
+    if (user.access_level == 1) {
+      if (tipo == 'editar') return false;
+      if (tipo == 'historico') return false;
+      if (tipo == 'tarefas') return true;
+      if (tipo == 'compartilhar') return false;
+      if (tipo == 'producao') return false;
+      if (tipo == 'anexos') return false;
+      if (tipo == 'valor') return false;
+      if (tipo == 'contato') return false;
+      if (tipo == 'coluna') return false;
+      if (tipo == 'etiqueta') return false;
+      if (tipo == 'estrelas') return false;
+      if (tipo == 'status') return false;
+      if (tipo == 'dashboard') return false;
+      if (tipo == 'adm') return false;
+    }
+
+    if (user.access_level == 2) {
+      if (tipo == 'editar') return false;
+      if (tipo == 'historico') return false;
+      if (tipo == 'tarefas') return true;
+      if (tipo == 'compartilhar') return false;
+      if (tipo == 'producao') return false;
+      if (tipo == 'anexos') return false;
+      if (tipo == 'valor') return false;
+      if (tipo == 'contato') return false;
+      if (tipo == 'coluna') return true;
+      if (tipo == 'etiqueta') return false;
+      if (tipo == 'estrelas') return false;
+      if (tipo == 'status') return false;
+      if (tipo == 'dashboard') return false;
+      if (tipo == 'adm') return false;
+    }
+
+    if (user.access_level == 3) {
+      if (tipo == 'editar') return true;
+      if (tipo == 'historico') return true;
+      if (tipo == 'tarefas') return true;
+      if (tipo == 'compartilhar') return true;
+      if (tipo == 'producao') return true;
+      if (tipo == 'anexos') return true;
+      if (tipo == 'valor') return false;
+      if (tipo == 'contato') return true;
+      if (tipo == 'coluna') return true;
+      if (tipo == 'etiqueta') return true;
+      if (tipo == 'estrelas') return false;
+      if (tipo == 'status') return true;
+      if (tipo == 'dashboard') return false;
+      if (tipo == 'adm') return false;
+    }
+
+    if (user.access_level == 4) {
+      if (tipo == 'editar') return true;
+      if (tipo == 'historico') return true;
+      if (tipo == 'tarefas') return true;
+      if (tipo == 'compartilhar') return true;
+      if (tipo == 'producao') return true;
+      if (tipo == 'anexos') return true;
+      if (tipo == 'valor') return true;
+      if (tipo == 'contato') return true;
+      if (tipo == 'coluna') return true;
+      if (tipo == 'etiqueta') return true;
+      if (tipo == 'estrelas') return true;
+      if (tipo == 'status') return true;
+      if (tipo == 'dashboard') return true;
+      if (tipo == 'adm') return false;
+    }
+
+    if (user.access_level == 5) {
+      if (tipo == 'editar') return true;
+      if (tipo == 'historico') return true;
+      if (tipo == 'tarefas') return true;
+      if (tipo == 'compartilhar') return true;
+      if (tipo == 'producao') return true;
+      if (tipo == 'anexos') return true;
+      if (tipo == 'valor') return true;
+      if (tipo == 'contato') return true;
+      if (tipo == 'coluna') return true;
+      if (tipo == 'etiqueta') return true;
+      if (tipo == 'estrelas') return true;
+      if (tipo == 'status') return true;
+      if (tipo == 'dashboard') return true;
+      if (tipo == 'adm') return true;
+    }
+
+    return false;
+  };
 
 
   const contextValue = {
@@ -110,7 +223,9 @@ export const UserProvider = ({ children }) => {
     listAllUsers,
     openCloseImportExcelEntidades, setOpenCloseImportExcelEntidades,
     openCloseImportExcelSuiteFlow, setOpenCloseImportExcelSuiteFlow,
-    theme, setTheme
+    theme, setTheme,
+    editableColumns,
+    getAccessLevel
   };
 
   useEffect(() => {

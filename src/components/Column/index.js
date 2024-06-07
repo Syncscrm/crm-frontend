@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 
 import Card from '../../components/Card';
 import CreateCard from '../../components/forms/CreateCard';
@@ -17,7 +17,7 @@ import { Droppable } from 'react-beautiful-dnd';
 function Column(props) {
   const { user } = useUser();
   const { cards, setCards } = useCard();
-  const { setLoadingResult, setLoadingModal, selectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal } = useColumns();
+  const { setLoadingResult, setLoadingModal, selectedAfilhados, dataInicial, setDataInicial, dataFinal, orderBy, setOrderBy, isAscending, setIsAscending } = useColumns();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [totalCostValue, setTotalCostValue] = useState(0);
@@ -131,6 +131,39 @@ function Column(props) {
     };
   }, []);
 
+
+  const sortedCards = useMemo(() => {
+    if (!filteredCards) return [];
+
+    const sorted = [...filteredCards].sort((a, b) => {
+      let comparison = 0;
+      switch (orderBy) {
+        case 'nome':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'dataStatus':
+          comparison = new Date(a.status_date) - new Date(b.status_date);
+          break;
+        case 'dataCreate':
+          comparison = new Date(a.created_at) - new Date(b.created_at);
+          break;
+        case 'dataUpdate':
+          comparison = new Date(a.updated_at) - new Date(b.updated_at);
+          break
+        case 'value':
+          comparison = a.cost_value - b.cost_value;
+          break;
+        default:
+          comparison = 0;
+      }
+      return isAscending ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [filteredCards, orderBy, isAscending]);
+
+
+
   return (
     <Droppable droppableId={String(props.columnData.id)}>
       {(provided, snapshot) => (
@@ -153,7 +186,7 @@ function Column(props) {
             </div>
           </div>
           <div className='column-body' ref={columnBodyRef}>
-            {filteredCards.slice(0, displayedCards).map((card, index) => (
+            {sortedCards.slice(0, displayedCards).map((card, index) => (
               <Card key={card.card_id} cardData={card} index={index} />
             ))}
             {provided.placeholder}
