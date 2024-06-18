@@ -135,6 +135,9 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'status') return false;
       if (tipo == 'dashboard') return false;
       if (tipo == 'adm') return false;
+      if (tipo == 'etapaProducao') return false;
+      if (tipo == 'excluir') return false;
+      if (tipo == 'exportExcel') return false;
     }
 
     if (user.access_level == 2) {
@@ -152,6 +155,9 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'status') return false;
       if (tipo == 'dashboard') return false;
       if (tipo == 'adm') return false;
+      if (tipo == 'etapaProducao') return false;
+      if (tipo == 'excluir') return false;
+      if (tipo == 'exportExcel') return false;
     }
 
     if (user.access_level == 3) {
@@ -169,6 +175,9 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'status') return true;
       if (tipo == 'dashboard') return false;
       if (tipo == 'adm') return false;
+      if (tipo == 'etapaProducao') return true;
+      if (tipo == 'excluir') return false;
+      if (tipo == 'exportExcel') return false;
     }
 
     if (user.access_level == 4) {
@@ -186,6 +195,9 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'status') return true;
       if (tipo == 'dashboard') return true;
       if (tipo == 'adm') return false;
+      if (tipo == 'etapaProducao') return false;
+      if (tipo == 'excluir') return false;
+      if (tipo == 'exportExcel') return false;
     }
 
     if (user.access_level == 5) {
@@ -203,6 +215,9 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'status') return true;
       if (tipo == 'dashboard') return true;
       if (tipo == 'adm') return true;
+      if (tipo == 'etapaProducao') return true;
+      if (tipo == 'excluir') return true;
+      if (tipo == 'exportExcel') return true;
     }
 
     return false;

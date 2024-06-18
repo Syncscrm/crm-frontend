@@ -6,18 +6,23 @@ import { format, parseISO } from 'date-fns';
 
 // ICONS
 import { GrTask } from "react-icons/gr";
-import { MdOutlineSendToMobile, MdLockOpen, MdLockOutline, MdBookmark, MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdColorLens, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
+import { MdDeleteForever, MdCreditCard, MdLibraryAdd, MdAutoAwesomeMotion, MdOutlineSendToMobile, MdLockOpen, MdLockOutline, MdBookmark, MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdColorLens, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
+import { GiWindow } from "react-icons/gi";
 
 import './style.css';
 
 // API
 import axios from 'axios';
-import { apiUrl } from '../../config/apiConfig';
+import { apiUrl ,fileApiUrl} from '../../config/apiConfig';
 
 import { differenceInCalendarDays } from 'date-fns';
 
 import { Draggable } from 'react-beautiful-dnd';
 import VendaPerdida from '../VendaPerdida';
+
+
+import fb from '../../config/firebase';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 
 
 function Card({ cardData, index }) {
@@ -128,7 +133,7 @@ function Card({ cardData, index }) {
 
   const handleUpdatePotencialVenda = async (potencial) => {
 
-    if(!getAccessLevel('estrelas')){
+    if (!getAccessLevel('estrelas')) {
       const confirmDelete = window.alert('Não autorizado pelo Administrador!');
       return
     }
@@ -171,12 +176,12 @@ function Card({ cardData, index }) {
 
   function openCloseEditEstatusCard(event) {
 
-    if(!getAccessLevel('status')){
+    if (!getAccessLevel('status')) {
       event.stopPropagation();
       const confirmDelete = window.alert('Não autorizado pelo Administrador!');
       return
     }
-      
+
 
     event.stopPropagation();
     setStatusCard(cardData.status)
@@ -473,6 +478,182 @@ function Card({ cardData, index }) {
 
 
 
+  const criarEtapaDeProducao = async () => {
+
+    if (!getAccessLevel('etapaProducao')) {
+      const userConfirmed = window.alert(`Não autorizado pelo ADM!`);
+      return;
+    }
+
+
+    const userConfirmed = window.confirm(`Criar etapa de Produção?`);
+    if (!userConfirmed) {
+      return;
+    }
+
+
+    try {
+      const cardDataPayload = {
+        created_at: new Date(),
+        name: cardData.name ? cardData.name : '',
+        document_number: cardData.document_number ? cardData.document_number : '',
+        cost_value: 0,
+        column_id: cardData.column_id,
+        entity_id: cardData.entity_id,
+        empresa_id: user.empresa_id,
+        origem: cardData.origem ? cardData.origem : '',
+        sale_value: 0,
+        potencial_venda: cardData.potencial_venda,
+        produto: cardData.produto,
+        status: cardData.status,
+        motivo_venda_perdida: cardData.motivo_venda_perdida,
+        nivel_prioridade: cardData.nivel_prioridade,
+        status_date: cardData.status_date,
+        updated_at: cardData.updated_at,
+        email: cardData.email ? cardData.email : '',
+        fone: cardData.fone ? cardData.fone : '',
+        state: cardData.state ? cardData.state : '',
+        city: cardData.city ? cardData.city : '',
+        pedido_number: cardData.pedido_number ? cardData.pedido_number : '',
+        etapa_producao: cardData.etapa_producao + 1,
+        etiqueta_id: cardData.etiqueta_id ? cardData.etiqueta_id : 1,
+      };
+
+      const response = await axios.post(`${apiUrl}/card/import-suiteflow`, cardDataPayload);
+      setCards([...cards, response.data]);
+
+      const userConfirmed = window.alert(`Etapa de produção criada com sucesso!`);
+
+    } catch (error) {
+      console.error('Erro ao criar etapa de produção');
+      const userConfirmed = window.alert(`Erro ao criar etapa de Produção!`);
+    }
+  };
+
+
+
+
+  // const excluirCard = async () => {
+  //   if (!getAccessLevel('excluir')) {
+  //     window.alert(`Não autorizado pelo ADM!`);
+  //     return;
+  //   }
+
+  //   const userConfirmed = window.confirm(`Excluir Card?`);
+  //   if (!userConfirmed) {
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await axios.delete(`${apiUrl}/card/${cardData.card_id}`);
+  //     setCards(prevCards => prevCards.filter(card => card.card_id !== cardData.card_id));
+  //     window.alert(`Card excluído com sucesso!`);
+  //   } catch (error) {
+  //     console.error('Erro ao excluir o card:', error);
+  //     window.alert(`Erro ao excluir o card!`);
+  //   }
+  // };
+
+
+  // const excluirCard = async () => {
+  //   if (!getAccessLevel('excluir')) {
+  //     window.alert(`Não autorizado pelo ADM!`);
+  //     return;
+  //   }
+  //   const userConfirmed = window.confirm(`Excluir Card?`);
+  //   if (!userConfirmed) {
+  //     return;
+  //   }
+  //   try {
+  //     // Chame o endpoint para excluir todos os anexos
+  //     const anexosResponse = await axios.delete(`${apiUrl}/card/${cardData.card_id}/delete-all-anexos`);
+  //     if (anexosResponse.data) {
+  //       // Exclua os arquivos do Firebase Storage
+  //       const storage = getStorage(fb);
+  //       for (const anexo of anexosResponse.data) {
+  //         const storagePath = `syncs/empresa-id-${user.empresa_id}/${anexo.nome_arquivo}`;
+  //         const storageRef = ref(storage, storagePath);
+  //         await deleteObject(storageRef);
+  //       }
+  //     }
+  //     // Chame o endpoint para excluir o card
+  //     const response = await axios.delete(`${apiUrl}/card/${cardData.card_id}`);
+  //     setCards(prevCards => prevCards.filter(card => card.card_id !== cardData.card_id));
+  //     window.alert(`Card excluído com sucesso!`);
+  //   } catch (error) {
+  //     console.error('Erro ao excluir o card:', error);
+  //     window.alert(`Erro ao excluir o card!`);
+  //   }
+  // };
+
+
+  const excluirCard = async () => {
+    if (!getAccessLevel('excluir')) {
+      window.alert(`Não autorizado pelo ADM!`);
+      return;
+    }
+    const userConfirmed = window.confirm(`Excluir Card?`);
+    if (!userConfirmed) {
+      return;
+    }
+    try {
+      setModalLoading(true);
+      setMensagemLoading('Excluindo anexos...');
+  
+      // Obtenha todos os anexos do card
+      const anexosResponse = await axios.get(`${apiUrl}/card/${cardData.card_id}/anexos`);
+
+      console.log('lista-anexos', anexosResponse.data)
+
+      const anexos = anexosResponse.data;
+  
+      // Exclua todos os anexos do servidor de arquivos
+      for (const anexo of anexos) {
+        try {
+          await axios.delete(`${fileApiUrl}/uploads/${anexo.nome_arquivo}`);
+
+
+        } catch (error) {
+          console.error(`Erro ao excluir o arquivo ${anexo.nome_arquivo} do servidor:`, error);
+        }
+      }
+  
+      setMensagemLoading('Excluindo anexos do banco de dados...');
+  
+      // Exclua todos os anexos do banco de dados
+      await axios.delete(`${apiUrl}/card/${cardData.card_id}/delete-all-anexos`);
+  
+      setMensagemLoading('Excluindo card...');
+  
+      // Exclua o card
+      await axios.delete(`${apiUrl}/card/${cardData.card_id}`);
+      setCards(prevCards => prevCards.filter(card => card.card_id !== cardData.card_id));
+  
+      window.alert(`Card excluído com sucesso!`);
+    } catch (error) {
+      console.error('Erro ao excluir o card:', error);
+      window.alert(`Erro ao excluir o card!`);
+    } finally {
+      setModalLoading(false);
+      setMensagemLoading('');
+    }
+  };
+  
+
+
+
+
+  function getBackgroundColor(days) {
+    if (days <= 3) {
+      return '#4eafff';
+    } else if (days > 3 && days <= 6) {
+      return '#FFD700';
+    } else if (days > 6 && days <= 10) {
+      return 'orange';
+    } else {
+      return 'rgb(255, 20, 98)';
+    }
+  }
 
 
 
@@ -571,15 +752,20 @@ function Card({ cardData, index }) {
                   }
 
 
+                  {getAccessLevel('contato') &&
+                    <label className='card-body-item-fone'>
+                      <div className='card-body-item-fone-number'>
+                        <MdWhatsapp className='icons-whatsapp' onClick={() => abrirWhatsApp(cardData.fone)} />{cardData.fone ? cardData.fone : 'Sem Fone'}
+                      </div>
+                    </label>
+                  }
 
-                  <label className='card-body-item-fone'>
-                    <div className='card-body-item-fone-number'>
-                      <MdWhatsapp className='icons-whatsapp' onClick={() => abrirWhatsApp(cardData.fone)} />{getAccessLevel('contato') && cardData.fone ? cardData.fone : '******'}
-                    </div>
-                  </label>
-                  <label className='card-body-item'>
-                    <MdAlternateEmail className='card-icon-item' />{getAccessLevel('contato') && cardData.email ? cardData.email : "******"}
-                  </label>
+                  {getAccessLevel('contato') &&
+                    <label className='card-body-item'>
+                      <MdAlternateEmail className='card-icon-item' />{getAccessLevel('contato') && cardData.email ? cardData.email : "Sem Email"}
+                    </label>
+                  }
+
                   <label className='card-body-item'>
                     <MdAccountBox className='card-icon-item' />{getUsernameById(cardData.entity_id).substring(0, 28)}
                   </label>
@@ -612,6 +798,7 @@ function Card({ cardData, index }) {
                     <label className='card-body-item-chat-bot'>
                       <MdAdsClick className='card-icon-item' />{cardData.origem ? cardData.origem : 'Não informado'}
                     </label>
+
                     <MdOutlineSendToMobile
                       className='lock-column' style={{ display: user.access_level === 5 ? '' : 'none' }}
 
@@ -626,8 +813,49 @@ function Card({ cardData, index }) {
 
 
                   <label className='card-body-item'>
-                    <MdColorLens className='card-icon-item' />{cardData.produto ? cardData.produto : 'Não informado'}
+                    <GiWindow className='card-icon-item' />{cardData.produto ? cardData.produto : 'Não informado'}
                   </label>
+
+
+
+                  <label className='row-column-container'>
+
+                    <label className='card-body-item-chat-bot'>
+                      <MdAutoAwesomeMotion className='card-icon-item' />Etapa: {cardData.etapa_producao === 0 ? 1 : cardData.etapa_producao + 1}
+                    </label>
+                    <MdLibraryAdd
+                      className='lock-column'
+
+                      onClick={(e) => {
+                        criarEtapaDeProducao();
+                        e.stopPropagation();
+                      }}
+                    />
+
+                  </label>
+
+
+
+
+
+                  <label className='row-column-container'>
+
+                    <label className='card-body-item-chat-bot'>
+                      <MdCreditCard className='card-icon-item' />ID: {cardData.card_id}
+                    </label>
+                    <MdDeleteForever
+                      className='btn-delete-card'
+
+                      onClick={(e) => {
+                        excluirCard();
+                        e.stopPropagation();
+                      }}
+                    />
+
+                  </label>
+
+
+
 
                   <label style={{ display: 'none' }} className='card-body-item'>
                     <MdViewColumn className='card-icon-item' />{cardData.column_id ? getNameColumnCard(cardData.column_id) : '---'}
@@ -764,7 +992,6 @@ function Card({ cardData, index }) {
                     <label style={{ display: 'none' }} className='card-id-item-separate'>ID: {cardData.card_id}</label>
 
 
-
                   </label>
                 </>
               )
@@ -773,37 +1000,41 @@ function Card({ cardData, index }) {
           </div>
           <div className='card-footer'>
 
-            <label className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label>
+            <label style={{ backgroundColor: getBackgroundColor(getDaysSinceUpdate(cardData.updated_at)) }} className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label>
+            <label style={{ backgroundColor: cardData.etapa_producao + 1 > 1 ? '' : 'transparent' }} className='etapa-producao'>Parte: {cardData.etapa_producao + 1}</label>
 
             {true &&
               <label className='card-star-container'>
                 <MdGrade
                   onClick={(event) => updatePotencialVenda(event, 1)}
                   className='card-icon-star'
-                  style={{ color: getAccessLevel('estrelas') && ( potencialVenda > 1 || potencialVenda === 1 )? 'gold' : '' }}
+                  style={{ color: getAccessLevel('estrelas') && (potencialVenda > 1 || potencialVenda === 1) ? 'gold' : '' }}
                 />
                 <MdGrade
                   onClick={(event) => updatePotencialVenda(event, 2)}
                   className='card-icon-star'
-                  style={{ color: getAccessLevel('estrelas') && ( potencialVenda > 2 || potencialVenda === 2 ) ? 'gold' : '' }}
+                  style={{ color: getAccessLevel('estrelas') && (potencialVenda > 2 || potencialVenda === 2) ? 'gold' : '' }}
                 />
                 <MdGrade
                   onClick={(event) => updatePotencialVenda(event, 3)}
                   className='card-icon-star'
-                  style={{ color: getAccessLevel('estrelas') && ( potencialVenda > 3 || potencialVenda === 3 ) ? 'gold' : '' }}
+                  style={{ color: getAccessLevel('estrelas') && (potencialVenda > 3 || potencialVenda === 3) ? 'gold' : '' }}
                 />
                 <MdGrade
                   onClick={(event) => updatePotencialVenda(event, 4)}
                   className='card-icon-star'
-                  style={{ color: getAccessLevel('estrelas') && ( potencialVenda > 4 || potencialVenda === 4 ) ? 'gold' : '' }}
+                  style={{ color: getAccessLevel('estrelas') && (potencialVenda > 4 || potencialVenda === 4) ? 'gold' : '' }}
                 />
                 <MdGrade
                   onClick={(event) => updatePotencialVenda(event, 5)}
                   className='card-icon-star'
-                  style={{ color: getAccessLevel('estrelas') && ( potencialVenda > 5 || potencialVenda === 5 ) ? 'gold' : '' }}
+                  style={{ color: getAccessLevel('estrelas') && (potencialVenda > 5 || potencialVenda === 5) ? 'gold' : '' }}
                 />
               </label>
             }
+
+            <label style={{ backgroundColor: 'white' }} className='etapa-producao'>Etapa: {cardData.etapa_producao + 1}</label>
+
 
 
             <div className='card-icons-status-container'>

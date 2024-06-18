@@ -5,18 +5,18 @@ import { ExcelRenderer } from 'react-excel-renderer';
 
 // CONTEXT API
 import { useUser } from '../../contexts/userContext';
-import { useColumns } from '../../contexts/columnsContext';
 
 import axios from 'axios';
 import { apiUrl } from '../../config/apiConfig';
 
+import { fromZonedTime } from 'date-fns-tz';
+
+import { parseISO, formatISO } from 'date-fns';
+
 function ImportExcelSuiteFlow() {
-  const { columns } = useColumns();
   const { user, listAllUsers, setOpenCloseImportExcelSuiteFlow } = useUser();
 
   const [loading, setLoading] = useState(false);
-  const [idColunaExcel, setIdColunaExcel] = useState('');
-  const [idColunaSistema, setIdColunaSistema] = useState('');
   const [numRowsLoaded, setNumRowsLoaded] = useState(0);
   const [numCardsLoaded, setNumCardsLoaded] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -24,36 +24,6 @@ function ImportExcelSuiteFlow() {
   const [estimatedTime, setEstimatedTime] = useState(0);
   const intervalRef = useRef(null);
 
-
-
-    // --------- RELAÇÃO DE COLUNAS 
-
-    // Import	9	42414
-    // Link Patrocinado	29	42453
-    // Potenciais Clientes	6	42415
-    // Em Orçamento	7	42416
-    // Em Negociação	30	42417
-    // Em Fechamento	16	42418
-    // Vendidos	17	42419
-    // Solicitação de pedidos	28	42430
-    // Análise Financeira	27	42431
-    // Análise Técnica	22	42432
-    // Analise Comercial	31	42433
-    // Implantação de Pedidos	21	42434
-    // Liberação do Financeiro	32	42442
-    // PCP	14	42441
-    // Aguardando Medidas	33	42444
-    // Projetos	13	42445
-    // Produção	34	42457
-    // Expedição	25	42452
-    // Entregues	23	42421
-    // Finalizados	20	42420
-    
-
-
-  useEffect(() => {
-    console.log(listAllUsers)
-  }, [listAllUsers]);
 
   useEffect(() => {
     if (loading) {
@@ -66,39 +36,44 @@ function ImportExcelSuiteFlow() {
   }, [loading]);
 
   useEffect(() => {
-    if (numCardsLoaded > 0 && numRowsLoaded > 0) {
-      const remainingCards = numRowsLoaded - numCardsLoaded;
-      const averageTimePerCard = elapsedTime / numCardsLoaded;
-      const estimatedTimeRemaining = Math.round(averageTimePerCard * remainingCards);
-      setEstimatedTime(estimatedTimeRemaining);
-    }
+    const debounce = setTimeout(() => {
+      if (numCardsLoaded > 0 && numRowsLoaded > 0) {
+        const remainingCards = numRowsLoaded - numCardsLoaded;
+        const averageTimePerCard = elapsedTime / numCardsLoaded;
+        const estimatedTimeRemaining = Math.round(averageTimePerCard * remainingCards);
+        setEstimatedTime(estimatedTimeRemaining);
+      }
+    }, 500); // Delay para debouncing
+
+    return () => clearTimeout(debounce);
   }, [numCardsLoaded, numRowsLoaded, elapsedTime]);
 
-  const handleIdColunaExcelChange = (event) => {
-    setIdColunaExcel(event.target.value);
-  };
 
-  const handleIdColunaSistemaChange = (event) => {
-    setIdColunaSistema(event.target.value);
-  };
+
 
   function buscarIdReferencia(entidade) {
     const listaFiltrada = listAllUsers.filter((item) => item.entidade === entidade);
     const id = listaFiltrada.map((item) => item.id);
+
+    if (entidade == user.username) {
+      id.push(user.id);
+    }
+
     return id.toString();
   }
 
-  function buscarEstadoReferencia(entidade) {
-    const listaFiltrada = listAllUsers.filter((item) => item.entidade === entidade);
-    const estado = listaFiltrada.map((item) => item.state);
-    return estado.toString();
-  }
+  // function buscarIdReferencia(entidade) {
+  //   const listaFiltrada = listAllUsers.filter((item) => item.entidade === entidade);
+  //   const id = listaFiltrada.map((item) => item.id);
 
-  function buscarCidadeReferencia(entidade) {
-    const listaFiltrada = listAllUsers.filter((item) => item.entidade === entidade);
-    const city = listaFiltrada.map((item) => item.city);
-    return city.toString();
-  }
+  //   // Adiciona o ID do usuário atual se não estiver já na lista
+  //   if (!id.includes(user.id)) {
+  //     id.push(user.id);
+  //   }
+
+  //   return id.toString();
+  // }
+
 
   const handleFileUpload = (event) => {
     setLoading(true);
@@ -124,7 +99,7 @@ function ImportExcelSuiteFlow() {
       const dataRows = rows.slice(1);
       setNumRowsLoaded(dataRows.length);
 
-      const batchSize = 100; // Tamanho do lote
+      const batchSize = 990; // Tamanho do lote
       let currentNumCardsLoaded = 0;
 
       const processBatch = async (batch) => {
@@ -139,8 +114,7 @@ function ImportExcelSuiteFlow() {
         for (let i = 0; i < dataRows.length; i += batchSize) {
           const batch = dataRows.slice(i, i + batchSize);
           await processBatch(batch);
-          // Pausa entre os lotes
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 20)); /////  ajustar aqui <<<<<<<<<<
         }
         setLoading(false);
       };
@@ -148,13 +122,6 @@ function ImportExcelSuiteFlow() {
       processAllBatches();
     });
   };
-
-
-
-
-
-
-
 
   const columnMapping = {
     42414: 9,
@@ -178,256 +145,10 @@ function ImportExcelSuiteFlow() {
     42421: 23,
     42420: 20
   };
-  
+
   const getMappedColumnId = (excelColumnId) => {
     return columnMapping[excelColumnId] || null;
   };
-
-  
-
-
-
-  // const addCardFirestore = async (row, currentNumCardsLoaded) => {
-  //   const [
-  //     numero_orcamento_1,
-  //     versao,
-  //     nome_cliente_1,
-  //     date,
-  //     valor,
-  //     entidade,
-  //     origem,
-  //     id_card,
-  //     id_column,
-  //     pedido_orcamento_2,
-  //     nome_cliente_2,
-  //     nome_obra,
-  //     valor_2,
-  //     valor_venda,
-  //     cidade,
-  //     estado,
-  //     fone,
-  //     email,
-  //     previsao_de_venda,
-  //     origem_2,
-  //     date_2,
-  //     potencial_de_venda,
-  //     etiqueta,
-  //     data_de_modificacao,
-  //     lista_de_tarefas,
-  //     lista_historico,
-  //     produto,
-  //     status,
-  //     id_create_by,
-  //     name_create_by,
-  //     parceiro_indicador_2,
-  //     contato_responsavel,
-  //     motivo_venda_perdida,
-  //     lista_anexos,
-  //     previsao_entrega,
-  //     horas_producao,
-  //     previsao_instalacao,
-  //     previsao_assistencia,
-  //     etapa_producao,
-  //     lista_compartilhamento,
-  //     cor,
-  //     data_de_modificacao_2,
-  //     prioridade,
-  //     previsao_producao,
-  //     recebimento_medidas,
-  //     prazo_entrega,
-  //     numero_pedido,
-  //     numero_quadros,
-  //     metros_quadrados,
-  //     quantidade_esquadrias,
-  //     entrega_vidro,
-  //     status_vidro,
-  //     fornecedor_vidro,
-  //     conclusao_producao
-  //   ] = row;
-
-
-  //   const mappedColumnId = getMappedColumnId(id_column);
-
-
-  //   if (!mappedColumnId) {
-  //     console.log('Coluna do Excel não corresponde a nenhuma coluna do sistema!');
-  //     return;
-  //   }
-
-
-  //   // if (!id_column || id_column != idColunaExcel) {
-  //   //   console.log('Coluna Não corresponde ao informado!');
-  //   //   return;
-  //   // }
-
-  //   if (entidade === '') {
-  //     console.log('Referência da Entidade Vazia - name_create_by', name_create_by);
-  //     return;
-  //   }
-
-  //   if (buscarIdReferencia(entidade) === "") {
-  //     console.log('Não existem entidade!!!', entidade);
-  //     return;
-  //   }
-
-  //   try {
-
-
-  //     function parseCurrency(value) {
-  //       let numericString = value.replace('R$', '').replace(/\s/g, '');
-  //       numericString = numericString.replace(',', '.');
-
-  //       const parts = numericString.split('.');
-  //       if (parts.length > 2) {
-  //         numericString = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1];
-  //       }
-
-  //       return parseFloat(numericString);
-  //     }
-
-  //     function convertISOToJavaScriptDate(isoDateString) {
-  //       if (typeof isoDateString !== 'string' || isoDateString.trim() === '') {
-  //         console.error('Entrada fornecida não é uma string válida:', isoDateString);
-  //         return null;
-  //       }
-
-  //       const dateObject = new Date(isoDateString);
-  //       if (isNaN(dateObject.getTime())) {
-  //         console.error('A string ISO fornecida não é uma data válida:', isoDateString);
-  //         return null;
-  //       }
-
-  //       return dateObject;
-  //     }
-
-  //     const cardData = {
-  //       name: nome_cliente_1 ? nome_cliente_1 : 'Não Informado',
-  //       document_number: numero_orcamento_1 ? numero_orcamento_1 : 'Não Informado',
-  //       cost_value: valor ? parseCurrency(valor) : 0,
-  //       column_id: mappedColumnId,
-  //       entity_id: buscarIdReferencia(entidade),
-  //       empresa_id: user.empresa_id,
-  //       origem: origem,
-  //       sale_value: valor_venda ? parseCurrency(valor_venda) : 0,
-  //       potencial_venda: potencial_de_venda,
-  //       produto: produto,
-  //       status: status,
-  //       motivo_venda_perdida: motivo_venda_perdida,
-  //       nivel_prioridade: prioridade,
-  //       status_date: convertISOToJavaScriptDate(data_de_modificacao),
-  //       updated_at: convertISOToJavaScriptDate(date),
-  //       email: email ? email : '',
-  //       fone: fone ? fone : '',
-  //       state: estado ? estado : '',
-  //       city: cidade ? cidade : '',
-  //     };
-
-  //     const response = await axios.post(`${apiUrl}/card/import-suiteflow`, cardData);
-  //     const cardId = response.data.card_id;
-
-  //     setNumCardsLoaded(currentNumCardsLoaded + 1);
-
-  //     try {
-
-
-  //       const esquadriaData = {
-  //         card_id: cardId,
-  //         nome_obra: nome_obra ? nome_obra : 'Não Informado!',
-  //         contato_obra: contato_responsavel ? contato_responsavel : 'Não Informado!',
-  //         previsao_medicao: recebimento_medidas ? new Date(recebimento_medidas) : new Date(),
-  //         status_medicao: 'Parado',
-  //         previsao_producao: previsao_producao ? new Date(previsao_producao) : new Date(),
-  //         status_producao: conclusao_producao ? 'Pronto' : 'Parado',
-  //         previsao_entrega_vidro: entrega_vidro ? new Date(entrega_vidro) : new Date(),
-  //         status_entrega_vidro: !status_vidro ? 'Parado' : status_vidro == 'Entregue' ? 'Pronto' : (status_vidro == 'Solicitado' ? 'Em Andamento' : 'Parado'),
-  //         previsao_vistoria_pre: new Date(),
-  //         status_vistoria_pre: 'Parado',
-  //         previsao_entrega_obra: prazo_entrega ? new Date(prazo_entrega) : new Date(),
-  //         status_entrega_obra: 'Parado',
-  //         previsao_instalacao: previsao_instalacao ? new Date(previsao_instalacao) : new Date(),
-  //         status_instalacao: 'Parado',
-  //         previsao_vistoria_pos: new Date(),
-  //         status_vistoria_pos: 'Parado',
-  //         previsao_assistencia: previsao_assistencia ? new Date(previsao_assistencia) : new Date(),
-  //         status_assistencia: 'Parado',
-  //         horas_producao: horas_producao ? horas_producao : 0,
-  //         quantidade_esquadrias: quantidade_esquadrias ? quantidade_esquadrias : 0,
-  //         quantidade_quadros: numero_quadros ? numero_quadros : 0,
-  //         metros_quadrados: metros_quadrados ? metros_quadrados : 0,
-  //         cor: cor ? cor : '',
-  //       };
-
-  //       const response = await axios.post(`${apiUrl}/card/upsert`, esquadriaData);
-
-  //       try {
-  //         //setLoadingResult('Importando Histórico...');
-  //         //setLoadingModal(true);
-
-  //         const historicos = JSON.parse(lista_historico);
-
-  //         function parseDateString(dateStr) {
-  //           const parts = dateStr.split('/');
-  //           if (parts.length === 3) {
-  //             const formattedDateStr = `${parts[1]}/${parts[0]}/${parts[2]}`;
-  //             return new Date(formattedDateStr).toISOString();
-  //           }
-  //           throw new Error('Data inválida: ' + dateStr);
-  //         }
-
-  //         for (const historico of historicos) {
-  //           const historyData = {
-  //             card_id: cardId,
-  //             user_id: buscarIdReferencia(entidade),
-  //             action_type: 'Update',
-  //             description: historico.title ? historico.title : '',
-  //             card_status: status ? status : false,
-  //             create_at: parseDateString(historico.date) ? parseDateString(historico.date) : new Date(),
-  //           };
-
-  //           const response = await axios.post(`${apiUrl}/card/add-history-import-suiteflow`, historyData);
-  //           //console.log(`Histórico adicionado com sucesso: ${response.data}`);
-  //         }
-
-  //         try {
-  //           //setLoadingResult('Importando Tarefas...');
-  //           //setLoadingModal(true);
-
-  //           const tarefas = JSON.parse(lista_de_tarefas);
-
-  //           for (const tarefa of tarefas) {
-  //             const tasksData = {
-  //               user_id: buscarIdReferencia(entidade),
-  //               card_id: cardId,
-  //               description: tarefa.title ? tarefa.title : '',
-  //               task_type: 'Card',
-  //               due_date: parseDateString(tarefa.date),
-  //               completed: tarefa.status ? tarefa.status : false,
-  //             };
-
-  //             const response = await axios.post(`${apiUrl}/card/add-tarefa`, tasksData);
-  //             //console.log(`Tarefa adicionado com sucesso: ${response.data}`);
-  //           }
-
-
-  //         } catch (error) {
-
-  //           console.error('Erro tarefas', error);
-  //         }
-  //       } catch (error) {
-
-  //         console.error('Erro history', error);
-  //       }
-  //     } catch (error) {
-
-  //       console.error('Erro módulo de esquadrias:', error);
-  //     }
-
-
-  //   } catch (error) {
-
-  //     console.error('Erro Card');
-  //   }
-  // };
 
 
   const addCardFirestore = async (row, currentNumCardsLoaded) => {
@@ -435,7 +156,7 @@ function ImportExcelSuiteFlow() {
       numero_orcamento_1,
       versao,
       nome_cliente_1,
-      date,
+      createDate,
       valor,
       entidade,
       origem,
@@ -455,7 +176,7 @@ function ImportExcelSuiteFlow() {
       date_2,
       potencial_de_venda,
       etiqueta,
-      data_de_modificacao,
+      status_date,
       lista_de_tarefas,
       lista_historico,
       produto,
@@ -473,7 +194,7 @@ function ImportExcelSuiteFlow() {
       etapa_producao,
       lista_compartilhamento,
       cor,
-      data_de_modificacao_2,
+      updateDate,
       prioridade,
       previsao_producao,
       recebimento_medidas,
@@ -487,55 +208,167 @@ function ImportExcelSuiteFlow() {
       fornecedor_vidro,
       conclusao_producao
     ] = row;
-  
+
     const mappedColumnId = getMappedColumnId(id_column);
-  
+
     if (!mappedColumnId) {
       console.log('Coluna do Excel não corresponde a nenhuma coluna do sistema!');
       return;
     }
-  
+
     if (entidade === '') {
-      console.log('Referência da Entidade Vazia - name_create_by', name_create_by);
+      console.log('Referência da Entidade Vazia - name_create_by', name_create_by, nome_cliente_1, id_create_by);
       return;
     }
-  
+
     if (buscarIdReferencia(entidade) === "") {
       console.log('Não existem entidade!!!', entidade);
       return;
     }
-  
+
     try {
       function parseCurrency(value) {
         let numericString = value.replace('R$', '').replace(/\s/g, '');
         numericString = numericString.replace(',', '.');
-  
+
         const parts = numericString.split('.');
         if (parts.length > 2) {
           numericString = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1];
         }
-  
+
         return parseFloat(numericString);
       }
-  
-      function convertISOToJavaScriptDate(isoDateString) {
+
+
+
+
+
+
+      // Função para converter a data no formato YYYY-MM-DD para um objeto Date
+      function convertISOToJavaScriptDate(isoDateString, nome_cliente_1) {
+        if (typeof isoDateString !== 'string' || isoDateString.trim() === '') {
+          console.error('Entrada fornecida não é uma string válida:', isoDateString);
+          console.error('Entrada fornecida não é uma string válida:', isoDateString, 'nome:', nome_cliente_1);
+          return null;
+        }
+
+        const dateObject = new Date(isoDateString);
+        if (isNaN(dateObject.getTime())) {
+          console.error('A string ISO fornecida não é uma data válida:', isoDateString);
+          console.error('A string ISO fornecida não é uma data válida:', isoDateString, 'nome:', nome_cliente_1);
+          return null;
+        }
+
+        return dateObject;
+      }
+
+
+
+
+      function convertBRDateToJavaScriptDate(brDateString, nome_cliente_1) {
+        // if (typeof brDateString !== 'string' || brDateString.trim() === '') {
+        //   console.error('Entrada fornecida não é uma string válida:', brDateString);
+        //   console.error('Entrada fornecida não é uma string válida:', brDateString, 'nome:', nome_cliente_1);
+        //   return null;
+        // }
+
+        // Remove todos os espaços em branco extras
+        brDateString = brDateString.trim();
+
+        // Verifica se a string resultante está vazia
+        if (brDateString === '') {
+          return null;
+        }
+
+        // Converte a data do formato DD/MM/YYYY para YYYY-MM-DD
+        const dateParts = brDateString.split('/').map(part => part.trim());
+        if (dateParts.length !== 3) {
+          console.error('Formato de data inválido:', brDateString);
+          console.error('Formato de data inválido:', brDateString, 'nome:', nome_cliente_1);
+          return null;
+        }
+
+        const isoDateString = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+        const dateObject = new Date(isoDateString);
+        if (isNaN(dateObject.getTime())) {
+          console.error('A string ISO fornecida não é uma data válida:', isoDateString);
+          console.error('A string ISO fornecida não é uma data válida:', isoDateString, 'nome:', nome_cliente_1);
+          return null;
+        }
+
+        return dateObject;
+      }
+
+
+
+      function convertBRDateToISO(brDateString, nome_cliente_1) {
+        // Remove espaços em branco extras
+        brDateString = brDateString.trim();
+
+        // Verifica se a string resultante está vazia
+        if (brDateString === '') {
+          return null;
+        }
+
+        // Separa a data e a hora
+        const [datePart, timePart] = brDateString.split(' ').filter(part => part.trim() !== '');
+
+        if (!datePart || !timePart) {
+          console.error('Formato de data e hora inválido:', brDateString, 'nome:', nome_cliente_1);
+          return null;
+        }
+
+        // Converte a data do formato DD/MM/YYYY para YYYY-MM-DD
+        const dateParts = datePart.split('/').map(part => part.trim());
+        if (dateParts.length !== 3) {
+          console.error('Formato de data inválido:', brDateString, 'nome:', nome_cliente_1);
+          return null;
+        }
+
+        // Formata a data e a hora em ISO 8601 com timezone (UTC)
+        const isoDateString = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${timePart}.000Z`;
+        const dateObject = new Date(isoDateString);
+        if (isNaN(dateObject.getTime())) {
+          console.error('A string ISO fornecida não é uma data válida:', isoDateString, 'nome:', nome_cliente_1);
+          return null;
+        }
+
+        return isoDateString;
+      }
+
+
+      // Função para converter ISO date string para timestamp com timezone
+      function convertISOToTimestampWithTZ(isoDateString) {
         if (typeof isoDateString !== 'string' || isoDateString.trim() === '') {
           console.error('Entrada fornecida não é uma string válida:', isoDateString);
           return null;
         }
-  
-        const dateObject = new Date(isoDateString);
-        if (isNaN(dateObject.getTime())) {
-          console.error('A string ISO fornecida não é uma data válida:', isoDateString);
+
+        try {
+          const date = parseISO(isoDateString);
+          return formatISO(date);
+        } catch (error) {
+          console.error('Erro ao converter ISO date string:', error);
           return null;
         }
-  
-        return dateObject;
       }
-  
+
+
+
+
+      function excelDateToJSDate(serial) {
+        var days = Math.floor(serial - 25569); // 25569 é o número de dias de 30/12/1899 até 01/01/1970
+        var value = serial - days - 25569;
+        var seconds = Math.floor(86400 * value);
+        var date = new Date(days * 86400000 + (seconds * 1000));
+        return date;
+      }
+
+
       const cardData = {
-        name: nome_cliente_1 ? nome_cliente_1 : 'Não Informado',
-        document_number: numero_orcamento_1 ? numero_orcamento_1 : 'Não Informado',
+        created_at: convertISOToTimestampWithTZ(createDate),
+        name: nome_cliente_1 ? nome_cliente_1 : '',
+        document_number: numero_orcamento_1 ? numero_orcamento_1 : '',
         cost_value: valor ? parseCurrency(valor) : 0,
         column_id: mappedColumnId,
         entity_id: buscarIdReferencia(entidade),
@@ -546,53 +379,71 @@ function ImportExcelSuiteFlow() {
         produto: produto,
         status: status,
         motivo_venda_perdida: motivo_venda_perdida,
-        nivel_prioridade: prioridade,
-        status_date: convertISOToJavaScriptDate(data_de_modificacao),
-        updated_at: convertISOToJavaScriptDate(date),
+        nivel_prioridade: prioridade === 'Média' ? 5 : prioridade === 'Alta' ? 4 : prioridade === 'Aguardando Informação' ? 2 : prioridade === 'Recusado' ? 6 : prioridade === 'Alteração de Pedido' ? 3 : prioridade === 'Normal' ? 1 : 1,
+        status_date: convertISOToTimestampWithTZ(status_date),
+        updated_at: convertISOToTimestampWithTZ(updateDate),
         email: email ? email : '',
         fone: fone ? fone : '',
         state: estado ? estado : '',
         city: cidade ? cidade : '',
+        pedido_number: numero_pedido ? numero_pedido : '',
+        etapa_producao: etapa_producao ? etapa_producao : 0,
+        etiqueta_id: prioridade === 'Média' ? 5 : prioridade === 'Alta' ? 4 : prioridade === 'Aguardando Informação' ? 2 : prioridade === 'Recusado' ? 6 : prioridade === 'Alteração de Pedido' ? 3 : prioridade === 'Normal' ? 1 : 1,
       };
-  
+
       const response = await axios.post(`${apiUrl}/card/import-suiteflow`, cardData);
       const cardId = response.data.card_id;
-  
+
       setNumCardsLoaded(currentNumCardsLoaded + 1);
-  
+
       try {
+
         const esquadriaData = {
           card_id: cardId,
-          nome_obra: nome_obra ? nome_obra : 'Não Informado!',
-          contato_obra: contato_responsavel ? contato_responsavel : 'Não Informado!',
-          previsao_medicao: recebimento_medidas ? new Date(recebimento_medidas) : new Date(),
-          status_medicao: 'Parado',
-          previsao_producao: previsao_producao ? new Date(previsao_producao) : new Date(),
-          status_producao: conclusao_producao ? 'Pronto' : 'Parado',
-          previsao_entrega_vidro: entrega_vidro ? new Date(entrega_vidro) : new Date(),
-          status_entrega_vidro: !status_vidro ? 'Parado' : status_vidro == 'Entregue' ? 'Pronto' : (status_vidro == 'Solicitado' ? 'Em Andamento' : 'Parado'),
-          previsao_vistoria_pre: new Date(),
+          nome_obra: nome_obra ? nome_obra : '',
+          contato_obra: contato_responsavel ? contato_responsavel : '',
+          previsao_medicao: recebimento_medidas ? convertBRDateToJavaScriptDate(recebimento_medidas) : null,
+          status_medicao: recebimento_medidas ? 'EmAndamento' : 'Parado',
+          previsao_producao: previsao_producao ? convertBRDateToJavaScriptDate(previsao_producao) : null,
+          status_producao: (previsao_producao && conclusao_producao) ? 'Pronto' : (previsao_producao && !conclusao_producao) ? 'EmAndamento' : 'Parado',
+          previsao_entrega_vidro: entrega_vidro ? convertBRDateToJavaScriptDate(entrega_vidro) : null,
+          status_entrega_vidro: status_vidro
+            ? (status_vidro === 'Entregue'
+              ? 'Pronto'
+              : status_vidro === 'Solicitado'
+                ? 'Em Andamento'
+                : status_vidro === 'Aguardando a Compra'
+                  ? 'Parado'
+                  : status_vidro === 'Entrega Parcial'
+                    ? 'Em Andamento'
+                    : 'Parado')
+            : 'Parado',
+          previsao_vistoria_pre: null,
           status_vistoria_pre: 'Parado',
-          previsao_entrega_obra: prazo_entrega ? new Date(prazo_entrega) : new Date(),
-          status_entrega_obra: 'Parado',
-          previsao_instalacao: previsao_instalacao ? new Date(previsao_instalacao) : new Date(),
-          status_instalacao: 'Parado',
-          previsao_vistoria_pos: new Date(),
+          previsao_entrega_obra: previsao_entrega ? convertBRDateToJavaScriptDate(previsao_entrega) : null,
+          status_entrega_obra: previsao_entrega ? 'EmAndamento' : 'Parado',
+          previsao_instalacao: previsao_instalacao ? convertBRDateToJavaScriptDate(previsao_instalacao) : null,
+          status_instalacao: previsao_instalacao ? 'EmAndamento' : 'Parado',
+          previsao_vistoria_pos: null,
           status_vistoria_pos: 'Parado',
-          previsao_assistencia: previsao_assistencia ? new Date(previsao_assistencia) : new Date(),
-          status_assistencia: 'Parado',
+          previsao_assistencia: previsao_assistencia ? convertBRDateToJavaScriptDate(previsao_assistencia) : null,
+          status_assistencia: previsao_assistencia ? 'EmAndamento' : 'Parado',
           horas_producao: horas_producao ? horas_producao : 0,
           quantidade_esquadrias: quantidade_esquadrias ? quantidade_esquadrias : 0,
           quantidade_quadros: numero_quadros ? numero_quadros : 0,
           metros_quadrados: metros_quadrados ? metros_quadrados : 0,
           cor: cor ? cor : '',
+          obs: fornecedor_vidro ? fornecedor_vidro : '',
+          empresa_id: user.empresa_id,
+          prazo_entrega: prazo_entrega ? convertBRDateToJavaScriptDate(prazo_entrega.trim(), nome_cliente_1) : null,
+          status_prazo_entrega: 'EmAndamento',
         };
-  
+
         const response = await axios.post(`${apiUrl}/card/upsert`, esquadriaData);
-  
+
         try {
           const historicos = JSON.parse(lista_historico);
-  
+
           function parseDateString(dateStr) {
             const parts = dateStr.split('/');
             if (parts.length === 3) {
@@ -601,7 +452,7 @@ function ImportExcelSuiteFlow() {
             }
             throw new Error('Data inválida: ' + dateStr);
           }
-  
+
           for (const historico of historicos) {
             const historyData = {
               card_id: cardId,
@@ -609,15 +460,18 @@ function ImportExcelSuiteFlow() {
               action_type: 'Update',
               description: historico.title ? historico.title : '',
               card_status: status ? status : false,
-              create_at: parseDateString(historico.date) ? parseDateString(historico.date) : new Date(),
+              create_at: parseDateString(historico.date) ? parseDateString(historico.date) : null,
+              empresa_id: user.empresa_id,
             };
-  
+
             const response = await axios.post(`${apiUrl}/card/add-history-import-suiteflow`, historyData);
           }
-  
+
           try {
             const tarefas = JSON.parse(lista_de_tarefas);
-  
+
+
+
             for (const tarefa of tarefas) {
               const tasksData = {
                 user_id: buscarIdReferencia(entidade),
@@ -626,10 +480,35 @@ function ImportExcelSuiteFlow() {
                 task_type: 'Card',
                 due_date: parseDateString(tarefa.date),
                 completed: tarefa.status ? tarefa.status : false,
+                empresa_id: user.empresa_id,
               };
-  
+
               const response = await axios.post(`${apiUrl}/card/add-tarefa`, tasksData);
             }
+
+
+            try {
+              const anexos = JSON.parse(lista_anexos);
+
+              for (const anexo of anexos) {
+
+                const newAnexo = {
+                  empresa_id: user.empresa_id,
+                  url: anexo.link,
+                  nome_arquivo: anexo.name,
+                  tamanho: 0,
+                  tipo_arquivo: '',
+                  created_at: new Date().toISOString()
+                };
+
+                const response = await axios.post(`${apiUrl}/card/${cardId}/add-anexo`, newAnexo);
+
+              }
+            } catch (error) {
+              console.error('Erro anexos', error);
+            }
+
+
           } catch (error) {
             console.error('Erro tarefas', error);
           }
@@ -643,7 +522,7 @@ function ImportExcelSuiteFlow() {
       console.error('Erro Card');
     }
   };
-  
+
 
   const handleInputChange = (event) => {
     const file = event.target.files[0];
@@ -709,10 +588,10 @@ function ImportExcelSuiteFlow() {
       {loading && (
         <div className="loading-modal">
           <div className="loading-content">
-            <label  className="infos-import-excel">Carregando...</label>
-            <p style={{color: 'white'}}>Tempo decorrido: {formatTime(elapsedTime)}</p>
+            <label className="infos-import-excel">Carregando...</label>
+            <p style={{ color: 'white' }}>Tempo decorrido: {formatTime(elapsedTime)}</p>
             {numCardsLoaded > 0 && (
-              <p style={{color: 'white'}}>Estimativa de tempo restante: {formatTime(estimatedTime)}</p>
+              <p style={{ color: 'white' }}>Estimativa de tempo restante: {formatTime(estimatedTime)}</p>
             )}
           </div>
         </div>

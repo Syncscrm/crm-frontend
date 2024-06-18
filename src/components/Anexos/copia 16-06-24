@@ -433,8 +433,7 @@ const Anexos = ({ idCard }) => {
           link: `${fileApiUrl}/uploads/${anexo.nome_arquivo}`, // Atualize o link para apontar para o servidor de arquivos
           tamanho: anexo.tamanho,
           tipo: anexo.tipo_arquivo,
-          createdAt: anexo.created_at,
-          url: anexo.url
+          createdAt: anexo.created_at
         }));
 
         setFileLinksCard(fileLinks);
@@ -448,7 +447,8 @@ const Anexos = ({ idCard }) => {
   }, [idCard]);
 
 
-  
+
+
   const handleFileUpload = async (e) => {
     setIsLoading(true);
     if (!user || !user.empresa_id) {
@@ -464,23 +464,13 @@ const Anexos = ({ idCard }) => {
           setIsSaving(true);
           setExigirSalvar(true);
   
-          // Separar nome e extensão do arquivo
-          const fileParts = file.name.split('.');
-          const extension = fileParts.pop();
-          const fileName = fileParts.join('.');
-  
-          // Alterar o nome do arquivo
-          const timestamp = Date.now();
-          const newFileName = `${fileName}_C${idCard}_U${user.id}_T${timestamp}.${extension}`;
-          const renamedFile = new File([file], newFileName, { type: file.type });
-  
           const formData = new FormData();
-          formData.append('file', renamedFile);
+          formData.append('file', file);
           formData.append('empresa_id', user.empresa_id);
           formData.append('idCard', idCard);
   
           try {
-            const response = await axios.post(`${fileApiUrl}/uploads`, formData, {
+            const response = await axios.post(`${fileApiUrl}/upload`, formData, {
               headers: {
                 'Content-Type': 'multipart/form-data'
               }
@@ -489,7 +479,7 @@ const Anexos = ({ idCard }) => {
             const newAnexo = {
               empresa_id: user.empresa_id,
               url: response.data.filePath,
-              nome_arquivo: newFileName,
+              nome_arquivo: file.name,
               tamanho: file.size,
               tipo_arquivo: file.type,
               created_at: new Date().toISOString()
@@ -504,18 +494,18 @@ const Anexos = ({ idCard }) => {
                 return [...prevLinks, {
                   id: dbResponse.data.id,
                   name: dbResponse.data.nome_arquivo,
-                  link: `${fileApiUrl}/uploads/${newFileName}`, // Atualize o link para apontar para o servidor de arquivos
+                  link: `${fileApiUrl}/uploads/${file.name}`, // Atualize o link para apontar para o servidor de arquivos
                   tamanho: dbResponse.data.tamanho,
-                  tipo_arquivo: dbResponse.data.tipo_arquivo,
+                  tipo: dbResponse.data.tipo_arquivo,
                   createdAt: dbResponse.data.created_at
                 }];
               } else {
                 return [{
                   id: dbResponse.data.id,
                   name: dbResponse.data.nome_arquivo,
-                  link: `${fileApiUrl}/uploads/${newFileName}`, // Atualize o link para apontar para o servidor de arquivos
+                  link: `${fileApiUrl}/uploads/${file.name}`, // Atualize o link para apontar para o servidor de arquivos
                   tamanho: dbResponse.data.tamanho,
-                  tipo_arquivo: dbResponse.data.tipo_arquivo,
+                  tipo: dbResponse.data.tipo_arquivo,
                   createdAt: dbResponse.data.created_at
                 }];
               }
@@ -526,8 +516,6 @@ const Anexos = ({ idCard }) => {
           } catch (error) {
             console.error("Erro ao enviar o arquivo:", error);
             window.alert('Erro ao incluir anexo!');
-            setIsLoading(false);
-
           }
           setIsSaving(false);
           setExigirSalvar(false);
@@ -604,7 +592,7 @@ const handleDeleteFile = async (fileId) => {
 
           if (deletedAnexo.data) {
             console.log("Deletando arquivo do servidor:", file.name);
-            const response = await axios.delete(`${fileApiUrl}/uploads/${file.name}`);
+            const response = await axios.delete(`${fileApiUrl}/upload/${file.name}`);
             console.log("Resposta da exclusão do arquivo no servidor:", response.data);
 
             if (response.data.message === 'File deleted successfully') {
@@ -655,29 +643,12 @@ const handleDeleteFile = async (fileId) => {
           {fileLinksCard && fileLinksCard.length > 0 && (
             fileLinksCard.map((file, index) => {
               const displayName = file.name ? file.name.replace(/_\d+$/, '') : 'Nome não disponível';
-
-              const isFirebaseStorageLink = file.url && file.url.includes('firebasestorage');
-
               return (
                 <li className='item-arquivo' key={index}>
                   <div className='file-info'>
-
-
-
-
-                  {isFirebaseStorageLink ? (
-                    <a className='link-anexo' href={file.url} target="_blank" rel="noopener noreferrer">
+                    <a className='link-anexo' href={file.link} target="_blank" rel="noopener noreferrer" download>
                       {index + 1} - {displayName}
                     </a>
-                  ) : (
-                    <a className='link-anexo' href={file.link} download>
-                      {index + 1} - {displayName}
-                    </a>
-                  )}
-
-
-
-                    
                     <div className='descricao-anexos'>Tipo: {file.tipo || 'Desconhecido'}</div>
                     <div className='descricao-anexos'>Tamanho: {file.tamanho ? (file.tamanho / 1024).toFixed(2) + ' KB' : 'Desconhecido'}</div>
                     <div className='descricao-anexos'>Criado em: {file.createdAt ? new Date(file.createdAt).toLocaleString() : 'Desconhecido'}</div>

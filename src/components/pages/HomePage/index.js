@@ -18,17 +18,22 @@ import Select from '../../Select';
 import { MdOutlineFilterList, MdGroups, MdOutlineSearch } from "react-icons/md";
 import ImportExcel from '../../ImportExcel';
 import ImportExcelSuiteFlow from '../../ImportExcelSuiteFlow';
+import { RiFileExcel2Line } from "react-icons/ri";
 
 import { BsCalendarDate } from "react-icons/bs";
 
 import logoDefault from '../../../assets/logo-suite-flow.ico'
 import Vendas from '../../Vendas';
 
+import ExcelJS from 'exceljs';
+
+
+
 function HomePage() {
 
   const { user, openCloseImportExcelEntidades, openCloseImportExcelSuiteFlow, afilhadosList, editableColumns, getAccessLevel } = useUser();
   const { columnsUser, setLoadingResult, setLoadingModal, selectedAfilhados, setSelectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal, orderBy, setOrderBy, isAscending, setIsAscending } = useColumns();
-  const { addHistoricoCardContext, cards, setCards, previewSearchCards, setPreviewSearchCards, searchTerm, setSearchTerm, setCurrentCardData, setOpenCloseUpdateCard, openCloseModalVendaPerdida, setOpenCloseModalVendaPerdida, currentCardData } = useCard();
+  const { fetchCards, addHistoricoCardContext, cards, setCards, previewSearchCards, setPreviewSearchCards, searchTerm, setSearchTerm, setCurrentCardData, setOpenCloseUpdateCard, openCloseModalVendaPerdida, setOpenCloseModalVendaPerdida, currentCardData } = useCard();
 
   const [openCloseSearchModal, setOpenCloseSearchModal] = useState(false);
   const [openCloseSelectAfilhadosModal, setOpenCloseSelectAfilhadosModal] = useState(false);
@@ -36,9 +41,6 @@ function HomePage() {
   const [openCloseFilterModal, setOpenCloseFilterModal] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
 
-  // Estados temporários para dataInicial e dataFinal
-  const [tempDataInicial, setTempDataInicial] = useState('');
-  const [tempDataFinal, setTempDataFinal] = useState('');
 
 
   const fetchCardsByName = async () => {
@@ -94,7 +96,7 @@ function HomePage() {
 
 
 
-    if(!getAccessLevel('coluna')){
+    if (!getAccessLevel('coluna')) {
       const confirmDelete = window.alert('Não autorizado pelo Administrador!');
       return
     }
@@ -198,31 +200,57 @@ function HomePage() {
   }, [user]);
 
   const handleTempDateChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'tempDataInicial') {
-      setTempDataInicial(value);
-    } else {
-      setTempDataFinal(value);
-    }
+    const { value } = e.target;
+    setDataInicial(value);
   };
 
   const handleUpdateDates = () => {
-    setDataInicial(tempDataInicial);
-    setDataFinal(tempDataFinal);
+    fetchCards(dataInicial, dataFinal)
   };
 
-  useEffect(() => {
-    const today = new Date();
-    const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59); // Final do dia de hoje
-    const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
-
-    setTempDataInicial(lastYear.toISOString().split('T')[0]);
-    setTempDataFinal(endOfToday.toISOString().split('T')[0]);
-    setDataInicial(lastYear.toISOString().split('T')[0]);
-    setDataFinal(endOfToday.toISOString().split('T')[0]);
-  }, []);
 
 
+  const exportarTabelasExcel = async () => {
+    const tables = ['cards', 'users', 'modulo_esquadrias', 'history', 'tasks'];
+
+    for (const table of tables) {
+      try {
+        const response = await axios.post(`${apiUrl}/users/${table}`, {
+          empresa_id: user.empresa_id,
+        });
+        const data = response.data;
+
+        if (data.length > 0) {
+          const workbook = new ExcelJS.Workbook();
+          const worksheet = workbook.addWorksheet(table);
+
+          worksheet.columns = Object.keys(data[0]).map((key) => ({
+            header: key,
+            key: key,
+            width: 20,
+          }));
+
+          data.forEach((row) => {
+            worksheet.addRow(row);
+          });
+
+          const buffer = await workbook.xlsx.writeBuffer();
+          const blob = new Blob([buffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          });
+
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `${table}.xlsx`);
+          document.body.appendChild(link);
+          link.click();
+        }
+      } catch (error) {
+        console.error(`Erro ao exportar tabela ${table}:`, error);
+      }
+    }
+  };
 
 
 
@@ -306,7 +334,7 @@ function HomePage() {
                   className='date-filter-date'
                   type="date"
                   name="tempDataInicial"
-                  value={tempDataInicial}
+                  value={dataInicial}
                   onChange={handleTempDateChange}
                 />
               </div>
@@ -317,7 +345,7 @@ function HomePage() {
                   className='date-filter-date'
                   type="date"
                   name="tempDataFinal"
-                  value={tempDataFinal}
+                  value={dataFinal}
                   onChange={handleTempDateChange}
                 />
               </div>
@@ -325,6 +353,7 @@ function HomePage() {
             <button className='btn-update-date-filter' onClick={handleUpdateDates}>Atualizar Datas</button>
           </div>
         )}
+
 
 
 
@@ -363,6 +392,13 @@ function HomePage() {
 
           </div>
         )}
+
+
+
+        { user && getAccessLevel('exportExcel') &&
+          <RiFileExcel2Line style={{ background: openCloseSelectAfilhadosModal ? 'dodgerblue' : '' }} onClick={() => exportarTabelasExcel()} className='afilhados-icon-open-close' />
+        }
+
 
 
 

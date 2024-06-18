@@ -5,6 +5,8 @@ import axios from 'axios';
 import { apiUrl } from '../config/apiConfig';
 
 import { useUser } from '../contexts/userContext';
+import { useColumns } from '../contexts/columnsContext';
+
 
 
 const CardContext = createContext();
@@ -14,6 +16,8 @@ export const useCard = () => useContext(CardContext);
 export const CardProvider = ({ children }) => {
 
   const { user } = useUser();
+
+  const { setLoadingResult, setLoadingModal, dataInicial, setDataInicial, dataFinal, setDataFinal } = useColumns();
 
 
   const [openCloseCreateCard, setOpenCloseCreateCard] = useState(false)
@@ -59,6 +63,7 @@ export const CardProvider = ({ children }) => {
         user_id: userId, // from useUser context
         action_type: 'Update', // or any other type depending on the context
         description: currentHistoric,
+        empresa_id: user.empresa_id
         //card_status: currentCardData.status // assuming cardData has a status field
       };
       const response = await axios.post(`${apiUrl}/card/add-history`, payload);
@@ -88,6 +93,41 @@ export const CardProvider = ({ children }) => {
     buscarEtiquetas()
   }, [user])
 
+  useEffect(() => {
+    if(!user)
+      return
+    const today = new Date();
+    const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59); // Final do dia de hoje
+    const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+
+    setDataInicial(lastYear.toISOString().split('T')[0]);
+    setDataFinal(endOfToday.toISOString().split('T')[0]);
+    fetchCards(lastYear.toISOString().split('T')[0], endOfToday.toISOString().split('T')[0])
+  }, [user]);
+
+
+  const fetchCards = async (dataInicial, dataFinal) => {
+    //console.log('dataInicial', dataInicial)
+    //console.log('dataFinal', dataFinal)
+
+    try {
+      setLoadingModal(true);
+      setLoadingResult('Carregando...');
+      const response = await axios.get(`${apiUrl}/card/find/${user.id}/${user.empresa_id}`, {
+        params: {
+          dataInicial,
+          dataFinal,
+        },
+      });
+      setCards(response.data);
+      setLoadingModal(false);
+      setLoadingResult('');
+    } catch (error) {
+      console.error('Erro ao buscar cards:', error);
+      setLoadingResult('Erro ao Carregar Cards!');
+    }
+  };
+
   const contextValue = {
     openCloseCreateCard,
     openModalCreateCard,
@@ -107,7 +147,8 @@ export const CardProvider = ({ children }) => {
     currentCardIdMessage, setCurrentCardIdMessage,
     openCloseModalMessenger, setOpenCloseModalMessenger,
     openCloseAnexosModal, setOpenCloseAnexosModal,
-    listaEtiquetas
+    listaEtiquetas,
+    fetchCards
   };
 
   return (

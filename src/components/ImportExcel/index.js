@@ -170,15 +170,6 @@ function ImportExcel() {
           return;
         }
 
-        if (buscarCidadeReferencia(entidade) === "") {
-          console.log('Usuário sem a Cidade no cadastro!!!');
-          return;
-        }
-
-        if (buscarEstadoReferencia(entidade) === "") {
-          console.log('Usuário sem o Estado no cadastro!!!');
-          return;
-        }
 
 
         try {

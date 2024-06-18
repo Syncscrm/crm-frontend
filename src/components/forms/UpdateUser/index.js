@@ -223,12 +223,12 @@ function UpdateUser({ user: propUser }) {
     setSelectedColumnsPermissionsContainer(!selectedColumnsPermissionsContainer);
     if (!selectedColumnsPermissionsContainer) {
       try {
-        const response = await axios.get(`${apiUrl}/users/${user.id}/permissions`, {
+        const response = await axios.get(`${apiUrl}/users/${id}/permissions`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setEditableColumns(response.data); // Atualize o estado com as permissões recebidas
 
-        //console.log(response.data)
+        console.log('Colunas Editaveis: ', response.data, 'User id:' , id)
       } catch (error) {
         console.error('Erro ao buscar permissões de edição:', error);
         setError('Falha ao carregar permissões.');
@@ -243,7 +243,7 @@ function UpdateUser({ user: propUser }) {
     if (isSelected) {
       // Remover permissão de edição
       setEditableColumns(editableColumns.filter(col => col.columnId !== columnId));
-      await axios.delete(`${apiUrl}/users/${user.id}/permissions/${columnId}`, {
+      await axios.delete(`${apiUrl}/users/${id}/permissions/${columnId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
 
@@ -251,7 +251,7 @@ function UpdateUser({ user: propUser }) {
     } else {
       // Adicionar permissão de edição
       setEditableColumns([...editableColumns, { columnId, canEdit: true }]);
-      await axios.post(`${apiUrl}/users/${user.id}/permissions`, { columnId, canEdit: true, empresaId: user.empresa_id }, {
+      await axios.post(`${apiUrl}/users/${id}/permissions`, { columnId, canEdit: true, empresaId: user.empresa_id }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       //console.log(editableColumns)

@@ -8,14 +8,14 @@
     display: flex;
     border-radius: 8px;
     background-color: white;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    box-shadow: rgba(31, 31, 31, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.24) 0px 3px 7px -3px;
     margin-bottom: 6px;
     margin-top: 6px;
     flex-direction: column;
 }
 
 .card-container:hover {
-    box-shadow: rgb(148, 148, 148) 0px 4px 10px -2px,rgb(150, 150, 150) 0px 3px 7px -3px;
+    box-shadow: rgba(0, 0, 0, 0.418) 0px 4px 10px -2px,rgba(0, 0, 0, 0.473) 0px 3px 7px -3px;
 }
 
 .card-header {
@@ -105,7 +105,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 5px;
+    margin-right: 8px;
     height: 19px;
     width: 19px;
     color: #ffffff;
@@ -403,4 +403,38 @@
 .lock-column:hover {
     background-color: rgb(97, 97, 97);
 }
+
+
+.etapa-producao {
+    min-width: 45px;
+    background-color: #26CC63;
+    border-radius: 5px;
+    color: white;
+    font-size: 10px;
+    min-height: 20px;
+    margin-inline: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+.btn-delete-card {
+    min-width: 20px;
+    height: 21px;
+    padding: 2px;
+    background-color: #ff4d47;
+    color: white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5px;
+}
+
+.btn-delete-card:hover {
+    background-color: rgb(128, 128, 128);
+}
+
 

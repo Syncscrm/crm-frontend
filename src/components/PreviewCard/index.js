@@ -6,7 +6,8 @@ import { format, parseISO } from 'date-fns';
 
 // ICONS
 import { GrTask } from "react-icons/gr";
-import { MdOutlineSendToMobile, MdLockOpen, MdLockOutline, MdBookmark, MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdColorLens, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
+import { MdDeleteForever , MdCreditCard ,MdLibraryAdd, MdAutoAwesomeMotion, MdOutlineSendToMobile, MdLockOpen, MdLockOutline, MdBookmark, MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdColorLens, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
+import { GiWindow } from "react-icons/gi";
 
 import './style.css';
 
@@ -128,6 +129,11 @@ function PreviewCard({ cardData, index }) {
 
   const handleUpdatePotencialVenda = async (potencial) => {
 
+    if (!getAccessLevel('estrelas')) {
+      const confirmDelete = window.alert('Não autorizado pelo Administrador!');
+      return
+    }
+
     const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
     if (!userConfirmed) {
       return;
@@ -166,12 +172,12 @@ function PreviewCard({ cardData, index }) {
 
   function openCloseEditEstatusCard(event) {
 
-    if(!getAccessLevel('status')){
+    if (!getAccessLevel('status')) {
       event.stopPropagation();
       const confirmDelete = window.alert('Não autorizado pelo Administrador!');
       return
     }
-      
+
 
     event.stopPropagation();
     setStatusCard(cardData.status)
@@ -468,12 +474,88 @@ function PreviewCard({ cardData, index }) {
 
 
 
+  const criarEtapaDeProducao = async () => {
+
+    if (!getAccessLevel('etapaProducao')) {
+      const userConfirmed = window.alert(`Não autorizado pelo ADM!`);
+      return;
+    }
+
+
+    const userConfirmed = window.confirm(`Criar etapa de Produção?`);
+    if (!userConfirmed) {
+      return;
+    }
+
+
+    try {
+      const cardDataPayload = {
+        created_at: new Date(),
+        name: cardData.name ? cardData.name : '',
+        document_number: cardData.document_number ? cardData.document_number : '',
+        cost_value: 0,
+        column_id: cardData.column_id,
+        entity_id: cardData.entity_id,
+        empresa_id: user.empresa_id,
+        origem: cardData.origem ? cardData.origem : '',
+        sale_value: 0,
+        potencial_venda: cardData.potencial_venda,
+        produto: cardData.produto,
+        status: cardData.status,
+        motivo_venda_perdida: cardData.motivo_venda_perdida,
+        nivel_prioridade: cardData.nivel_prioridade,
+        status_date: cardData.status_date,
+        updated_at: cardData.updated_at,
+        email: cardData.email ? cardData.email : '',
+        fone: cardData.fone ? cardData.fone : '',
+        state: cardData.state ? cardData.state : '',
+        city: cardData.city ? cardData.city : '',
+        pedido_number: cardData.pedido_number ? cardData.pedido_number : '',
+        etapa_producao: cardData.etapa_producao + 1,
+        etiqueta_id: cardData.etiqueta_id ? cardData.etiqueta_id : 1,
+      };
+
+      const response = await axios.post(`${apiUrl}/card/import-suiteflow`, cardDataPayload);
+      setCards([...cards, response.data]);
+
+      const userConfirmed = window.alert(`Etapa de produção criada com sucesso!`);
+
+    } catch (error) {
+      console.error('Erro ao criar etapa de produção');
+      const userConfirmed = window.alert(`Erro ao criar etapa de Produção!`);
+    }
+  };
+
+
+
+
+  const excluirCard = async () => {
+    if (!getAccessLevel('excluir')) {
+      window.alert(`Não autorizado pelo ADM!`);
+      return;
+    }
+
+    const userConfirmed = window.confirm(`Excluir Card?`);
+    if (!userConfirmed) {
+      return;
+    }
+
+    try {
+      const response = await axios.delete(`${apiUrl}/card/${cardData.card_id}`);
+      setCards(prevCards => prevCards.filter(card => card.card_id !== cardData.card_id));
+      window.alert(`Card excluído com sucesso!`);
+    } catch (error) {
+      console.error('Erro ao excluir o card:', error);
+      window.alert(`Erro ao excluir o card!`);
+    }
+  };
 
 
 
 
 
   return (
+
 
         <div
           className='card-container'
@@ -561,15 +643,20 @@ function PreviewCard({ cardData, index }) {
                   }
 
 
+                  {getAccessLevel('contato') &&
+                    <label className='card-body-item-fone'>
+                      <div className='card-body-item-fone-number'>
+                        <MdWhatsapp className='icons-whatsapp' onClick={() => abrirWhatsApp(cardData.fone)} />{cardData.fone ? cardData.fone : 'Sem Fone'}
+                      </div>
+                    </label>
+                  }
 
-                  <label className='card-body-item-fone'>
-                    <div className='card-body-item-fone-number'>
-                      <MdWhatsapp className='icons-whatsapp' onClick={() => abrirWhatsApp(cardData.fone)} />{getAccessLevel('contato') && cardData.fone ? cardData.fone : '******'}
-                    </div>
-                  </label>
-                  <label className='card-body-item'>
-                    <MdAlternateEmail className='card-icon-item' />{getAccessLevel('contato') && cardData.email ? cardData.email : "******"}
-                  </label>
+                  {getAccessLevel('contato') &&
+                    <label className='card-body-item'>
+                      <MdAlternateEmail className='card-icon-item' />{getAccessLevel('contato') && cardData.email ? cardData.email : "Sem Email"}
+                    </label>
+                  }
+
                   <label className='card-body-item'>
                     <MdAccountBox className='card-icon-item' />{getUsernameById(cardData.entity_id).substring(0, 28)}
                   </label>
@@ -602,6 +689,7 @@ function PreviewCard({ cardData, index }) {
                     <label className='card-body-item-chat-bot'>
                       <MdAdsClick className='card-icon-item' />{cardData.origem ? cardData.origem : 'Não informado'}
                     </label>
+
                     <MdOutlineSendToMobile
                       className='lock-column' style={{ display: user.access_level === 5 ? '' : 'none' }}
 
@@ -616,8 +704,49 @@ function PreviewCard({ cardData, index }) {
 
 
                   <label className='card-body-item'>
-                    <MdColorLens className='card-icon-item' />{cardData.produto ? cardData.produto : 'Não informado'}
+                    <GiWindow className='card-icon-item' />{cardData.produto ? cardData.produto : 'Não informado'}
                   </label>
+
+
+
+                  <label className='row-column-container'>
+
+                    <label className='card-body-item-chat-bot'>
+                      <MdAutoAwesomeMotion className='card-icon-item' />Etapa: {cardData.etapa_producao === 0 ? 1 : cardData.etapa_producao + 1}
+                    </label>
+                    <MdLibraryAdd
+                      className='lock-column'
+
+                      onClick={(e) => {
+                        criarEtapaDeProducao();
+                        e.stopPropagation();
+                      }}
+                    />
+
+                  </label>
+
+
+
+
+                  
+                  <label className='row-column-container'>
+
+                    <label className='card-body-item-chat-bot'>
+                      <MdCreditCard  className='card-icon-item' />ID: {cardData.card_id}
+                    </label>
+                    <MdDeleteForever 
+                      className='lock-column'
+
+                      onClick={(e) => {
+                        excluirCard();
+                        e.stopPropagation();
+                      }}
+                    />
+
+                  </label>
+
+
+
 
                   <label style={{ display: 'none' }} className='card-body-item'>
                     <MdViewColumn className='card-icon-item' />{cardData.column_id ? getNameColumnCard(cardData.column_id) : '---'}
@@ -754,7 +883,6 @@ function PreviewCard({ cardData, index }) {
                     <label style={{ display: 'none' }} className='card-id-item-separate'>ID: {cardData.card_id}</label>
 
 
-
                   </label>
                 </>
               )
@@ -764,36 +892,40 @@ function PreviewCard({ cardData, index }) {
           <div className='card-footer'>
 
             <label className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label>
+            <label style={{ backgroundColor: cardData.etapa_producao + 1 > 1 ? '' : 'transparent' }} className='etapa-producao'>Parte: {cardData.etapa_producao + 1}</label>
 
-            {getAccessLevel('estrelas') &&
+            {true &&
               <label className='card-star-container'>
                 <MdGrade
                   onClick={(event) => updatePotencialVenda(event, 1)}
                   className='card-icon-star'
-                  style={{ color: potencialVenda > 1 || potencialVenda === 1 ? 'gold' : '' }}
+                  style={{ color: getAccessLevel('estrelas') && (potencialVenda > 1 || potencialVenda === 1) ? 'gold' : '' }}
                 />
                 <MdGrade
                   onClick={(event) => updatePotencialVenda(event, 2)}
                   className='card-icon-star'
-                  style={{ color: potencialVenda > 2 || potencialVenda === 2 ? 'gold' : '' }}
+                  style={{ color: getAccessLevel('estrelas') && (potencialVenda > 2 || potencialVenda === 2) ? 'gold' : '' }}
                 />
                 <MdGrade
                   onClick={(event) => updatePotencialVenda(event, 3)}
                   className='card-icon-star'
-                  style={{ color: potencialVenda > 3 || potencialVenda === 3 ? 'gold' : '' }}
+                  style={{ color: getAccessLevel('estrelas') && (potencialVenda > 3 || potencialVenda === 3) ? 'gold' : '' }}
                 />
                 <MdGrade
                   onClick={(event) => updatePotencialVenda(event, 4)}
                   className='card-icon-star'
-                  style={{ color: potencialVenda > 4 || potencialVenda === 4 ? 'gold' : '' }}
+                  style={{ color: getAccessLevel('estrelas') && (potencialVenda > 4 || potencialVenda === 4) ? 'gold' : '' }}
                 />
                 <MdGrade
                   onClick={(event) => updatePotencialVenda(event, 5)}
                   className='card-icon-star'
-                  style={{ color: potencialVenda > 5 || potencialVenda === 5 ? 'gold' : '' }}
+                  style={{ color: getAccessLevel('estrelas') && (potencialVenda > 5 || potencialVenda === 5) ? 'gold' : '' }}
                 />
               </label>
             }
+
+            <label style={{ backgroundColor: 'white' }} className='etapa-producao'>Etapa: {cardData.etapa_producao + 1}</label>
+
 
 
             <div className='card-icons-status-container'>

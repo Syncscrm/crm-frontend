@@ -1,13 +1,16 @@
 .messenger-container {
     position: fixed;
     bottom: 30px;
-    right: 10px;
-    width: 340px;
-    min-height: calc(100vh - 70px);
-    max-height: calc(100vh - 70px);
+    right: 4px;
+    width: 370px;
+    max-width: 370px;
+    min-height: calc(100vh - 35px);
+    max-height: calc(100vh - 35px);
     display: flex;
-    border-radius: 15px;
-    background-color: deepskyblue;
+    border-radius: 10px;
+    background-color: #00AEFF;
+    box-shadow: rgba(70, 70, 70, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+
     z-index: 1002;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -25,6 +28,7 @@
     display: flex;
     align-items: center;
     padding-inline: 8px;
+    font-weight: 900;
 }
 
 .messenger-body {
@@ -35,6 +39,7 @@
     justify-content: flex-start;
     overflow-y: auto;
     padding-inline: 8px;
+    margin-top: 15px;
 
 }
 
@@ -49,17 +54,18 @@
 
 .item-list-messenger {
     width: 100%;
-    min-height: 55px;
+    min-height: 60px;
     display: flex;
     align-items: center;
     margin-bottom: 5px;
     border-radius: 8px;
-    padding-inline: 8px;
+    padding-inline: 6px;
     overflow-y: auto;
+    background-color: #e0e0e08f;
 }
 
 .item-list-messenger:hover {
-    background-color: #89caff;
+    background-color: #e0e0e0b2;
 }
 
 .user-logo-messenger-container {
@@ -74,6 +80,8 @@
     border-radius: 5px;
     margin-right: 5px;
     background-color: rgb(255, 255, 255);
+    box-shadow: rgba(70, 70, 70, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+
 }
 
 
@@ -114,18 +122,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
+    font-weight: 900;
 }
 
 .message-container {
     position: fixed;
-    bottom: 28px;
-    right: 8px;
-    min-width: 344px;
-    min-height: calc(100vh - 68px);
-    max-height: calc(100vh - 68px);
+    bottom: 30px;
+    right: 4px;
+    min-width: 370px;
+    max-width: 370px;
+
+    min-height: calc(100vh - 35px);
+    max-height: calc(100vh - 35px);
     height: 100%;
     display: flex;
-    border-radius: 15px;
+    border-radius: 8px;
     background-color: rgb(0, 174, 255);
     z-index: 1003;
     padding-top: 10px;
@@ -221,8 +233,14 @@
     font-size: 13px;
     padding-inline: 8px;
     background-color: rgb(78, 78, 78);
-    padding: 5px;
-    border-radius: 5px;
+    padding: 8px;
+    border-radius: 10px;
+    font-weight:bolder;
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    box-shadow: rgba(59, 59, 59, 0.25) 0px 4px 10px -2px, rgba(49, 49, 49, 0.24) 0px 3px 7px -3px;
+
 }
 
 .date-message-label {
@@ -236,20 +254,24 @@
 }
 
 .close-messenger-modal {
-    width: 22px;
-    height: 22px;
+    width: 23px;
+    height: 23px;
     border-radius: 5px;
     border: none;
     background-color: #ffffff;
-    color: rgb(70, 70, 70);
+    color: rgb(105, 105, 105);
     position:absolute;
     right: 10px;
-    top:10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 14px;
 
 }
 
 .close-messenger-modal:hover {
-    background-color: rgb(94, 94, 94);
+    background-color:rgb(255, 103, 103);
     color: white;
 
 }

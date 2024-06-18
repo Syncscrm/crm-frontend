@@ -74,6 +74,8 @@ export const ColumnsProvider = ({ children }) => {
     fetchUserColumnsInfo();
   }, [user]);
 
+  
+
   const contextValue = {
     columns,
     setColumns,
@@ -93,7 +95,8 @@ export const ColumnsProvider = ({ children }) => {
     dataFinal,
     setDataFinal,
     orderBy, setOrderBy,
-    isAscending, setIsAscending
+    isAscending, setIsAscending,
+    
   };
 
 

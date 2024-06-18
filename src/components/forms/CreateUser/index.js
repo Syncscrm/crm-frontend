@@ -19,10 +19,10 @@ import { useUser } from '../../../contexts/userContext';
 function CreateUser() {
 
   // CONTEXT API
-  const { openModalCreateUser } = useUser();
+  const { openModalCreateUser,user } = useUser();
 
   // ESTADOS LOCAL
-  const [userEmail, setUserEmail] = useState('crm@bazze.com.br');
+  const [userEmail, setUserEmail] = useState(user.email);
   const [avatar, setAvatar] = useState(null);
   const fileInputRef = useRef(null);
   const [avatarPreview, setAvatarPreview] = useState(Logo);

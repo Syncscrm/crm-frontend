@@ -29,11 +29,39 @@ function Messenger({ closeModal }) {
   const [loadingMessage, setLoadingMessage] = useState(false);
 
 
-  useEffect(() => {
+  function rolagemAutomatica() {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [listMessages, openCloseModalMessage]);
+  }
+
+  const [currentListaCount, setCurrentListaCount] = useState(0);
+
+
+  useEffect(() => {
+
+    let lista = listMessages.length;
+
+    if (currentListaCount != lista) {
+      setCurrentListaCount(lista);
+      rolagemAutomatica();
+
+    }
+
+
+  }, [listMessages]);
+
+
+
+
+
+
+
+
+
+
+
+
 
   useEffect(() => {
     if (currentCardIdMessage && destinatarioId) {
@@ -56,6 +84,11 @@ function Messenger({ closeModal }) {
 
   const sendMessage = async (mensagem) => {
     if (mensagem.trim() === '') return;
+
+    if (containsForbiddenWords(mensagem)) {
+      alert('Sua mensagem contém palavras proibidas e não pode ser enviada.');
+      return;
+    }
 
     const isCardMessage = mensagem.includes('card_id:');
     let cardData = null;
@@ -180,7 +213,7 @@ function Messenger({ closeModal }) {
     //console.log('userId',userId,'destinatarioId',destinatarioId)
     // if (user.id === destinatarioId)
     // return
-    if(openCloseModalMessage){
+    if (openCloseModalMessage) {
       try {
         await axios.put(`${apiUrl}/card/mark-messages-as-read/${userId}/${destinatarioId}`);
       } catch (error) {
@@ -195,7 +228,7 @@ function Messenger({ closeModal }) {
 
   useEffect(() => {
     let intervalMessage;
-    if (openCloseModalMessenger  ) {
+    if (openCloseModalMessenger) {
       fetchUnreadMessagesForUsers();
       intervalMessage = setInterval(() => {
         fetchUnreadMessagesForUsers();
@@ -203,7 +236,7 @@ function Messenger({ closeModal }) {
     }
 
     return () => clearInterval(intervalMessage);
-  }, [openCloseModalMessenger ]);
+  }, [openCloseModalMessenger]);
 
 
 
@@ -261,6 +294,35 @@ function Messenger({ closeModal }) {
     return unreadB - unreadA;
   });
 
+
+
+
+
+
+  const forbiddenWords = [
+    'merda', 'porra', 'caralho', 'filha da puta', 'foda-se', 'cu', 'arrombado',
+    'desgraça', 'buceta', 'corno', 'viado', 'puta', 'babaca', 'bosta', 'cacete',
+    'escroto', 'otário', 'piroca', 'pau no cu', 'safado', 'chupa', 'piranha',
+    'arrombada', 'vagabunda', 'trouxa', 'infeliz', 'imbecil', 'burro',
+    'ignorante', 'canalha', 'cuzão', 'bicha', 'sapatão', 'trouxa', 'meretriz',
+    'nojento', 'moleque', 'vadia', 'escória', 'delinquente', 'debilóide',
+    'pau no cu', 'cornudo', 'peido', 'imbecil', 'retardado', 'cretino',
+    'mimado', 'bostinha', 'pilantra', 'miserável', 'fedido', 'pustema',
+    'paspalho', 'palerma', 'panaca', 'pervertido', 'otária', 'peidorreiro',
+    'boçal', 'bronco', 'estúpido', 'idiota', 'malcriado', 'desmiolado',
+    'filho da mãe', 'desnaturado', 'desgraçado', 'demente', 'debilóide',
+    'esquisito', 'feio', 'grosseiro', 'idiotinha', 'imbeciloide', 'insensato',
+    'lerdo', 'mal educado', 'malandro', 'miserável', 'nojento', 'pentelho',
+    'pistoleiro', 'preguiçoso', 'prostituta', 'puta que pariu', 'puta merda',
+    'safado', 'safada', 'sem vergonha', 'tarado', 'tonto', 'trouxa', 'vagabundo',
+    'vagabunda', 'vadio', 'velhaco', 'verme', 'xexelento', 'xereta', 'xoxo'
+  ];
+  
+  function containsForbiddenWords(message) {
+    return forbiddenWords.some(word => message.toLowerCase().includes(word));
+  }
+  
+
   return (
     <div className='messenger-container'>
       <div className='header-messenger'>
@@ -300,14 +362,34 @@ function Messenger({ closeModal }) {
           </div>
           <div className='message-body'>
             {listMessages.map((item) => (
+
+
               <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: item.id_remetente === user.id ? 'flex-end' : 'flex-start' }} className='item-list-message'>
-                {!item.cardData &&
-                  <label style={{ backgroundColor: item.id_remetente === user.id ? '' : 'deepskyblue' }} className='message-label'>
+
+
+                {!item.cardData && !item.message.includes('card_id:') &&
+                  <label style={{ backgroundColor: item.id_remetente === user.id ? 'rgb(78, 78, 78)' : 'white', color: item.id_remetente === user.id ? 'white' : 'rgb(78, 78, 78)' }} className='message-label'>
                     {item.message}
                   </label>
                 }
 
-                {item.cardData && <PreviewCard cardData={item.cardData} />}
+                {!item.cardData && item.message.includes('card_id:') &&
+                  <label style={{ backgroundColor: item.id_remetente === user.id ? 'rgb(78, 78, 78)' : 'white', color: item.id_remetente === user.id ? 'white' : 'rgb(78, 78, 78)' }} className='message-label'>
+                    ⛔ Mensagem Bloqueada pelo ADM ⛔ 
+                  </label>
+                }
+
+
+                {item.cardData &&
+                  <label style={{ backgroundColor: item.id_remetente === user.id ? 'rgb(78, 78, 78)' : 'white', color: item.id_remetente === user.id ? 'white' : 'rgb(78, 78, 78)' }} className='message-label'>
+
+                    <PreviewCard cardData={item.cardData} />
+
+                  </label>
+
+
+                }
+
                 <label className='date-message-label'>
                   {getUserName(item.id_remetente)} - {formatDate(item.created_at)}
                   {item.read ? (
@@ -320,7 +402,7 @@ function Messenger({ closeModal }) {
             ))}
 
             {loadingMessage &&
-              <label>Carregando...</label>
+              <label style={{ display: 'none' }}>Carregando...</label>
             }
 
             <div ref={messagesEndRef}></div>

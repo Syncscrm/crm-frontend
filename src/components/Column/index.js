@@ -36,33 +36,33 @@ function Column(props) {
   };
 
 
-  const fetchCards = async () => {
-    //console.log('dataInicial', dataInicial)
-    //console.log('dataFinal', dataFinal)
+  // const fetchCards = async () => {
+  //   //console.log('dataInicial', dataInicial)
+  //   //console.log('dataFinal', dataFinal)
 
-    try {
-      setLoadingModal(true);
-      setLoadingResult('Carregando...');
-      const response = await axios.get(`${apiUrl}/card/find/${user.id}/${user.empresa_id}`, {
-        params: {
-          dataInicial,
-          dataFinal,
-        },
-      });
-      setCards(response.data);
-      setLoadingModal(false);
-      setLoadingResult('');
-    } catch (error) {
-      console.error('Erro ao buscar cards:', error);
-      setLoadingResult('Erro ao Carregar Cards!');
-    }
-  };
+  //   try {
+  //     setLoadingModal(true);
+  //     setLoadingResult('Carregando...');
+  //     const response = await axios.get(`${apiUrl}/card/find/${user.id}/${user.empresa_id}`, {
+  //       params: {
+  //         dataInicial,
+  //         dataFinal,
+  //       },
+  //     });
+  //     setCards(response.data);
+  //     setLoadingModal(false);
+  //     setLoadingResult('');
+  //   } catch (error) {
+  //     console.error('Erro ao buscar cards:', error);
+  //     setLoadingResult('Erro ao Carregar Cards!');
+  //   }
+  // };
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    fetchCards();
+  //   fetchCards();
 
-  }, [dataInicial, dataFinal]);
+  // }, [dataInicial, dataFinal]);
 
 
   // useEffect(() => {

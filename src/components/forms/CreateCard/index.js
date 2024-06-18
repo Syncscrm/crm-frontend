@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { apiUrl } from '../../../config/apiConfig';
 import { useUser } from '../../../contexts/userContext';
+import { useCard } from '../../../contexts/cardContext'
+
 import './style.css';
 
 // API URL for IBGE
@@ -9,6 +11,11 @@ const apiUrlIbge = 'https://servicodados.ibge.gov.br/api/v1/localidades';
 
 function CreateCard({ columnId, onClose }) {
   const { openModalCreateUser, user } = useUser();
+
+  const {
+    cards,
+    setCards
+  } = useCard();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -64,7 +71,13 @@ function CreateCard({ columnId, onClose }) {
     };
 
     try {
-      await axios.post(`${apiUrl}/card/create`, cardData);
+      console.log('createdCard')
+
+      const response = await axios.post(`${apiUrl}/card/create`, cardData);
+      const createdCard = response.data;
+      console.log(createdCard)
+      setCards([...cards, createdCard]); // Atualiza a lista de cards com o novo card
+
       openModalCreateUser();
       onClose();
     } catch (error) {

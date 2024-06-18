@@ -38,6 +38,10 @@ function ModuloEsquadrias({ idCard }) {
   const [previsaoVistoriaPos, setPrevisaoVistoriaPos] = useState(null);
   const [statusVistoriaPos, setStatusVistoriaPos] = useState('Parado');
   const [previsaoAssistencia, setPrevisaoAssistencia] = useState(null);
+
+  const [prazoEntrega, setPrazoEntrega] = useState(null);
+  const [statusPrazoEntrega, setStatusPrazoEntrega] = useState('Parado');
+
   const [statusAssistencia, setStatusAssistencia] = useState('Parado');
 
   const [horasProducao, setHorasProducao] = useState(0);
@@ -81,6 +85,9 @@ function ModuloEsquadrias({ idCard }) {
       metros_quadrados: metrosQuadrados,
       cor: cor,
       obs: obsObra,
+      empresa_id: user.empresa_id,
+      prazo_entrega: prazoEntrega,
+      status_prazo_entrega: statusPrazoEntrega,
     };
 
     try {
@@ -145,6 +152,8 @@ function ModuloEsquadrias({ idCard }) {
     setMetrosQuadrados(esquadriasData.metros_quadrados);
     setCor(esquadriasData.cor ? esquadriasData.cor : "");
     setObsObra(esquadriasData.obs ? esquadriasData.obs : "");
+    setPrazoEntrega(formatDate(esquadriasData.prazo_entrega));
+    setStatusPrazoEntrega(esquadriasData.status_prazo_entrega);
 
     buscarCores()
   }, [esquadriasData]);
@@ -292,6 +301,21 @@ function ModuloEsquadrias({ idCard }) {
               <div className='module-esquadrias-column'>
                 <label htmlFor="statusVistoriaPos" className='modulo-esquadrias-label-input'>Status:</label>
                 <select id="statusVistoriaPos" className="modulo-esquadrias-input" name="statusVistoriaPos" value={statusVistoriaPos} onChange={(e) => setStatusVistoriaPos(e.target.value)}>
+                  <option value="Parado">Parado</option>
+                  <option value="EmAndamento">Em Andamento</option>
+                  <option value="Pronto">Pronto</option>
+                </select>
+              </div>
+            </div>
+
+            <div className='module-esquadrias-row-container'>
+              <div className='module-esquadrias-column'>
+                <label htmlFor="prazoEntrega" className='modulo-esquadrias-label-input'>Prazo maximo de entrega:</label>
+                <input id="prazoEntrega" className="modulo-esquadrias-input" type="date" name="prazoEntrega" value={prazoEntrega} onChange={(e) => setPrazoEntrega(e.target.value)} />
+              </div>
+              <div className='module-esquadrias-column'>
+                <label htmlFor="statusProducao" className='modulo-esquadrias-label-input'>Status:</label>
+                <select id="statusProducao" className="modulo-esquadrias-input" name="statusProducao" value={statusPrazoEntrega} onChange={(e) => setStatusPrazoEntrega(e.target.value)}>
                   <option value="Parado">Parado</option>
                   <option value="EmAndamento">Em Andamento</option>
                   <option value="Pronto">Pronto</option>

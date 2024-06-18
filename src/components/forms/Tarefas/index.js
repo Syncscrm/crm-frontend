@@ -73,6 +73,7 @@ function Tarefas() {
         task_type: 'Card',
         due_date: dueDate,
         completed: false,
+        empresa_id: user.empresa_id
       };
 
       const response = await axios.post(`${apiUrl}/card/add-tarefa`, payload);

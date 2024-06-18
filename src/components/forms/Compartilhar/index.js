@@ -72,7 +72,8 @@ function Compartilhar() {
       const payload = {
         owner_user_id: user.id, // ID do usuário logado, obtido do contexto
         card_id: currentCardData.card_id,       // ID do card atual
-        email: email           // E-mail para o qual o card será compartilhado
+        email: email,           // E-mail para o qual o card será compartilhado
+        empresa_id: user.empresa_id
       };
       const response = await axios.post(`${apiUrl}/card/add-compartilhar`, payload);
       // Verifica se a resposta inclui os dados corretos e atualiza o estado

@@ -72,7 +72,8 @@ function Historic() {
         user_id: user.id, // from useUser context
         action_type: 'Update', // or any other type depending on the context
         description: currentHistoric,
-        card_status: currentCardData.status // assuming cardData has a status field
+        card_status: currentCardData.status, // assuming cardData has a status field
+        empresa_id: user.empresa_id,
       };
       const response = await axios.post(`${apiUrl}/card/add-history`, payload);
       //console.log('History added:', response.data);
@@ -111,9 +112,9 @@ function Historic() {
     <div className='history-card-modal'>
       <div className='history-card-container'>
         <div className='history-card-footer'>
-        <div className='header-update-card-container'>
-          <label>Histórico</label>
-        </div>
+          <div className='header-update-card-container'>
+            <label>Histórico</label>
+          </div>
           <button className="history-card-close-button" onClick={() => { setOpenCloseHistoricModal(false) }}>X</button>
         </div>
         <div className="history-card-form-container">

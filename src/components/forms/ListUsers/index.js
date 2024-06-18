@@ -104,6 +104,8 @@ const ListUsers = () => {
             <button className='btn-order-by-users' onClick={() => orderUsersBy('is_active')} style={{ backgroundColor: orderBy === 'is_active' ? 'dodgerblue' : '#aaaaaa' }}>Ativos</button>
             <button className='btn-order-by-users' onClick={() => orderUsersBy('state')} style={{ backgroundColor: orderBy === 'state' ? 'dodgerblue' : '#aaaaaa' }}>Estado</button>
           </div>
+
+          <label style={{fontSize: '12px'}}>{users.length} usuários</label>
           <div className='list-user-form-container'>
             {filteredUsers.map((user) => (
               <li key={user.id} className='item-list-users' onClick={() => updateUser(user)}>

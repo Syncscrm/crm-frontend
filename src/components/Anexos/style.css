@@ -1,4 +1,7 @@
-.anexos-modal {
+
+
+/* ----------- GERAL ------------*/
+.geral-modal {
     position: fixed;
     top: 0;
     width: 100vw;
@@ -10,7 +13,7 @@
     align-items: center;
 }
 
-.anexos-container {
+.geral-container {
     position: fixed;
     left: auto;
     top: 40px;
@@ -22,9 +25,208 @@
     box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
     display: flex;
     flex-direction: column;
-    justify-content:flex-start;
+    justify-content: flex-start;
     align-items: center;
     border-radius: 10px;
     padding-inline: 10px;
-    margin-inline: 5px;
+}
+
+.geral-header {
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.geral-header-title {
+    width: calc(100% - 80px);
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaaaaa;
+    font-weight: 900;
+    font-size: 20px;
+}
+
+.geral-header-close-button {
+    width: 35px;
+    min-height: 35px;
+    border: none;
+    border-radius: 5px;
+    background-color: #aaaaaa;
+    color: white;
+}
+
+.geral-header-close-button:hover {
+    background-color:red;
+}
+
+.geral-body-container {
+    width: 100%;
+    height: calc(100% - 130px);
+    overflow-y: auto;
+    padding-inline: 10px;
+}
+
+.geral-body-container::-webkit-scrollbar {
+    width: 7px;
+}
+
+.geral-body-container::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 5px;
+}
+
+.geral-footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 60px;
+    min-height: 50px;
+}
+
+.geral-footer-btn-add {
+    min-height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    padding-inline: 5px;
+}
+/* --------- FIM GERAL ---------*/
+
+
+
+
+
+
+
+.anexos-container.loading {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.loading-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    color: #333;
+    z-index: 1020;
+}
+
+.info-upload-arquivo {
+    margin-bottom: 10px;
+    font-size: 1em;
+    color: #333;
+}
+
+
+.arquivos-storage-container {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.item-arquivo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+}
+
+.file-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.link-anexo {
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.link-anexo:hover {
+    text-decoration: underline;
+}
+
+.btn-delete-anexo {
+    background: #dc3545;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-delete-anexo:hover {
+    background: #c82333;
+
+}
+
+.descricao-anexos {
+    color: #5c5c5c;
+    font-size: 12px;
+}
+
+.btn-anexos-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    min-height: 40px;
+    padding-inline: 3px;
+    margin-bottom: 10px;
+}
+
+.btn-anexos-add:hover {
+    background-color: #6eb2fc;
+}
+
+
+.header-anexos-container {
+    width: 100%;
+    height: 50px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.anexos-header-label {
+    color: #5c5c5c;
+    font-weight: 900;
+    font-size: 18px;
+}
+
+.btn-anexos-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 5px;
+    background-color: #747474;
+    color: white;
+    min-height: 40px;
+    padding-inline: 3px;
+    margin-bottom: 10px;
+}
+
+.btn-anexos-close:hover {
+    background-color: #6eb2fc;
 }

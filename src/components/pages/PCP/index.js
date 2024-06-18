@@ -237,7 +237,7 @@ function PCP() {
             let previsaoData = getDateColumnFor(item, controlePlanejamento);
             if (previsaoData) {
               totalHorasProducao += item.horas_producao ? parseFloat(item.horas_producao) : 0;
-              totalValue += item.valor ? parseFloat(item.cost_value) : 0;
+              totalValue += item.cost_value ? parseFloat(item.cost_value) : 0;
               totalEsquadrias += item.quantidade_esquadrias ? parseFloat(item.quantidade_esquadrias) : 0;
               totalQuadros += item.quantidade_quadros ? parseFloat(item.quantidade_quadros) : 0;
               totalMetrosQuadrados += item.metros_quadrados ? parseFloat(item.metros_quadrados) : 0;
@@ -278,6 +278,7 @@ function PCP() {
                     <td style={{ fontSize: '12px' }}>{parseFloat(item.cost_value ? item.cost_value : 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                   }
 
+
                   <td style={{ fontSize: '12px' }}>{item.horas_producao ? item.horas_producao : 0}</td>
                   <td style={{ fontSize: '12px' }}>{item.quantidade_esquadrias ? item.quantidade_esquadrias : 0}</td>
                   <td style={{ fontSize: '12px' }}>{item.quantidade_quadros ? item.quantidade_quadros : 0}</td>
@@ -316,6 +317,7 @@ function PCP() {
               {getAccessLevel('valor') &&
                 <td style={{ backgroundColor: '#9862FF', color: 'white' }}><label className='horas-totais-label'>{parseFloat(totalValue ? totalValue : 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</label></td>
               }
+
 
 
               <td style={{ backgroundColor: '#9820FF', color: 'white' }} ><label className='horas-totais-label'>{totalHorasProducao.toFixed(0)}</label></td>

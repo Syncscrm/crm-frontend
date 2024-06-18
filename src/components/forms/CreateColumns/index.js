@@ -3,9 +3,12 @@ import axios from 'axios';
 import { apiUrl } from '../../../config/apiConfig';
 import './style.css';
 import { useUser } from '../../../contexts/userContext';
+import { useColumns } from  '../../../contexts/columnsContext';
 
 function CreateColumns() {
   const { openModalCreateUser, user } = useUser();
+
+  const { openCloseCreateColumn, openModalCreateColumn } = useColumns();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -39,7 +42,7 @@ function CreateColumns() {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      openModalCreateUser(); // Assumindo que este método feche o modal atual ou navegue para onde você deseja ir após a criação
+      openModalCreateColumn();
     } catch (error) {
       setError('Erro ao criar a coluna do processo.');
     } finally {
@@ -59,7 +62,7 @@ function CreateColumns() {
           <input className="create-column-input" type="number" placeholder="Ordem de Exibição" value={displayOrder} onChange={(e) => setDisplayOrder(e.target.value)} />
           {error && <div className="create-column-error-message">{error}</div>}
           <div className='create-column-footer'>
-            <button type="button" className="create-column-close-button" onClick={openModalCreateUser}>Cancelar</button>
+            <button type="button" className="create-column-close-button" onClick={openModalCreateColumn}>Cancelar</button>
             <button type="submit" className="create-column-button" disabled={isCreatingColumn}>Criar Coluna</button>
           </div>
         </form>

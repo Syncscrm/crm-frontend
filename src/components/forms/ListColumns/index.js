@@ -4,6 +4,9 @@ import { apiUrl } from '../../../config/apiConfig';
 import { useColumns } from '../../../contexts/columnsContext';
 import { useUser } from '../../../contexts/userContext';
 
+// STYLE
+import './style.css';
+
 const ListColumns = () => {
   const { columns, setColumns } = useColumns();
   const { user } = useUser();
@@ -40,22 +43,49 @@ const ListColumns = () => {
     console.log('Columns:', columns);
   }, [columns]);
 
+
+
+  const handleEdit = async (column) => {
+    const newName = prompt('Novo nome:', column.name);
+    if (newName) {
+      try {
+        await axios.put(`${apiUrl}/process-columns/${column.id}`, { name: newName }, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        // Atualize a lista de colunas após a edição
+        setColumns(columns.map(col => col.id === column.id ? { ...col, name: newName } : col));
+      } catch (error) {
+        console.error('Erro ao editar coluna:', error);
+      }
+    }
+  };
+  
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${apiUrl}/process-columns/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      // Atualize a lista de colunas após a exclusão
+      setColumns(columns.filter(col => col.id !== id));
+    } catch (error) {
+      console.error('Erro ao excluir coluna:', error);
+    }
+  };
+
+
+
   return (
     <div className='list-columns-container'>
-      {columns.length > 0 ? (
-        <div className='list-columns'>
-          {columns.map((column) => (
-            <li key={column.id} className='item-list-users'>  
-              <label className='list-user-label-username'>{column.name}</label>
-              <div className='list-user-logo-container'>
-                <label className='label-is-active' >Order: {column.display_order}</label>
-              </div>
-            </li>
-          ))}
-        </div>
-      ) : (
-        <p>Nenhuma coluna de processo encontrada.</p>
-      )}
+      {columns.map((column) => (
+        <li key={column.id} className='item-list-columns'>
+          <label className='list-column-label-name'>{column.name}</label>
+          <div className='list-column-actions-container'>
+            <button className='btn-edite-column' onClick={() => handleEdit(column)}>Editar</button>
+            <button className='btn-delete-column'onClick={() => handleDelete(column.id)}>Excluir</button>
+          </div>
+        </li>
+      ))}
+
     </div>
   );
 };

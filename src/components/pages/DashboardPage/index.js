@@ -23,15 +23,15 @@ function DashboardPage() {
 
   useEffect(() => {
     const currentDate = new Date();
-    const priorDate = new Date();
-    priorDate.setMonth(priorDate.getMonth() - 1);
-    currentDate.setDate(currentDate.getDate() + 1);
-
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  
     const formatDate = (date) => date.toISOString().split('T')[0];
-
-    setStartDate(formatDate(priorDate));
-    setEndDate(formatDate(currentDate));
+  
+    setStartDate(formatDate(startOfMonth));
+    setEndDate(formatDate(endOfMonth));
   }, []);
+  
 
   const formatName = (name) => {
     return name.toUpperCase().substring(0, 22);
