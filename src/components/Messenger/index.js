@@ -317,11 +317,11 @@ function Messenger({ closeModal }) {
     'safado', 'safada', 'sem vergonha', 'tarado', 'tonto', 'trouxa', 'vagabundo',
     'vagabunda', 'vadio', 'velhaco', 'verme', 'xexelento', 'xereta', 'xoxo'
   ];
-  
+
   function containsForbiddenWords(message) {
     return forbiddenWords.some(word => message.toLowerCase().includes(word));
   }
-  
+
 
   return (
     <div className='messenger-container'>
@@ -334,7 +334,13 @@ function Messenger({ closeModal }) {
           sortedUsers.map((item) => (
             <div key={item.id} className='item-list-messenger' onClick={() => { openMessage(item) }}>
               <div className='user-logo-messenger-container'>
-                <img src={item.avatar ? item.avatar : logo} className='messenger-logo-user' alt={`${item.username}'s avatar`} />
+                {/* <img src={item.avatar ? item.avatar : logo} className='messenger-logo-user' alt={`${item.username}'s avatar`} /> */}
+                <img
+                  src={item.avatar ? (item.avatar.includes('syncs-avatar') ? require(`../../assets/avatares/${item.avatar}`) : item.avatar) : logo}
+                  className='messenger-logo-user'
+                  alt={`${item.username}'s avatar`}
+                />
+
               </div>
               <label className='messenger-username-label'>
                 {item.username}
@@ -356,7 +362,13 @@ function Messenger({ closeModal }) {
               }}
             />
             <div className='user-logo-message-container'>
-              <img src={destinatarioAvatar} className='message-logo-user' alt={`${destinatarioName}'s avatar`} />
+              {/* <img src={destinatarioAvatar} className='message-logo-user' alt={`${destinatarioName}'s avatar`} /> */}
+              <img
+                src={destinatarioAvatar ? (destinatarioAvatar.includes('syncs-avatar') ? require(`../../assets/avatares/${destinatarioAvatar}`) : destinatarioAvatar) : logo}
+                className='message-logo-user'
+                alt={`${destinatarioName}'s avatar`}
+              />
+
             </div>
             <label className='messenger-username-label'>{destinatarioName}</label>
           </div>
@@ -375,7 +387,7 @@ function Messenger({ closeModal }) {
 
                 {!item.cardData && item.message.includes('card_id:') &&
                   <label style={{ backgroundColor: item.id_remetente === user.id ? 'rgb(78, 78, 78)' : 'white', color: item.id_remetente === user.id ? 'white' : 'rgb(78, 78, 78)' }} className='message-label'>
-                    ⛔ Mensagem Bloqueada pelo ADM ⛔ 
+                    ⛔ Mensagem Bloqueada pelo ADM ⛔
                   </label>
                 }
 

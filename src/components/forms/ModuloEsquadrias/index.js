@@ -171,13 +171,16 @@ function ModuloEsquadrias({ idCard }) {
     };
 
     fetchEsquadriasData();
+    buscarCores();
   }, [idCard]);
 
 
 
   const buscarCores = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/card/cor/${user.empresa_id}`);
+      //const response = await axios.get(`${apiUrl}/card/cor/${user.empresa_id}`);
+      const response = await axios.get(`${apiUrl}/users/getCores/${user.empresa_id}`);
+
       setListCor(response.data);
     } catch (error) {
       console.error('Erro ao buscar cores:', error);

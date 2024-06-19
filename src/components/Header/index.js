@@ -31,10 +31,12 @@ import ModuloEsquadrias from '../forms/ModuloEsquadrias';
 import Loading from '../Loading';
 import Messenger from '../Messenger';
 import Anexos from '../Anexos';
+import Avatar from '../Avatar';
+
 
 function Header() {
 
-  const { user, clearUserContext, setOpenCloseImportExcelEntidades, setOpenCloseImportExcelSuiteFlow, themeDark, getAccessLevel } = useUser();
+  const { user, clearUserContext, setOpenCloseImportExcelEntidades, setOpenCloseImportExcelSuiteFlow, themeDark, getAccessLevel, openCloseModalAvatar, setOpenCloseModalAvatar, userAvatar, setUserAvatar } = useUser();
   const { setColumns, setColumnsUser, setSelectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal } = useColumns();
 
   const { setCurrentCardData, openCloseUpdateCard,
@@ -87,6 +89,15 @@ function Header() {
       console.error('Erro ao buscar contagem de mensagens não lidas', error);
     }
   };
+
+  useEffect(() => {
+
+    if (user) {
+      setUserAvatar(user.avatar);
+    }
+
+  }, [user]);
+
 
   useEffect(() => {
 
@@ -258,6 +269,12 @@ function Header() {
   return (
 
     <header className="header-container" >
+
+      {openCloseModalAvatar &&
+        <Avatar />
+      }
+
+
       <div className='header-menu-left' onClick={() => openLeftMenu()}>
         <FaBars />
       </div>
@@ -287,7 +304,7 @@ function Header() {
           }
 
           {getAccessLevel('adm') &&
-            <button className='left-menu-button' onClick={() => processColumnsPage()}>Colunas</button>
+            <button className='left-menu-button' onClick={() => processColumnsPage()}>Configurações</button>
           }
 
           {getAccessLevel('adm') &&
@@ -302,13 +319,35 @@ function Header() {
       )}
 
       <div className='header-user-logo-container' onClick={() => openCloseInfosUser()}>
-        <img onClick={() => openCloseInfosUser()} className='header-users-logo' src={user && user.avatar ? user.avatar : Logo} alt={`${user && user.username}'s avatar`} />
+
+
+        <img
+          onClick={() => openCloseInfosUser()}
+          className='header-users-logo'
+          src={user && user.avatar ? (userAvatar?.includes('syncs-avatar') ? require(`../../assets/avatares/${userAvatar}`) : user.avatar) : Logo}
+          alt={`${user && user.username}'s avatar`}
+        />
+
+
       </div>
 
       {showMenuUser && (
         <div className='user-infors-container'>
+
+          <button className='btn-close-metas-user' onClick={() => openCloseInfosUser()}>x</button>
+
           <div className='user-infors-logo-container' onClick={() => openCloseInfosUser()}>
-            <img onClick={() => openCloseInfosUser()} className='user-infors-logo' src={user && user.avatar ? user.avatar : Logo} />
+            {/* <img onClick={() => openCloseInfosUser()} className='user-infors-logo' src={user && user.avatar ? user.avatar : Logo} /> */}
+
+            <img
+              onClick={() => setOpenCloseModalAvatar(true)}
+              className='header-users-logo'
+              src={user && user.avatar ? (userAvatar?.includes('syncs-avatar') ? require(`../../assets/avatares/${userAvatar}`) : user.avatar) : Logo}
+              alt={`${user && user.username}'s avatar`}
+            />
+
+            <button className='btn-edit-avatar-user' onClick={() => setOpenCloseModalAvatar(true)}>editar</button>
+
           </div>
 
           <label className='user-info-name'>{user ? user.username : ''}</label>

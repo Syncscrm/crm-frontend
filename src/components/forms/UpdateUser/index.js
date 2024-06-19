@@ -52,12 +52,13 @@ function UpdateUser({ user: propUser }) {
   const [selectedColumns, setSelectedColumns] = useState([]);
 
 
+
   // SET
   useEffect(() => {
     if (propUser && propUser.id) {
       setUserId(propUser.id);
       setAvatarPreview(propUser.avatar || Logo);
-      setAvatar(propUser.avatar || Logo);
+      setAvatar(propUser.avatar);
       setUsername(propUser.username);
       setEmail(propUser.email);
       setIsActive(propUser.is_active);
@@ -268,8 +269,10 @@ function UpdateUser({ user: propUser }) {
 
         {error && <div className="error-message">{error}</div>}
 
+
+
         <div className="update-user-header">
-          <img src={avatarPreview} alt="Preview" className="update-user-avatar" onClick={() => fileInputRef.current.click()} />
+          <img src={avatarPreview ? (avatarPreview?.includes('syncs-avatar') ? require(`../../../assets/avatares/${avatarPreview}`) : avatarPreview) : Logo} alt="Preview" className="update-user-avatar" onClick={() => fileInputRef.current.click()} />
           <input ref={fileInputRef} id="avatar" type="file" onChange={handleAvatarChange} style={{ display: 'none' }} accept="image/*" />
         </div>
 

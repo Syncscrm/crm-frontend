@@ -105,12 +105,19 @@ const ListUsers = () => {
             <button className='btn-order-by-users' onClick={() => orderUsersBy('state')} style={{ backgroundColor: orderBy === 'state' ? 'dodgerblue' : '#aaaaaa' }}>Estado</button>
           </div>
 
-          <label style={{fontSize: '12px'}}>{users.length} usuários</label>
+          <label style={{ fontSize: '12px' }}>{users.length} usuários</label>
           <div className='list-user-form-container'>
             {filteredUsers.map((user) => (
               <li key={user.id} className='item-list-users' onClick={() => updateUser(user)}>
                 <div className='list-user-logo-container'>
-                  <img className='list-users-logo' src={user.avatar ? user.avatar : Logo} alt={`${user.username}'s avatar`} style={{ height: 50 }} />
+                  {/* <img className='list-users-logo' src={user.avatar ? user.avatar : Logo} alt={`${user.username}'s avatar`} style={{ height: 50 }} /> */}
+                  <img
+                    className='list-users-logo'
+                    src={user.avatar ? (user.avatar.includes('syncs-avatar') ? require(`../../../assets/avatares/${user.avatar}`) : user.avatar) : Logo}
+                    alt={`${user.username}'s avatar`}
+                    style={{ height: 50 }}
+                  />
+
                 </div>
                 <label className='list-user-label-username'>{user.username} - {user.state}</label>
                 <div className='list-user-logo-container'>

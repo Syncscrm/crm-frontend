@@ -49,7 +49,7 @@ function UpdateCard({ idCard, cardData }) {
     if (count > 1) {
       setIsUpdatingCard(true);
     }
-  }, [statusCard, documentNumber, entityId, name, saleValue, costValue, email, state, city, fone, columnId]);
+  }, [statusCard, documentNumber, entityId, name, saleValue, costValue, email, state, city, fone, columnId, origemCard]);
 
   useEffect(() => {
     if (cardData) {

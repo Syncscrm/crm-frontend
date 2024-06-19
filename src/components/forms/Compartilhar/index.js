@@ -19,7 +19,7 @@ import Logo from '../../../assets/logo-suite-flow.ico'
 function Compartilhar() {
 
   // CONTEXT API
-  const { user } = useUser();
+  const { user, listAllUsers } = useUser();
   const { columnsUser } = useColumns();
   const { 
     currentCardData,
@@ -116,6 +116,11 @@ function Compartilhar() {
   }, [email]);
 
 
+  const getUserData = (userId) => {
+    return listAllUsers.find(u => u.id === userId);
+  };
+
+
   return (
     <div className='compartilhar-card-modal'>
       <div className='compartilhar-card-container'>
@@ -135,6 +140,8 @@ function Compartilhar() {
                 <div className='compartilhar-mensagem-container'>
                   <div className='user-logo-compartilhar-container'>
                     <img className='user-logo-compartilhar' src={Logo} alt={`${user && user.username}'s avatar`} />
+ 
+
                   </div>
                   <p className='compartilhar-description'>{item.email}</p>
                   <button className='btn-delete-compartilhamento' onClick={(event) => deleteCompartilhamento(event, item.id)}>X</button>

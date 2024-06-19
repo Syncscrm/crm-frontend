@@ -11,7 +11,7 @@ import Logo from '../../../assets/logo-suite-flow.ico';
 import { MdThumbDown, MdThumbUp, MdFilterAltOff } from "react-icons/md";
 
 function DashboardPage() {
-  const { user, afilhadosList } = useUser();
+  const { user, afilhadosList, userAvatar } = useUser();
   const { cards } = useCard();
   const { columns } = useColumns();
   const [selectedAfilhados, setSelectedAfilhados] = useState([]);
@@ -25,13 +25,13 @@ function DashboardPage() {
     const currentDate = new Date();
     const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-  
+
     const formatDate = (date) => date.toISOString().split('T')[0];
-  
+
     setStartDate(formatDate(startOfMonth));
     setEndDate(formatDate(endOfMonth));
   }, []);
-  
+
 
   const formatName = (name) => {
     return name.toUpperCase().substring(0, 22);
@@ -217,7 +217,14 @@ function DashboardPage() {
     <div className='dashboard-container'>
       <Header />
       <div className='dashboard-header'>
-        <img className='logo-dashboard' src={user && user.avatar ? user.avatar : Logo} alt='Logo' />
+        {/* <img className='logo-dashboard' src={user && user.avatar ? user.avatar : Logo} alt='Logo' /> */}
+        <img
+          className='logo-dashboard'
+          src={user && userAvatar ? (userAvatar?.includes('syncs-avatar') ? require(`../../../assets/avatares/${userAvatar}`) : user.avatar) : Logo}
+          alt='Logo'
+        />
+
+
         <div className='dashboard-total-sales'>
           <h2>Total</h2>
           <h2>{filteredTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h2>

@@ -2,8 +2,8 @@
     position: fixed;
     bottom: 30px;
     right: 4px;
-    width: 370px;
-    max-width: 370px;
+    width: 400px;
+    max-width: 400px;
     min-height: calc(100vh - 35px);
     max-height: calc(100vh - 35px);
     display: flex;
@@ -130,8 +130,8 @@
     position: fixed;
     bottom: 30px;
     right: 4px;
-    min-width: 370px;
-    max-width: 370px;
+    min-width: 400px;
+    max-width: 400px;
 
     min-height: calc(100vh - 35px);
     max-height: calc(100vh - 35px);

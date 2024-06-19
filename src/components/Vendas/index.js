@@ -30,25 +30,25 @@ function Vendas() {
 
 
   useEffect(() => {
-    if(!user)
+    if (!user)
       return
-      getVendasDoDia();
-    
+    getVendasDoDia();
+
   }, [user]);
 
-    // Buscar todos os cards com status == "Vendido" && data de modificação == dia de hoje colocar em uma lista
-    const getVendasDoDia = async () => {
-      try {
-        const url = `${apiUrl}/card/sold-last-minute/${user.empresa_id}`;
-        const response = await axios.get(url);
-        const vendasExistentes = response.data;
-  
-        setVendasAnteriores(vendasExistentes);
-  
-      } catch (error) {
-        console.error('Erro ao buscar vendas existentes:', error);
-      }
-    };
+  // Buscar todos os cards com status == "Vendido" && data de modificação == dia de hoje colocar em uma lista
+  const getVendasDoDia = async () => {
+    try {
+      const url = `${apiUrl}/card/sold-last-minute/${user.empresa_id}`;
+      const response = await axios.get(url);
+      const vendasExistentes = response.data;
+
+      setVendasAnteriores(vendasExistentes);
+
+    } catch (error) {
+      console.error('Erro ao buscar vendas existentes:', error);
+    }
+  };
 
   useEffect(() => {
 
@@ -104,7 +104,7 @@ function Vendas() {
   }, [novosVendidos]);
 
 
-  
+
 
 
   const [playSino, setPlaySino] = useState(false);
@@ -144,8 +144,13 @@ function Vendas() {
               vendaUltimoMinuto.map((venda) => (
 
                 <div key={venda.card_id} className='nova-venda-adm-row'>
+{/* 
+                  <img className='logo-afilhado-lista-vendas' src={venda.entity_id ? getAvatarById(venda.entity_id) : logoDefault} /> */}
 
-                  <img className='logo-afilhado-lista-vendas' src={venda.entity_id ? getAvatarById(venda.entity_id) : logoDefault} />
+                  <img
+                    className='logo-afilhado-lista-vendas'
+                    src={venda.entity_id && getAvatarById(venda.entity_id) ? (getAvatarById(venda.entity_id)?.includes('syncs-avatar') ? require(`../../assets/avatares/${getAvatarById(venda.entity_id)}`) : getAvatarById(venda.entity_id)) : logoDefault}
+                  />
 
                   <div className='nova-venda-adm'>
                     <label className='nova-venda-name'>{getUsernameById(venda.entity_id).substring(0, 30)}</label>

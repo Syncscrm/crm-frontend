@@ -126,7 +126,13 @@ function Historic() {
               <div className='history-item-container' key={item.history_id}>
                 <div className='history-mensagem-container'>
                   <div className='user-logo-history-container'>
-                    <img src={getUserData(item.user_id)?.avatar || Logo} alt={getUserData(item.user_id)?.username || 'User'} className='user-logo-history' />
+                    {/* <img src={getUserData(item.user_id)?.avatar || Logo} alt={getUserData(item.user_id)?.username || 'User'} className='user-logo-history' /> */}
+
+                    <img
+                      className='user-logo-history' 
+                      src={user && user.avatar ? (getUserData(item.user_id)?.avatar?.includes('syncs-avatar') ? require(`../../../assets/avatares/${getUserData(item.user_id).avatar}`) : getUserData(item.user_id).avatar) : Logo}
+                    />
+
                   </div>
                   <p className='history-description'>{item.description}</p>
                 </div>

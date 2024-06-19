@@ -162,7 +162,13 @@ function Tarefas() {
               <div className='tarefa-item-container' key={item.task_id}>
                 <div className='tarefa-mensagem-container'>
                   <div className='user-logo-tarefa-container'>
-                    <img className='user-logo-history' src={getUserData(item.user_id)?.avatar || Logo} />
+                    {/* <img className='user-logo-history' src={getUserData(item.user_id)?.avatar || Logo} /> */}
+
+                    <img
+                      className='user-logo-history'
+                      src={user && user.avatar ? (getUserData(item.user_id)?.avatar?.includes('syncs-avatar') ? require(`../../../assets/avatares/${getUserData(item.user_id).avatar}`) : getUserData(item.user_id).avatar) : Logo}
+                    />
+
                   </div>
                   <p className='tarefa-description'>
                     <label className='tarefa-description-title'>{item.description}</label>

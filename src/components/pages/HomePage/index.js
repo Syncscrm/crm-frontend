@@ -31,7 +31,7 @@ import ExcelJS from 'exceljs';
 
 function HomePage() {
 
-  const { user, openCloseImportExcelEntidades, openCloseImportExcelSuiteFlow, afilhadosList, editableColumns, getAccessLevel } = useUser();
+  const { user, openCloseImportExcelEntidades, openCloseImportExcelSuiteFlow, afilhadosList, editableColumns, getAccessLevel, userAvatar } = useUser();
   const { columnsUser, setLoadingResult, setLoadingModal, selectedAfilhados, setSelectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal, orderBy, setOrderBy, isAscending, setIsAscending } = useColumns();
   const { fetchCards, addHistoricoCardContext, cards, setCards, previewSearchCards, setPreviewSearchCards, searchTerm, setSearchTerm, setCurrentCardData, setOpenCloseUpdateCard, openCloseModalVendaPerdida, setOpenCloseModalVendaPerdida, currentCardData } = useCard();
 
@@ -297,7 +297,7 @@ function HomePage() {
               >
                 {selectedAfilhados.length === afilhadosList.length + 1 ? 'Desselecionar Todos' : 'Selecionar Todos'}
               </div>
-              <div
+              {/* <div
                 key={user.id}
                 className={`select-filter-option ${selectedAfilhados.includes(user.id) ? 'selected' : ''}`}
                 style={{ backgroundColor: selectedAfilhados.includes(user.id) ? 'dodgerblue' : '' }}
@@ -305,7 +305,23 @@ function HomePage() {
               >
                 <img className='logo-afilhado-lista' src={user.avatar ? user.avatar : logoDefault} />
                 <label className='label-afilhados-lista'>{user.username}</label>
+              </div> */}
+
+              <div
+                key={user.id}
+                className={`select-filter-option ${selectedAfilhados.includes(user.id) ? 'selected' : ''}`}
+                style={{ backgroundColor: selectedAfilhados.includes(user.id) ? 'dodgerblue' : '' }}
+                onClick={() => handleSelectChange(user.id)}
+              >
+                <img
+                  className='logo-afilhado-lista'
+                  src={user.avatar ? (userAvatar?.includes('syncs-avatar') ? require(`../../../assets/avatares/${userAvatar}`) : user.avatar) : logoDefault}
+                />
+                <label className='label-afilhados-lista'>{user.username}</label>
               </div>
+
+
+
               {afilhadosList
                 .sort((a, b) => a.username.localeCompare(b.username))
                 .map(afilhado => (
@@ -315,7 +331,14 @@ function HomePage() {
                     style={{ backgroundColor: selectedAfilhados.includes(afilhado.id) ? 'dodgerblue' : '' }}
                     onClick={() => handleSelectChange(afilhado.id)}
                   >
-                    <img className='logo-afilhado-lista' src={afilhado.avatar ? afilhado.avatar : logoDefault} />
+                    {/* <img className='logo-afilhado-lista' src={afilhado.avatar ? afilhado.avatar : logoDefault} /> */}
+
+                    <img
+                      className='logo-afilhado-lista'
+                      src={afilhado.avatar ? (afilhado.avatar.includes('syncs-avatar') ? require(`../../../assets/avatares/${afilhado.avatar}`) : afilhado.avatar) : logoDefault}
+                    />
+
+
                     <label className='label-afilhados-lista'>{afilhado.username}</label>
                   </div>
                 ))}
@@ -395,7 +418,7 @@ function HomePage() {
 
 
 
-        { user && getAccessLevel('exportExcel') &&
+        {user && getAccessLevel('exportExcel') &&
           <RiFileExcel2Line style={{ background: openCloseSelectAfilhadosModal ? 'dodgerblue' : '' }} onClick={() => exportarTabelasExcel()} className='afilhados-icon-open-close' />
         }
 

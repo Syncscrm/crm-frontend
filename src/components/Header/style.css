@@ -464,3 +464,39 @@
     padding: 4px;
 }
 
+.btn-edit-avatar-user {
+    min-height: 20px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    position: absolute;
+    top: 80px;
+    padding-inline: 5px;
+    font-size: 10px;
+}
+
+.btn-close-metas-user {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(97, 97, 97);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding-inline: 5px;
+    font-size: 12px;
+    padding-bottom: 1px;
+}
+
+.btn-close-metas-user:hover {
+
+    background-color: red;
+
+}
+

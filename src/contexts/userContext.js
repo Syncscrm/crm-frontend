@@ -15,6 +15,8 @@ export const UserProvider = ({ children }) => {
 
   const [user, setUser] = useState(null);
 
+  const [userAvatar, setUserAvatar] = useState(null);
+
   const [listAllUsers, setListAllUsers] = useState([]); // Estado para armazenar todos os usuários
 
   const [theme, setTheme] = useState({
@@ -68,7 +70,7 @@ export const UserProvider = ({ children }) => {
   const [openCloseImportExcelEntidades, setOpenCloseImportExcelEntidades] = useState(false)
   const [openCloseImportExcelSuiteFlow, setOpenCloseImportExcelSuiteFlow] = useState(false)
 
-
+  const [openCloseModalAvatar, setOpenCloseModalAvatar] = useState(false)
 
   const clearUserContext = () => {
     setUser(null);
@@ -240,7 +242,9 @@ export const UserProvider = ({ children }) => {
     openCloseImportExcelSuiteFlow, setOpenCloseImportExcelSuiteFlow,
     theme, setTheme,
     editableColumns,
-    getAccessLevel
+    getAccessLevel,
+    openCloseModalAvatar, setOpenCloseModalAvatar,
+    userAvatar, setUserAvatar
   };
 
   useEffect(() => {
