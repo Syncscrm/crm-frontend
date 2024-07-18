@@ -1,0 +1,156 @@
+
+.modal-pedidos {
+    position: fixed;
+    top: 0px;
+    left: 0;
+    width: 100vw;
+    background: #00000036;
+    z-index: 1100;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+.pedido-form-container {
+    position: fixed;
+    top: 40px;
+    width: 800px;
+    max-width: 98%;
+    padding: 20px;
+    background: #f7f7f7;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    color: dimgray;
+}
+
+.close-button {
+    background: red;
+    border: none;
+    font-size: 12px;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+}
+
+
+.pedido-form {
+    width: 100%;
+}
+
+.pedido-form h3 {
+    margin-bottom: 15px;
+}
+
+.pedido-form label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.pedido-form input,
+.pedido-form textarea,
+.pedido-form select {
+    width: 100%;
+    max-width: 98%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pedido-form textarea {
+    height: 100px;
+}
+
+.pedido-form button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pedido-form button:hover {
+    background: #0056b3;
+}
+
+.styled-table {
+    width: 100%;
+    max-width: 98%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-width: 400px;
+    border-radius: 0px;
+    overflow: hidden;
+}
+
+.styled-table thead tr {
+    background-color: #269bfa;
+    color: #ffffff;
+    text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+    color: rgb(82, 82, 82);
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #218ff7;
+}
+
+.styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: #218ff7;
+}
+
+.select-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.valor-total-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.valor-total-input {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: right;
+    padding: 10px;
+    border: none;
+    background: transparent;
+}
+
+.input{
+border: 1px solid #ccc; /* Adiciona uma borda padrão */
+}
+
+.input:focus {
+  outline: none; /* Remove a borda de foco padrão */
+  border: 1px solid #007bff; /* Define uma borda de foco customizada */
+}

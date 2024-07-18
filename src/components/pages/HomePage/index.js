@@ -15,7 +15,7 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import PreviewCard from '../../PreviewCard';
 import Select from '../../Select';
 
-import { MdOutlineFilterList, MdGroups, MdOutlineSearch } from "react-icons/md";
+import { MdOutlineFilterList, MdGroups, MdOutlineSearch, MdOutlineUpdate  } from "react-icons/md";
 import ImportExcel from '../../ImportExcel';
 import ImportExcelSuiteFlow from '../../ImportExcelSuiteFlow';
 import { RiFileExcel2Line } from "react-icons/ri";
@@ -26,6 +26,7 @@ import logoDefault from '../../../assets/logo-suite-flow.ico'
 import Vendas from '../../Vendas';
 
 import ExcelJS from 'exceljs';
+
 
 
 
@@ -42,21 +43,59 @@ function HomePage() {
   const [loadingSearch, setLoadingSearch] = useState(false);
 
 
+  const [searchType, setSearchType] = useState('name'); // Estado para armazenar o tipo de pesquisa selecionado
+
+
+
+
+  // const fetchCardsByName = async () => {
+  //   setLoadingSearch(true);
+  //   if (searchTerm.trim()) {
+  //     try {
+  //       const response = await axios.get(`${apiUrl}/card/search`, {
+  //         params: {
+  //           [searchType]: encodeURIComponent(searchTerm), // Usa o tipo de pesquisa selecionado
+  //           entityId: user.id,
+  //           empresaId: user.empresa_id,
+  //         }
+  //       });
+  //       setPreviewSearchCards(response.data);
+  //       setLoadingSearch(false);
+  //     } catch (error) {
+  //       console.error('Failed to fetch cards:', error);
+  //       setLoadingSearch(false);
+  //     }
+  //   } else {
+  //     setPreviewSearchCards([]);
+  //   }
+  // };
 
   const fetchCardsByName = async () => {
     setLoadingSearch(true);
     if (searchTerm.trim()) {
       try {
-        const response = await axios.get(`${apiUrl}/card/search?name=${encodeURIComponent(searchTerm)}&entityId=${user.id}&empresaId=${user.empresa_id}`);
+        const response = await axios.get(`${apiUrl}/card/search`, {
+          params: {
+            searchType, // Passa o tipo de pesquisa selecionado
+            searchTerm, // Termo de busca
+            entityId: user.id,
+            empresaId: user.empresa_id,
+          }
+        });
         setPreviewSearchCards(response.data);
         setLoadingSearch(false);
       } catch (error) {
         console.error('Failed to fetch cards:', error);
+        setLoadingSearch(false);
       }
     } else {
       setPreviewSearchCards([]);
     }
   };
+
+
+
+
 
   const handleSearchClick = () => {
     if (searchTerm.length < 3) return;
@@ -175,6 +214,7 @@ function HomePage() {
   function clearSearchTerm() {
     setSearchTerm('');
     setPreviewSearchCards([]);
+    setOpenCloseSearchModal(!openCloseSearchModal)
   }
 
   const handleSelectChange = (id) => {
@@ -211,6 +251,12 @@ function HomePage() {
 
 
   const exportarTabelasExcel = async () => {
+
+    const userConfirmed = window.confirm(`Exportar Planilhas?`);
+    if (!userConfirmed) {
+      return;
+    }
+
     const tables = ['cards', 'users', 'modulo_esquadrias', 'history', 'tasks'];
 
     for (const table of tables) {
@@ -254,15 +300,23 @@ function HomePage() {
 
 
 
+function reloadPage() {
+  window.location.reload();
+}
+
+
 
   return (
     <div className='home-page-container'>
+
+
+
       <Header />
       <Vendas />
       <div className='tools-container'>
-        <MdOutlineSearch onClick={() => setOpenCloseSearchModal(true)} style={{ display: !openCloseSearchModal ? '' : 'none', cursor: 'pointer' }} className='search-icon-open-close' />
+        <MdOutlineSearch onClick={() => clearSearchTerm()} style={{ background: openCloseSearchModal ? 'dodgerblue' : '', cursor: 'pointer' }} className='search-icon-open-close' />
 
-        <div style={{ display: openCloseSearchModal ? '' : 'none' }} className='search-card-container'>
+        {/* <div style={{ display: openCloseSearchModal ? '' : 'none' }} className='search-card-container'>
           <input
             style={{ backgroundColor: searchTerm.trim() ? '#e0e0e0' : '', color: searchTerm.trim() ? 'rgb(83, 83, 83)' : '' }}
             className='search-card-input'
@@ -281,9 +335,126 @@ function HomePage() {
           >
             X
           </button>
+        </div> */}
+
+        {<div style={{ display: openCloseSearchModal ? '' : 'none' }} className='select-search'>
+
+
+          <div className='serach-imput-container'>
+            <input
+              style={{ backgroundColor: searchTerm.trim() ? '#e0e0e0' : '', color: searchTerm.trim() ? 'rgb(83, 83, 83)' : '' }}
+              className='search-card-input'
+              placeholder="Buscar Cards..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+            <MdOutlineSearch style={{ cursor: 'pointer' }} className='search-icon' onClick={handleSearchClick} />
+
+          </div>
+
+          {/* <button
+            style={{ display: openCloseSearchModal ? '' : 'none' }}
+            className='btn-clear-search'
+            onClick={() => {
+              clearSearchTerm();
+              setOpenCloseSearchModal(false);
+            }}
+          >
+            X
+          </button> */}
+
+          <div className='search-type-container'>
+            <label className='label-search-radio'>
+              <input
+                type="radio"
+                value="name"
+                checked={searchType === 'name'}
+                onChange={() => setSearchType('name')}
+                className='input-radio-container'
+              />
+              Nome
+            </label>
+
+            <label className='label-search-radio'>
+              <input
+                type="radio"
+                value="nome_obra"
+                checked={searchType === 'nome_obra'}
+                onChange={() => setSearchType('nome_obra')}
+                className='input-radio-container'
+              />
+              Nome da Obra
+            </label>
+
+            <label style={{ display: 'none' }} className='label-search-radio'>
+              <input
+                style={{ display: 'none' }}
+                type="radio"
+                value="state"
+                checked={searchType === 'state'}
+                onChange={() => setSearchType('state')}
+                className='input-radio-container'
+              />
+              Estado
+            </label>
+            <label className='label-search-radio'>
+              <input
+                type="radio"
+                value="document_number"
+                checked={searchType === 'document_number'}
+                onChange={() => setSearchType('document_number')}
+                className='input-radio-container'
+              />
+              Número do Documento
+            </label>
+            <label style={{ display: 'none' }} className='label-search-radio'>
+              <input
+                type="radio"
+                value="origem"
+                checked={searchType === 'origem'}
+                onChange={() => setSearchType('origem')}
+                className='input-radio-container'
+              />
+              Origem
+            </label>
+            <label style={{ display: 'none' }} className='label-search-radio'>
+              <input
+                type="radio"
+                value="produto"
+                checked={searchType === 'produto'}
+                onChange={() => setSearchType('produto')}
+                className='input-radio-container'
+              />
+              Produto
+            </label>
+            <label className='label-search-radio'>
+              <input
+                type="radio"
+                value="pedido_number"
+                checked={searchType === 'pedido_number'}
+                onChange={() => setSearchType('pedido_number')}
+                className='input-radio-container'
+              />
+              Número do Pedido
+            </label>
+          </div>
         </div>
+        }
+
+
 
         <MdGroups style={{ background: openCloseSelectAfilhadosModal ? 'dodgerblue' : '' }} onClick={() => setOpenCloseSelectAfilhadosModal(!openCloseSelectAfilhadosModal)} className='afilhados-icon-open-close' />
+
+
+
+
+
+
+
+
+
+
+
 
         {openCloseSelectAfilhadosModal && (
           <div id="afilhadosSelect" className="select-filter">
@@ -297,15 +468,6 @@ function HomePage() {
               >
                 {selectedAfilhados.length === afilhadosList.length + 1 ? 'Desselecionar Todos' : 'Selecionar Todos'}
               </div>
-              {/* <div
-                key={user.id}
-                className={`select-filter-option ${selectedAfilhados.includes(user.id) ? 'selected' : ''}`}
-                style={{ backgroundColor: selectedAfilhados.includes(user.id) ? 'dodgerblue' : '' }}
-                onClick={() => handleSelectChange(user.id)}
-              >
-                <img className='logo-afilhado-lista' src={user.avatar ? user.avatar : logoDefault} />
-                <label className='label-afilhados-lista'>{user.username}</label>
-              </div> */}
 
               <div
                 key={user.id}
@@ -317,35 +479,81 @@ function HomePage() {
                   className='logo-afilhado-lista'
                   src={user.avatar ? (userAvatar?.includes('syncs-avatar') ? require(`../../../assets/avatares/${userAvatar}`) : user.avatar) : logoDefault}
                 />
-                <label className='label-afilhados-lista'>{user.username}</label>
+                <label className='label-afilhados-lista'>
+                  {user.username}
+                  <label className='label-user-type' style={{ background: user.user_type == 'Administrador' ? 'red' : user.user_type == 'Supervisor' ? '#49c5ff' : '' }}>{user.user_type}</label>
+                </label>
               </div>
 
+              {Object.entries(
+                afilhadosList.reduce((acc, afilhado) => {
+                  const state = afilhado.state || 'Sem Estado'; // Adicione um fallback caso não haja estado
+                  if (!acc[state]) {
+                    acc[state] = [];
+                  }
+                  acc[state].push(afilhado);
+                  return acc;
+                }, {})
+              ).map(([state, afilhados]) => (
+                <React.Fragment key={state}>
+                  <div className='state-divider'>{state}</div>
+                  {afilhados.sort((a, b) => a.username.localeCompare(b.username)).map(afilhado => (
+                    <div
+                      key={afilhado.id}
+                      className={`select-filter-option ${selectedAfilhados.includes(afilhado.id) ? 'selected' : ''}`}
+                      style={{ backgroundColor: selectedAfilhados.includes(afilhado.id) ? 'dodgerblue' : '' }}
+                      onClick={() => handleSelectChange(afilhado.id)}
+                    >
+                      <img
+                        className='logo-afilhado-lista'
+                        src={afilhado.avatar ? (afilhado.avatar.includes('syncs-avatar') ? require(`../../../assets/avatares/${afilhado.avatar}`) : afilhado.avatar) : logoDefault}
+                      />
+                      <label className='label-afilhados-lista'>
+                        {afilhado.username}
 
+                        <label
+                          className='label-user-type'
+                          style={{
+                            background: afilhado.user_type === 'Administrador' ? 'red' : afilhado.user_type === 'Supervisor' ? '#49c5ff' : ''
+                          }}
+                        >
+                          {afilhado.user_type}
+                        </label>
+                      </label>
 
-              {afilhadosList
-                .sort((a, b) => a.username.localeCompare(b.username))
-                .map(afilhado => (
-                  <div
-                    key={afilhado.id}
-                    className={`select-filter-option ${selectedAfilhados.includes(afilhado.id) ? 'selected' : ''}`}
-                    style={{ backgroundColor: selectedAfilhados.includes(afilhado.id) ? 'dodgerblue' : '' }}
-                    onClick={() => handleSelectChange(afilhado.id)}
-                  >
-                    {/* <img className='logo-afilhado-lista' src={afilhado.avatar ? afilhado.avatar : logoDefault} /> */}
-
-                    <img
-                      className='logo-afilhado-lista'
-                      src={afilhado.avatar ? (afilhado.avatar.includes('syncs-avatar') ? require(`../../../assets/avatares/${afilhado.avatar}`) : afilhado.avatar) : logoDefault}
-                    />
-
-
-                    <label className='label-afilhados-lista'>{afilhado.username}</label>
-                  </div>
-                ))}
-
+                    </div>
+                  ))}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         <BsCalendarDate style={{ background: openCloseSelectDateModal ? 'dodgerblue' : '' }} onClick={() => setOpenCloseSelectDateModal(!openCloseSelectDateModal)} className='afilhados-icon-open-close' />
         {openCloseSelectDateModal && (
@@ -423,6 +631,10 @@ function HomePage() {
         }
 
 
+        <MdOutlineUpdate  onClick={() => reloadPage()} className='afilhados-icon-open-close' />
+
+
+
 
 
       </div>
@@ -461,6 +673,7 @@ function HomePage() {
 
       {openCloseImportExcelEntidades && <ImportExcel />}
       {openCloseImportExcelSuiteFlow && <ImportExcelSuiteFlow />}
+
 
 
     </div>

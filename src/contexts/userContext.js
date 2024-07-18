@@ -13,7 +13,30 @@ export const useUser = () => useContext(UserContext);
 export const UserProvider = ({ children }) => {
 
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
+
+  const loginUser = (userData) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
+
+  const logoutUser = () => {
+    setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  };
 
   const [userAvatar, setUserAvatar] = useState(null);
 
@@ -34,7 +57,7 @@ export const UserProvider = ({ children }) => {
           params: { empresa_id: user.empresa_id }
         });
         setListAllUsers(response.data);
-        //console.log('lista de users?', response.data)
+        console.log('lista de users?', response.data)
       } catch (error) {
         console.error('Erro ao buscar usuários da empresa:', error);
         setListAllUsers([]);
@@ -42,17 +65,34 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+
+  const fetchRecursosByEmpresa = async (empresaId) => {
+    try {
+      const response = await axios.get(`${apiUrl}/users/getRecursos/${empresaId}`);
+      setEmpresaRecursos(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar recursos da empresa:', error);
+    }
+  };
+
+
+  useEffect(() => {
+    if (user && user.empresa_id) {
+      fetchRecursosByEmpresa(user.empresa_id);
+    }
+  }, [user]);
+
   useEffect(() => {
     fetchUsersByCompany();
   }, [user]);
 
-  const loginUser = (userData) => {
-    setUser(userData);
-  };
+  // const loginUser = (userData) => {
+  //   setUser(userData);
+  // };
 
-  const logoutUser = () => {
-    setUser(null);
-  };
+  // const logoutUser = () => {
+  //   setUser(null);
+  // };
 
   const updateUser = (updates) => {
     setUser(current => ({
@@ -71,6 +111,8 @@ export const UserProvider = ({ children }) => {
   const [openCloseImportExcelSuiteFlow, setOpenCloseImportExcelSuiteFlow] = useState(false)
 
   const [openCloseModalAvatar, setOpenCloseModalAvatar] = useState(false)
+
+  const [openCloseCustomModule, setOpenCloseCustomModule] = useState(false)
 
   const clearUserContext = () => {
     setUser(null);
@@ -105,7 +147,7 @@ export const UserProvider = ({ children }) => {
       console.log('context user', response.data)
     } catch (error) {
       console.error('Erro ao buscar permissões de edição:', error);
-      
+
     }
   }
 
@@ -114,6 +156,7 @@ export const UserProvider = ({ children }) => {
     if (user) {
       getAfilhados();
       toggleEditableColumnsContainer();
+      getEmpresa();
     }
   }, [user])
 
@@ -128,6 +171,8 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'tarefas') return true;
       if (tipo == 'compartilhar') return false;
       if (tipo == 'producao') return false;
+      if (tipo == 'pedido') return false;
+      if (tipo == 'editePedido') return false;
       if (tipo == 'anexos') return false;
       if (tipo == 'valor') return false;
       if (tipo == 'contato') return false;
@@ -140,6 +185,7 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'etapaProducao') return false;
       if (tipo == 'excluir') return false;
       if (tipo == 'exportExcel') return false;
+
     }
 
     if (user.access_level == 2) {
@@ -148,6 +194,8 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'tarefas') return true;
       if (tipo == 'compartilhar') return false;
       if (tipo == 'producao') return false;
+      if (tipo == 'pedido') return false;
+      if (tipo == 'editePedido') return false;
       if (tipo == 'anexos') return false;
       if (tipo == 'valor') return false;
       if (tipo == 'contato') return false;
@@ -168,6 +216,8 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'tarefas') return true;
       if (tipo == 'compartilhar') return true;
       if (tipo == 'producao') return true;
+      if (tipo == 'pedido') return true;
+      if (tipo == 'editePedido') return false;
       if (tipo == 'anexos') return true;
       if (tipo == 'valor') return false;
       if (tipo == 'contato') return true;
@@ -188,6 +238,8 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'tarefas') return true;
       if (tipo == 'compartilhar') return true;
       if (tipo == 'producao') return true;
+      if (tipo == 'pedido') return true;
+      if (tipo == 'editePedido') return false;
       if (tipo == 'anexos') return true;
       if (tipo == 'valor') return true;
       if (tipo == 'contato') return true;
@@ -208,6 +260,8 @@ export const UserProvider = ({ children }) => {
       if (tipo == 'tarefas') return true;
       if (tipo == 'compartilhar') return true;
       if (tipo == 'producao') return true;
+      if (tipo == 'pedido') return true;
+      if (tipo == 'editePedido') return true;
       if (tipo == 'anexos') return true;
       if (tipo == 'valor') return true;
       if (tipo == 'contato') return true;
@@ -224,6 +278,28 @@ export const UserProvider = ({ children }) => {
 
     return false;
   };
+
+
+
+  const [empresa, setEmpresa] = useState([]);
+
+  const getEmpresa = async () => {
+    if (user && user.empresa_id) {
+      try {
+        const response = await axios.get(`${apiUrl}/users/getEmpresa/${user.empresa_id}`);
+        setEmpresa(response.data);
+        console.log('Informações da empresa', response.data);
+      } catch (error) {
+        console.error('Erro ao buscar Empresa:', error);
+      }
+    }
+  };
+
+
+  const [empresaRecursos, setEmpresaRecursos] = useState([]);
+
+  console.log(empresaRecursos)
+
 
 
   const contextValue = {
@@ -244,7 +320,10 @@ export const UserProvider = ({ children }) => {
     editableColumns,
     getAccessLevel,
     openCloseModalAvatar, setOpenCloseModalAvatar,
-    userAvatar, setUserAvatar
+    userAvatar, setUserAvatar,
+    empresa,
+    openCloseCustomModule, setOpenCloseCustomModule,
+    empresaRecursos,
   };
 
   useEffect(() => {

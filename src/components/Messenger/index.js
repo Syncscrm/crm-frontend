@@ -28,6 +28,10 @@ function Messenger({ closeModal }) {
 
   const [loadingMessage, setLoadingMessage] = useState(false);
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+
+
 
   function rolagemAutomatica() {
     if (messagesEndRef.current) {
@@ -294,6 +298,10 @@ function Messenger({ closeModal }) {
     return unreadB - unreadA;
   });
 
+  const filteredUsers = sortedUsers.filter(user =>
+    user.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
 
 
 
@@ -329,27 +337,49 @@ function Messenger({ closeModal }) {
         <label>Messenger</label>
         <button onClick={clearIdCardMessage} className='close-messenger-modal'>X</button>
       </div>
+
+      <div className="header-messenger">
+
+        <input
+          type="text"
+          placeholder="Buscar usuário"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className='input-search-user-messenger'
+        />
+
+      </div>
+
       <div className='messenger-body'>
-        {sortedUsers &&
-          sortedUsers.map((item) => (
+
+
+        {filteredUsers &&
+          filteredUsers.map((item) => (
             <div key={item.id} className='item-list-messenger' onClick={() => { openMessage(item) }}>
               <div className='user-logo-messenger-container'>
-                {/* <img src={item.avatar ? item.avatar : logo} className='messenger-logo-user' alt={`${item.username}'s avatar`} /> */}
                 <img
                   src={item.avatar ? (item.avatar.includes('syncs-avatar') ? require(`../../assets/avatares/${item.avatar}`) : item.avatar) : logo}
                   className='messenger-logo-user'
                   alt={`${item.username}'s avatar`}
                 />
-
               </div>
               <label className='messenger-username-label'>
-                {item.username}
+                <div className='column-messender-item-label'>
+                  <label>{item.username}</label>
+                  <label className='label-user-type-messenger' style={{ background: item.user_type == 'Administrador' ? 'red' : item.user_type == 'Supervisor' ? 'rgb(138, 224, 0)' : '' }}>{item.user_type}</label>
+                  <label className='label-state-messenger'>{item.state}</label>
+                </div>
+
                 {userUnreadMessages[item.id] > 0 && (
                   <span className="mensagens-nao-lidas">{userUnreadMessages[item.id]}</span>
                 )}
               </label>
             </div>
-          ))}
+          ))
+        }
+
+
+
       </div>
 
       {user != null && openCloseModalMessage && (

@@ -1,0 +1,14 @@
+.email-conversation-container {
+    position: fixed;
+    top: 50px;
+    left: calc((100vw / 2) - 400px);
+    width: 800px;
+    height: 800px;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    border-radius: 10px;
+    color: black;
+    padding: 10px;
+    box-shadow: rgba(31, 31, 31, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.24) 0px 3px 7px -3px;
+    z-index: 1000;
+}

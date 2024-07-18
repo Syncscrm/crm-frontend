@@ -1,9 +1,9 @@
 .column-container {
-    min-width: 300px;
-    max-width: 300px;
+    min-width: 315px;
+    max-width: 315px;
     height: calc(100vh - 90px);
     min-height: calc(100vh - 90px);
-    border-radius: 10px;
+    border-radius: 8px;
     display: flex;
     justify-content: flex-start;
     margin-inline: 5px;

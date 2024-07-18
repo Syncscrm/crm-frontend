@@ -17,9 +17,18 @@ import { useColumns } from '../../../contexts/columnsContext';
 import { useCard } from '../../../contexts/cardContext'
 
 
+
 // COMPONENTS
 
 function UpdateUser({ user: propUser }) {
+
+  // API URL for IBGE
+  const apiUrlIbge = 'https://servicodados.ibge.gov.br/api/v1/localidades';
+
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+
+
 
   // CONTEXT API
   const { user, updateUser, openModalUpdateUser } = useUser(); // Acesso ao estado global do usuário
@@ -53,6 +62,32 @@ function UpdateUser({ user: propUser }) {
 
 
 
+  useEffect(() => {
+    axios.get(`${apiUrlIbge}/estados?orderBy=nome`).then(response => {
+      const stateOptions = response.data.map(state => ({
+        sigla: state.sigla,
+        nome: state.nome,
+      }));
+      setStates(stateOptions);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (state) {
+      axios.get(`${apiUrlIbge}/estados/${state}/municipios?orderBy=nome`).then(response => {
+        const cityOptions = response.data.map(city => ({
+          id: city.id,
+          nome: city.nome,
+        }));
+        setCities(cityOptions);
+      });
+    } else {
+      setCities([]);
+    }
+  }, [state]);
+
+
+
   // SET
   useEffect(() => {
     if (propUser && propUser.id) {
@@ -71,6 +106,7 @@ function UpdateUser({ user: propUser }) {
       setMetaGrupo(propUser.meta_grupo);
       setEntidade(propUser.entidade);
       setAccessLevel(propUser.access_level ? propUser.access_level : 0);
+      setUserType(propUser.user_type);
     }
   }, [propUser]);
 
@@ -155,6 +191,7 @@ function UpdateUser({ user: propUser }) {
     }
   };
 
+
   // CARREGAR UM AVATAR
   const handleAvatarChange = (event) => {
     if (event.target.files && event.target.files[0]) {
@@ -168,41 +205,72 @@ function UpdateUser({ user: propUser }) {
     }
   };
 
-  // ATUALIZAR INFORMAÇÕES DO USUÁRIO
-  const handleUpdateUser = async (e) => {
-    e.preventDefault();
-    setError('');
 
-    try {
-      const avatarBase64 = avatar instanceof File ? await convertToBase64(avatar) : avatar;
-      const userData = {
-        username,
-        fone,
-        avatar: avatarBase64,
-        is_active: isActive,
-        meta_user: metaUser,
-        meta_grupo: metaGrupo,
-        entidade: entidade,
-        access_level: accessLevel,
-        address,
-        city,
-        state,
-        cep
-      };
-      const response = await axios.put(`${apiUrl}/users/${id}`, userData, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      updateUser(response.data);
-      openModalUpdateUser();
-      setError('');
-    } catch (error) {
-      console.error('Erro ao atualizar usuário:', error);
-      setError('Falha ao atualizar o usuário.');
-    }
-  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // ATUALIZAR INFORMAÇÕES DO USUÁRIO
+const handleUpdateUser = async (e) => {
+  e.preventDefault();
+  setError('');
+
+  try {
+    const avatarBase64 = avatar instanceof File ? await convertToBase64(avatar) : avatar;
+    const userData = {
+      username,
+      fone,
+      avatar: avatarBase64,
+      is_active: isActive,
+      meta_user: metaUser,
+      meta_grupo: metaGrupo,
+      entidade: entidade,
+      access_level: accessLevel,
+      address,
+      city,
+      state,
+      cep, 
+      user_type: userType
+    };
+    const response = await axios.put(`${apiUrl}/users/${id}`, userData, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    updateUser(response.data);
+    openModalUpdateUser();
+    setError('');
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error);
+    setError('Falha ao atualizar o usuário.');
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // CONVERTER IMAGEM EM DADOS
   const convertToBase64 = (file) => new Promise((resolve, reject) => {
@@ -229,7 +297,7 @@ function UpdateUser({ user: propUser }) {
         });
         setEditableColumns(response.data); // Atualize o estado com as permissões recebidas
 
-        console.log('Colunas Editaveis: ', response.data, 'User id:' , id)
+        console.log('Colunas Editaveis: ', response.data, 'User id:', id)
       } catch (error) {
         console.error('Erro ao buscar permissões de edição:', error);
         setError('Falha ao carregar permissões.');
@@ -260,10 +328,62 @@ function UpdateUser({ user: propUser }) {
   };
 
 
+
+
+
+
+
+
+  const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const togglePasswordModal = () => setPasswordModalOpen(!isPasswordModalOpen);
+  const handleChangePassword = async (e) => {
+    e.preventDefault(); // Previne o comportamento padrão do formulário
+    if (newPassword === confirmPassword) {
+      try {
+        await axios.put(`${apiUrl}/users/${id}/change-password`, { password: newPassword }, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        setPasswordModalOpen(false);
+        setNewPassword('');
+        setConfirmPassword('');
+      } catch (error) {
+        console.error('Erro ao alterar senha:', error);
+      }
+    } else {
+      console.error('As senhas não coincidem');
+    }
+  };
+  
+
+
+
+
+  const [userType, setUserType] = useState('');
+
+
+
   return (
 
 
     <div className='update-user-container'>
+
+      {isPasswordModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Alterar Senha</h2>
+            <label htmlFor="newPassword" className='modal-label'>Nova Senha:</label>
+            <input id="newPassword" className="modal-input" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+            <label htmlFor="confirmPassword" className='modal-label'>Confirmar Nova Senha:</label>
+            <input id="confirmPassword" className="modal-input" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+            <button onClick={handleChangePassword} className="modal-button">Salvar</button>
+            <button onClick={togglePasswordModal} className="modal-button">Cancelar</button>
+          </div>
+        </div>
+      )}
+
+
 
       <div className="update-user-form-container">
 
@@ -290,11 +410,28 @@ function UpdateUser({ user: propUser }) {
           <label htmlFor="address" className='update-user-label-input'>Endereço:</label>
           <input id="address" className="update-user-input" type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
 
-          <label htmlFor="state" className='update-user-label-input'>Estado:</label>
+          {/* <label htmlFor="state" className='update-user-label-input'>Estado:</label>
           <input id="state" className="update-user-input" type="text" value={state} onChange={(e) => setState(e.target.value)} />
 
           <label htmlFor="city" className='update-user-label-input'>Cidade:</label>
-          <input id="city" className="update-user-input" type="text" value={city} onChange={(e) => setCity(e.target.value)} />
+          <input id="city" className="update-user-input" type="text" value={city} onChange={(e) => setCity(e.target.value)} /> */}
+
+          <label htmlFor="state" className='update-user-label-input'>Estado:</label>
+          <select id="state" className="update-user-input" value={state} onChange={(e) => setState(e.target.value)}>
+            <option value="">Selecione o estado</option>
+            {states.map(state => (
+              <option key={state.sigla} value={state.sigla}>{state.nome}</option>
+            ))}
+          </select>
+
+          <label htmlFor="city" className='update-user-label-input'>Cidade:</label>
+          <select id="city" className="update-user-input" value={city} onChange={(e) => setCity(e.target.value)} disabled={!state}>
+            <option value="">Selecione a cidade</option>
+            {cities.map(city => (
+              <option key={city.id} value={city.id}>{city.nome}</option>
+            ))}
+          </select>
+
 
           <label htmlFor="cep" className='update-user-label-input'>CEP:</label>
           <input id="cep" className="update-user-input" type="text" value={cep} onChange={(e) => setCep(e.target.value)} />
@@ -371,6 +508,28 @@ function UpdateUser({ user: propUser }) {
 
 
 
+
+
+          <label htmlFor="userType" className='update-user-label-input'>Tipo de Usuário:</label>
+          <select id="userType" className="update-user-input" value={userType} onChange={(e) => setUserType(e.target.value)}>
+            <option value="">Selecione o tipo de usuário</option>
+            <option value="Administrador">Administrador</option>
+            <option value="Supervisor">Supervisor</option>
+            <option value="Técnico">Técnico</option>
+            <option value="Comercial">Comercial</option>
+            <option value="Colaborador">Colaborador</option>
+            <option value="Escritório">Escritório</option>
+          </select>
+
+
+
+
+
+
+
+
+
+
           <label htmlFor="address" className='update-user-label-input'>Nível de Acesso:</label>
 
           <div className='btns-acess-nivel-container'>
@@ -384,6 +543,9 @@ function UpdateUser({ user: propUser }) {
           <label htmlFor="address" className='update-user-label-input'>Status:</label>
 
           <div onClick={() => setIsActive(!isActive)} className="btn-is-active" style={{ background: isActive === true ? 'dodgerblue' : '#aaaaaa' }}>{isActive === true ? 'Ativo' : 'Inativo'}</div>
+
+          <button onClick={(e) => { e.preventDefault(); togglePasswordModal(); }} className="update-user-password-button">Alterar a senha</button>
+
 
         </form>
 

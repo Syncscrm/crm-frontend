@@ -30,13 +30,12 @@
 }
 
 .search-card-input {
-    width: 150px;
+    width: 180px;
     height: 30px;
     border: none;
     outline: none;
     padding-inline: 8px;
     font-size: 13px;
-    margin-left: 5px;
     background-color: #e0e0e0;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
@@ -47,7 +46,7 @@
 }
 
 .search-icon {
-    background-color: rgb(199, 199, 199);
+    background-color: deepskyblue;
     width: 30px;
     height: 30px;
     padding: 4px;
@@ -60,7 +59,7 @@
 }
 
 .search-icon:hover {
-    background-color: deepskyblue;
+    background-color: rgb(110, 110, 110);
 }
 
 
@@ -118,12 +117,11 @@
 }
 
 .search-result-container {
-    width: 340px;
-    min-height: 200px;
+    width: 325px;
     max-height: calc(100vh - 113px);
     position: fixed;
     top: 70px;
-    left: 5px;
+    left: 240px;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -164,13 +162,14 @@
 }
 
 .loading-container-search {
-    width: 130px;
+    width: calc(100% - 10px);
     height: 90px;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 5px;
     background-color: white;
+    margin-top: 5px;
 }
 
 
@@ -390,3 +389,82 @@
 .btn-filter-tools-order:hover {
     background-color:dodgerblue;
 }
+
+
+
+
+
+
+
+
+.select-search {
+    position: fixed;
+    top: 70px;
+    left: 4px;
+
+    max-height: calc(100vh - 100px);
+    color: #ffffff;
+    font-size: 13px;
+    border: none;
+    background-color: #C4C4C4;
+    margin-left: 10px;
+    z-index: 100;
+    border-radius: 8px;
+    padding: 5px;
+    overflow: hidden;
+}
+
+.serach-imput-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.search-type-container {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 30px;
+    flex-direction: column;
+    padding: 8px;
+}
+
+.label-search-radio {
+    display: flex;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+.input-radio-container {
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+}
+
+
+.state-divider {
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: center;
+    background-color: #49c5ff;
+    padding: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+
+
+
+
+
+  .label-user-type {
+    background: rgb(95, 95, 95);
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 10px;
+    font-size: 10px;
+  }
+  

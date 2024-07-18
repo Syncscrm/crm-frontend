@@ -32,30 +32,60 @@ function LoginPage() {
     return true;
   };
 
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   setError('');
+  //   try {
+  //     const loginResponse = await axios.post(`${apiUrl}/users/login`, { email, password });
+  //     localStorage.setItem('token', loginResponse.data.access_token);
+  //     navigate('/home');
+      
+  //     // Buscar informações do usuário
+  //     const config = {
+  //       headers: { Authorization: `Bearer ${loginResponse.data.access_token}` }
+  //     };
+  //     const userInfoResponse = await axios.get(`${apiUrl}/users/find-by-email?email=${encodeURIComponent(email)}`, config);
+
+  //     loginUser(userInfoResponse.data);
+  
+  //   } catch (error) {
+  //     setError('Falha no login. Verifique suas credenciais.');
+  //     if (error.response) {
+  //       // Você pode querer tratar erros específicos aqui
+  //       console.log(error.response.data);
+  //     }
+  //   }
+  // };
+
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     try {
       const loginResponse = await axios.post(`${apiUrl}/users/login`, { email, password });
-      localStorage.setItem('token', loginResponse.data.access_token);
-      navigate('/home');
+      const token = loginResponse.data.access_token;
+      localStorage.setItem('token', token);
       
       // Buscar informações do usuário
       const config = {
-        headers: { Authorization: `Bearer ${loginResponse.data.access_token}` }
+        headers: { Authorization: `Bearer ${token}` }
       };
       const userInfoResponse = await axios.get(`${apiUrl}/users/find-by-email?email=${encodeURIComponent(email)}`, config);
-
-      loginUser(userInfoResponse.data);
+      const userData = userInfoResponse.data;
   
+      localStorage.setItem('user', JSON.stringify(userData));
+      loginUser(userData);
+      navigate('/home');
     } catch (error) {
       setError('Falha no login. Verifique suas credenciais.');
       if (error.response) {
-        // Você pode querer tratar erros específicos aqui
         console.log(error.response.data);
       }
     }
   };
+
+  
+  
 
   const handleCreateUser = async (e) => {
     e.preventDefault();

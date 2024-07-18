@@ -50,6 +50,9 @@ export const CardProvider = ({ children }) => {
   const [listaEtiquetas, setListaEtiquetas] = useState([]);
 
 
+  const [currentModuleCard, setCurrentModuleCard] = useState()
+
+
 
 
   const addHistoricoCardContext = async (currentHistoric, cardId, userId) => {
@@ -119,9 +122,11 @@ export const CardProvider = ({ children }) => {
           dataFinal,
         },
       });
+      console.log('Cards',response.data)
       setCards(response.data);
       setLoadingModal(false);
       setLoadingResult('');
+      
     } catch (error) {
       console.error('Erro ao buscar cards:', error);
       setLoadingResult('Erro ao Carregar Cards!');
@@ -148,7 +153,8 @@ export const CardProvider = ({ children }) => {
     openCloseModalMessenger, setOpenCloseModalMessenger,
     openCloseAnexosModal, setOpenCloseAnexosModal,
     listaEtiquetas,
-    fetchCards
+    fetchCards,
+    currentModuleCard, setCurrentModuleCard
   };
 
   return (

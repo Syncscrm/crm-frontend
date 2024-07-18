@@ -1,0 +1,26 @@
+.email-field-container {
+    width: 100%;
+    position: relative;
+}
+
+.email-field-label {
+    background-color: rgb(255, 255, 255);
+    font-size: 12px;
+    padding-inline: 4px;
+    color: #A1A2A2;
+    position: absolute;
+    top: -6px;
+    left: 10px;
+}
+
+.email-field-input {
+    width: 100%;
+    padding: 8px;
+    background-color: rgb(255, 255, 255);
+    height: 45px;
+    border-radius: 5px;
+    border: solid 1px #A1A2A2;
+    outline: none;
+    color: #505050;
+    text-align: center;
+}

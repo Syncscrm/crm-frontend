@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../../contexts/userContext';
 import { useColumns } from '../../../contexts/columnsContext';
@@ -10,7 +10,7 @@ import ListColumns from '../../forms/ListColumns';
 import CreateColumns from '../../forms/CreateColumns';
 
 function ColumnsPage() {
-  const { user } = useUser();
+  const { user, empresa } = useUser();
   const { openCloseCreateColumn, openModalCreateColumn } = useColumns();
 
   const [modalEtiquetas, setModalEtiquetas] = useState(false);
@@ -18,6 +18,8 @@ function ColumnsPage() {
   const [modalColunas, setModalColunas] = useState(false);
   const [modalProdutos, setModalProdutos] = useState(false);
   const [modalCores, setModalCores] = useState(false);
+  const [modalStatus, setModalStatus] = useState(false);
+
 
 
   const [listaEtiquetas, setListaEtiquetas] = useState([]);
@@ -26,14 +28,31 @@ function ColumnsPage() {
   const [listaProdutos, setListaProdutos] = useState([]);
   const [listaCores, setListaCores] = useState([]);
 
+  const [listaStatusDeColuna, setListaStatusDeColuna] = useState([]);
+
+  const [colunaStatusVendido, setColunaStatusVendido] = useState('');
+  const [colunaStatusPerdido, setColunaStatusPerdido] = useState('');
+  const [colunaStatusArquivado, setColunaStatusArquivado] = useState('');
+
+
 
   // ----------- BTNS TOOLS --------------
+  const showModalStatus = () => {
+
+    setColunaStatusVendido(empresa.coluna_vendido ? empresa.coluna_vendido : 'Não definido!')
+    setColunaStatusPerdido(empresa.coluna_perdido ? empresa.coluna_perdido : 'Não definido!')
+    setColunaStatusArquivado(empresa.coluna_arquivado ? empresa.coluna_arquivado : 'Não definido!')
+
+    setModalStatus(!modalStatus);
+
+  };
+
   const showModalCores = () => {
     getCores();
     setModalCores(!modalCores);
   };
 
-  
+
   const showModalEtiquetas = () => {
     getEtiquetas();
     setModalEtiquetas(!modalEtiquetas);
@@ -56,6 +75,9 @@ function ColumnsPage() {
 
   // ----------- Get --------------
 
+
+
+
   const getCores = async () => {
     try {
       const response = await axios.get(`${apiUrl}/users/getCores/${user.empresa_id}`);
@@ -65,7 +87,7 @@ function ColumnsPage() {
     }
   };
 
-  
+
   const getEtiquetas = async () => {
     try {
       const response = await axios.get(`${apiUrl}/users/getEtiquetas/${user.empresa_id}`);
@@ -217,6 +239,45 @@ function ColumnsPage() {
   };
 
   // ----------- Edite --------------
+
+
+  const editeColunaStatusVendido = async () => {
+    const newName = prompt('Novo nome:', colunaStatusVendido);
+    if (newName) {
+      try {
+        await axios.put(`${apiUrl}/users/updateColunaVendido/${user.empresa_id}`, { coluna_vendido: newName });
+        setColunaStatusVendido(newName);
+      } catch (error) {
+        console.error('Erro ao editar coluna vendido:', error);
+      }
+    }
+  };
+  
+  const editeColunaStatusPerdido = async () => {
+    const newName = prompt('Novo nome:', colunaStatusPerdido);
+    if (newName) {
+      try {
+        await axios.put(`${apiUrl}/users/updateColunaPerdido/${user.empresa_id}`, { coluna_perdido: newName });
+        setColunaStatusPerdido(newName);
+      } catch (error) {
+        console.error('Erro ao editar coluna perdido:', error);
+      }
+    }
+  };
+  
+  const editeColunaStatusArquivado = async () => {
+    const newName = prompt('Novo nome:', colunaStatusArquivado);
+    if (newName) {
+      try {
+        await axios.put(`${apiUrl}/users/updateColunaArquivado/${user.empresa_id}`, { coluna_arquivado: newName });
+        setColunaStatusArquivado(newName);
+      } catch (error) {
+        console.error('Erro ao editar coluna arquivado:', error);
+      }
+    }
+  };
+  
+
 
   const editeCor = async (item) => {
     const newName = prompt('Novo nome:', item.name);
@@ -371,6 +432,8 @@ function ColumnsPage() {
         <button className="btn-select-edit-parameter" onClick={showModalColunas}>Colunas</button>
         <button className="btn-select-edit-parameter" onClick={showModalProdutos}>Produtos</button>
         <button className="btn-select-edit-parameter" onClick={showModalCores}>Cores</button>
+        <button className="btn-select-edit-parameter" onClick={showModalStatus}>Status</button>
+
       </div>
 
       {modalCores && (
@@ -499,6 +562,53 @@ function ColumnsPage() {
           </div>
         </div>
       )}
+
+
+      {modalStatus && (
+        <div className="parameter-modal">
+          <div className="parameter-container">
+            <div className="parameter-header">
+              <label className="parameter-title">Status X Coluna</label>
+            </div>
+            <div className="parameter-body">
+
+              <label className="label-item-parameter-description">Quando Status Vendido ir para a Coluna com seguinte nome:</label>
+              <div className="item-list-parameter" >
+                <label className="label-item-parameter">{colunaStatusVendido}</label>
+                <div className="btns-item-list">
+                  <button className="btn-edite-item-list" onClick={() => editeColunaStatusVendido()}>Editar</button>
+                </div>
+              </div>
+
+              <label className="label-item-parameter-description">Quando Status Perdido ir para a Coluna com seguinte nome:</label>
+              <div className="item-list-parameter" >
+                <label className="label-item-parameter">{colunaStatusPerdido}</label>
+                <div className="btns-item-list">
+                  <button className="btn-edite-item-list" onClick={() => editeColunaStatusPerdido()}>Editar</button>
+                </div>
+              </div>
+
+
+              <label className="label-item-parameter-description">Quando Status Arquivado ir para a Coluna com seguinte nome:</label>
+              <div className="item-list-parameter" >
+                <label className="label-item-parameter">{colunaStatusArquivado}</label>
+                <div className="btns-item-list">
+                  <button className="btn-edite-item-list" onClick={() => editeColunaStatusArquivado()}>Editar</button>
+                </div>
+              </div>
+
+
+
+
+            </div>
+            <div className="parameter-footer">
+              <button className="btn-close-parameter" onClick={showModalStatus}>Fechar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }

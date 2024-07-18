@@ -92,6 +92,16 @@
     justify-content: center;
 }
 
+.label-item-parameter-description {
+    width: calc(100% - 20px);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 13px;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+
 .btns-item-list {
     display: flex;
 }

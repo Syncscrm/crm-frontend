@@ -5,7 +5,7 @@ import './style.css';
 
 // REACT ICONS
 import { FaBars } from 'react-icons/fa';
-import { MdMessage, MdLens, MdNotifications, MdDateRange, MdAddTask, } from 'react-icons/md';
+import { MdOutlineCalendarMonth, MdLens, MdNotifications, MdDateRange, MdAddTask, } from 'react-icons/md';
 import { TbMessageDots } from "react-icons/tb";
 
 
@@ -32,11 +32,13 @@ import Loading from '../Loading';
 import Messenger from '../Messenger';
 import Anexos from '../Anexos';
 import Avatar from '../Avatar';
+import Calendario from '../Calendario';
+import CustomModule from '../DynamicForm/CustomModule';
 
 
 function Header() {
 
-  const { user, clearUserContext, setOpenCloseImportExcelEntidades, setOpenCloseImportExcelSuiteFlow, themeDark, getAccessLevel, openCloseModalAvatar, setOpenCloseModalAvatar, userAvatar, setUserAvatar } = useUser();
+  const { user, clearUserContext, setOpenCloseImportExcelEntidades, setOpenCloseImportExcelSuiteFlow, themeDark, getAccessLevel, openCloseModalAvatar, setOpenCloseModalAvatar, userAvatar, setUserAvatar, openCloseCustomModule, setOpenCloseCustomModule } = useUser();
   const { setColumns, setColumnsUser, setSelectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal } = useColumns();
 
   const { setCurrentCardData, openCloseUpdateCard,
@@ -266,6 +268,11 @@ function Header() {
   }, [showNotifications, allNotifications, itemsToRender]);
 
 
+
+
+  const [showCalendar, setShowCalendar] = useState(false);
+
+
   return (
 
     <header className="header-container" >
@@ -390,6 +397,11 @@ function Header() {
         <div className='menu-notification-container'>
           <div className='menu-notification-header'>
             <button className='btn-close-notifications-menu' onClick={() => setShowNotifications(!showNotifications)}>X</button>
+
+
+            <MdOutlineCalendarMonth className='btn-icon-calendario' onClick={() => setShowCalendar(true)} />
+
+
             <div className='total-mensagens-text' > {numberNotifications} Mensagens</div>
 
           </div>
@@ -429,6 +441,13 @@ function Header() {
         <Anexos idCard={currentCardData.card_id} />
       )}
 
+      {openCloseCustomModule && (
+        <CustomModule idCard={currentCardData.card_id} />
+      )}
+
+
+
+
       <Loading />
 
       <TbMessageDots onClick={() => setOpenCloseModalMessenger(true)} className='icon-messenger-flutuante' />
@@ -439,6 +458,9 @@ function Header() {
 
       {unreadMessagesCount > 0 && <span className="badge">{unreadMessagesCount}</span>}
       {openCloseModalMessenger && <Messenger closeModal={closeModal} />}
+
+
+      {showCalendar && <Calendario userId={user.id} closeModal={() => setShowCalendar(false)} />}
 
     </header>
   );

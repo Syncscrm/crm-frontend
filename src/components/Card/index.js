@@ -6,28 +6,33 @@ import { format, parseISO } from 'date-fns';
 
 // ICONS
 import { GrTask } from "react-icons/gr";
-import { MdDeleteForever, MdCreditCard, MdLibraryAdd, MdAutoAwesomeMotion, MdOutlineSendToMobile, MdLockOpen, MdLockOutline, MdBookmark, MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdColorLens, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
+import { MdEmail, MdFolder, MdDeleteForever, MdCreditCard, MdLibraryAdd, MdAutoAwesomeMotion, MdOutlineSendToMobile, MdLockOpen, MdLockOutline, MdBookmark, MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdAddShoppingCart, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
 import { GiWindow } from "react-icons/gi";
 
 import './style.css';
 
 // API
 import axios from 'axios';
-import { apiUrl ,fileApiUrl} from '../../config/apiConfig';
+import { apiUrl, fileApiUrl } from '../../config/apiConfig';
 
 import { differenceInCalendarDays } from 'date-fns';
 
 import { Draggable } from 'react-beautiful-dnd';
 import VendaPerdida from '../VendaPerdida';
 
+import EmailConversation from '../forms/EmailConversation';
+
+import PedidoPedido from '../ModuloPedido';
+
 
 import fb from '../../config/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import CustomModule from '../DynamicForm/CustomModule';
 
 
 function Card({ cardData, index }) {
 
-  const { user, afilhadosList, listAllUsers, editableColumns, getAccessLevel } = useUser();
+  const { user, afilhadosList, listAllUsers, editableColumns, getAccessLevel, empresa, openCloseCustomModule, setOpenCloseCustomModule } = useUser();
   const { setOpenCloseUpdateCard, setCurrentCardData,
     setCards, setPreviewSearchCards,
     setListNotifications,
@@ -40,7 +45,8 @@ function Card({ cardData, index }) {
     currentCardIdMessage, setCurrentCardIdMessage,
     openCloseModalMessenger, setOpenCloseModalMessenger,
     openCloseAnexosModal, setOpenCloseAnexosModal,
-    listaEtiquetas
+    listaEtiquetas,
+    currentModuleCard, setCurrentModuleCard
   } = useCard();
   const { columnsUser, columns } = useColumns();
 
@@ -93,14 +99,15 @@ function Card({ cardData, index }) {
     setOpenCloseTarefasModal(true)
   };
 
+
   const viewCard = (e) => {
     e.stopPropagation();
+    fetchCardDetails(cardData.card_id);
+    fetchModules();
+    setShowCard(!showCard);
+  };
 
-    //console.log(cardData)
 
-
-    setShowCard(!showCard)
-  }
 
   function formatDate(dateString) {
     const date = parseISO(dateString);
@@ -200,14 +207,20 @@ function Card({ cardData, index }) {
 
 
     // Verificar se existe uma coluna com o nome 'Vendidos' e obter seu ID
-    const vendidosColumn = columns.find(column => column.name === 'Vendidos');
+    const vendidosColumn = columns.find(column => column.name === empresa.coluna_vendido);
     if (!vendidosColumn) {
-      console.error("Coluna 'Vendidos' não encontrada");
-      return;
+      console.error(`Coluna ${empresa.coluna_vendido} não encontrada`);
+      //return;
     }
 
-    // Definir o ID da coluna para 'Vendidos' se o status for 'Vendido'
-    const columnId = status === 'Vendido' ? vendidosColumn.id : null;
+    let columnId;
+
+    if (vendidosColumn && status != null) {
+      // Definir o ID da coluna para 'Vendidos' se o status for 'Vendido'
+      columnId = vendidosColumn.id;
+    } else {
+      columnId = cardData.column_id;
+    }
 
     try {
       setModalLoading(true);
@@ -423,6 +436,9 @@ function Card({ cardData, index }) {
 
 
 
+  useEffect(() => {
+    setBlockColumnCard(cardData.block_column);
+  }, [cardData.block_column]);
 
 
 
@@ -443,24 +459,44 @@ function Card({ cardData, index }) {
     }
 
 
-    sendMessage(
+    enviarMensagemParaBotConversa(
+      user.empresa_id,
       buscarFoneReferencia(cardData.entity_id),
       '',
       `${getUsernameById(cardData.entity_id)}\n \nCard com Link Patrocinado criado com sucesso no CRM! \n \nCliente: ${cardData.name} \nNúmero do orçamento: ${cardData.document_number} \nValor: ${cardData.sale_value ? parseFloat(cardData.sale_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '0,00'}\n\n Verifique as informações fornecidas!\n\nBazze PVC`
     );
   }
 
-  const sendMessage = async (numero, contato, mensagem) => {
-    try {
+  // const   = async (numero, contato, mensagem) => {
+  //   try {
 
-      // Envie a mensagem
-      await axios.post(`${apiUrl}/card/enviar`, { numero, mensagem, contato });
+  //     // Envie a mensagem
+  //     await axios.post(`${apiUrl}/card/enviar`, { numero, mensagem, contato });
+
+  //     const userConfirmed = window.confirm('Mensagem enviada!');
+
+  //     console.log('Mensagem enviada com sucesso!');
+  //   } catch (error) {
+  //     console.error('Erro ao enviar mensagem:', error.message);
+  //   }
+  // };
+
+  const enviarMensagemParaBotConversa = async (empresaId, numero, contato, mensagem) => {
+    try {
+      await axios.post(`${apiUrl}/card/enviarMensagemParaBotConversa`, null, {
+        params: {
+          empresaId,
+          numero,
+          contato,
+          mensagem,
+        },
+      });
 
       const userConfirmed = window.confirm('Mensagem enviada!');
 
-      console.log('Mensagem enviada com sucesso!');
+      console.log('Mensagem enviada com sucesso');
     } catch (error) {
-      console.error('Erro ao enviar mensagem:', error.message);
+      console.error('Erro ao enviar mensagem para o BotConversa:', error.message);
     }
   };
 
@@ -599,14 +635,14 @@ function Card({ cardData, index }) {
     try {
       setModalLoading(true);
       setMensagemLoading('Excluindo anexos...');
-  
+
       // Obtenha todos os anexos do card
       const anexosResponse = await axios.get(`${apiUrl}/card/${cardData.card_id}/anexos`);
 
       console.log('lista-anexos', anexosResponse.data)
 
       const anexos = anexosResponse.data;
-  
+
       // Exclua todos os anexos do servidor de arquivos
       for (const anexo of anexos) {
         try {
@@ -617,18 +653,18 @@ function Card({ cardData, index }) {
           console.error(`Erro ao excluir o arquivo ${anexo.nome_arquivo} do servidor:`, error);
         }
       }
-  
+
       setMensagemLoading('Excluindo anexos do banco de dados...');
-  
+
       // Exclua todos os anexos do banco de dados
       await axios.delete(`${apiUrl}/card/${cardData.card_id}/delete-all-anexos`);
-  
+
       setMensagemLoading('Excluindo card...');
-  
+
       // Exclua o card
       await axios.delete(`${apiUrl}/card/${cardData.card_id}`);
       setCards(prevCards => prevCards.filter(card => card.card_id !== cardData.card_id));
-  
+
       window.alert(`Card excluído com sucesso!`);
     } catch (error) {
       console.error('Erro ao excluir o card:', error);
@@ -638,23 +674,107 @@ function Card({ cardData, index }) {
       setMensagemLoading('');
     }
   };
-  
+
 
 
 
 
   function getBackgroundColor(days) {
     if (days <= 3) {
-      return '#4eafff';
+      return '#00C7E2';
     } else if (days > 3 && days <= 6) {
-      return '#FFD700';
-    } else if (days > 6 && days <= 10) {
-      return 'orange';
+      return '#FEE300';
+    } else if (days > 6) {
+      return '#FC553F';
     } else {
       return 'rgb(255, 20, 98)';
     }
   }
 
+
+  const fetchCardDetails = async (cardId) => {
+    try {
+
+      const response = await axios.get(`${apiUrl}/card/find-by-id/${cardId}`);
+      const updatedCard = response.data;
+      setCards(prevCards =>
+        prevCards.map(card =>
+          card.card_id === updatedCard.card_id ? { ...card, ...updatedCard } : card
+        )
+      );
+
+    } catch (error) {
+      console.error('Erro ao buscar detalhes do card:', error);
+    }
+  };
+
+  const [showEmails, setShowEmails] = useState(false);
+
+  const handleEmailButtonClick = () => {
+    setShowEmails(!showEmails);
+  };
+
+
+
+  const [showPedidos, setShowPedidos] = useState(false);
+
+  const handlePedidosButtonClick = () => {
+    setShowPedidos(!showPedidos);
+  };
+
+  //const [showCustomModule, setShowCustomModule] = useState(false);
+
+  const handleCustomModuleButtonClick = (event, Module) => {
+    setCurrentModuleCard(Module);
+    event.stopPropagation();
+    setCurrentCardData(cardData)
+
+    setOpenCloseCustomModule(true);
+  };
+
+
+
+
+
+
+
+  const [modules, setModules] = useState([]);
+
+
+  const fetchModules = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/custom-modules/list-modules`, {
+        params: { empresa_id: user.empresa_id }
+      });
+      setModules(response.data);
+    } catch (error) {
+      console.error('Erro ao listar módulos:', error);
+      setModules([]);
+    }
+  };
+
+  const createNewModule = async () => {
+    const moduleData = {
+      name: newModuleName,
+      empresa_id: user.empresa_id,
+      // outros dados do módulo
+    };
+
+    try {
+      await axios.post(`${apiUrl}/custom-modules/create-module`, moduleData);
+      fetchModules();
+      setShowNewModuleContainer(false);
+      setNewModuleName('');
+    } catch (error) {
+      console.error('Erro ao criar módulo:', error);
+    }
+  };
+
+
+
+
+  const [showNewModuleContainer, setShowNewModuleContainer] = useState(false);
+  const [newModuleName, setNewModuleName] = useState('');
 
 
 
@@ -695,6 +815,12 @@ function Card({ cardData, index }) {
                   <div onClick={(event) => updateCardStatusPerdido(cardData.card_id, 'Perdido', event)} className='icon-edit-status-card-container' >
                     <MdThumbDown style={{ color: statusCard === 'Perdido' ? '' : '#9c9c9c' }} className='icon-status-card-perdido' />
                   </div>
+
+                  <button onClick={(e) => {
+                    setOpenCloseEditStatusModal(false);
+                    e.stopPropagation();
+                  }} className='btn-close-select-status'>x</button>
+
                 </div>
               </div>
             )
@@ -710,8 +836,9 @@ function Card({ cardData, index }) {
               showCard && (
                 <>
 
-                  <label className='card-body-item-select-column'>
+                  <label className='card-body-item'>
                     <MdBookmark className='card-icon-item' />
+                    Etiqueta:
                     <select
                       className="select-etiqueta-card"
                       value={cardData.etiqueta_id ? cardData.etiqueta_id : null}
@@ -736,135 +863,14 @@ function Card({ cardData, index }) {
                   </label>
 
 
-                  <label className='card-body-item'>
-                    <MdArticle className='card-icon-item' />{cardData.document_number}
-                  </label>
-                  <label className='card-body-item'>
-                    <MdAssignment className='card-icon-item' />{cardData.second_document_number ? cardData.second_document_number : 'Não Informado'}
-                  </label>
-                  <label className='card-body-item'>
-                    <MdAssignmentTurnedIn className='card-icon-item' />{cardData.pedido_number ? cardData.pedido_number : 'Sem Pedido'}
-                  </label>
-                  {cardData && cardData.nome_obra && cardData.nome_obra != '' &&
-                    <label className='card-body-item'>
-                      <MdHome className='card-icon-item' />{cardData.nome_obra}
-                    </label>
-                  }
-
-
-                  {getAccessLevel('contato') &&
-                    <label className='card-body-item-fone'>
-                      <div className='card-body-item-fone-number'>
-                        <MdWhatsapp className='icons-whatsapp' onClick={() => abrirWhatsApp(cardData.fone)} />{cardData.fone ? cardData.fone : 'Sem Fone'}
-                      </div>
-                    </label>
-                  }
-
-                  {getAccessLevel('contato') &&
-                    <label className='card-body-item'>
-                      <MdAlternateEmail className='card-icon-item' />{getAccessLevel('contato') && cardData.email ? cardData.email : "Sem Email"}
-                    </label>
-                  }
-
-                  <label className='card-body-item'>
-                    <MdAccountBox className='card-icon-item' />{getUsernameById(cardData.entity_id).substring(0, 28)}
-                  </label>
-                  <label className='card-body-item'>
-                    <MdRoom className='card-icon-item' /> {cardData.city + '/' + cardData.state}
-                  </label>
-
-                  <label className='card-body-item'>
-                    <MdAccountBalance className='card-icon-item' />
-                    <label className='card-valor-item'>{getAccessLevel('valor') && cardData.cost_value ? parseFloat(cardData.cost_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ ******'}</label>
-                  </label>
-                  <label className='card-body-item'>
-                    <MdShoppingCart className='card-icon-item' />
-                    <label className='card-valor-item'>{getAccessLevel('valor') && cardData.sale_value ? parseFloat(cardData.sale_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ ******'}</label>
-                  </label>
-                  <label className='card-body-item'>
-                    <MdCreate className='card-icon-item' />{formatDate(cardData.created_at)}
-                  </label>
-                  <label className='card-body-item'>
-                    <MdOutlineUpdate className='card-icon-item' />{formatDate(cardData.updated_at)}
-                  </label>
-                  <label className='card-body-item'>
-                    <MdAnalytics className='card-icon-item' />{cardData.status_date ? formatDate(cardData.status_date) : ''}
-                  </label>
-
-
-
-                  <label className='row-column-container'>
-
-                    <label className='card-body-item-chat-bot'>
-                      <MdAdsClick className='card-icon-item' />{cardData.origem ? cardData.origem : 'Não informado'}
-                    </label>
-
-                    <MdOutlineSendToMobile
-                      className='lock-column' style={{ display: user.access_level === 5 ? '' : 'none' }}
-
-                      onClick={(e) => {
-                        enviarMensagemPotencialCliente();
-                        e.stopPropagation();
-                      }}
-                    />
-
-                  </label>
-
-
-
-                  <label className='card-body-item'>
-                    <GiWindow className='card-icon-item' />{cardData.produto ? cardData.produto : 'Não informado'}
-                  </label>
-
-
-
-                  <label className='row-column-container'>
-
-                    <label className='card-body-item-chat-bot'>
-                      <MdAutoAwesomeMotion className='card-icon-item' />Etapa: {cardData.etapa_producao === 0 ? 1 : cardData.etapa_producao + 1}
-                    </label>
-                    <MdLibraryAdd
-                      className='lock-column'
-
-                      onClick={(e) => {
-                        criarEtapaDeProducao();
-                        e.stopPropagation();
-                      }}
-                    />
-
-                  </label>
 
 
 
 
 
-                  <label className='row-column-container'>
-
-                    <label className='card-body-item-chat-bot'>
-                      <MdCreditCard className='card-icon-item' />ID: {cardData.card_id}
-                    </label>
-                    <MdDeleteForever
-                      className='btn-delete-card'
-
-                      onClick={(e) => {
-                        excluirCard();
-                        e.stopPropagation();
-                      }}
-                    />
-
-                  </label>
-
-
-
-
-                  <label style={{ display: 'none' }} className='card-body-item'>
-                    <MdViewColumn className='card-icon-item' />{cardData.column_id ? getNameColumnCard(cardData.column_id) : '---'}
-                  </label>
-
-
-
-                  <label className='row-column-container'>
+                  <label className='card-body-item-column'>
                     <MdViewColumn className='card-icon-item' />
+                    Coluna:
                     <select
                       className="select-column-card"
                       value={selectedColumnId}
@@ -895,8 +901,7 @@ function Card({ cardData, index }) {
                       }
                     </select>
 
-                    {
-                      blockColumnCard &&
+                    {blockColumnCard ? (
                       <MdLockOutline
                         style={{ backgroundColor: 'red' }}
                         className='lock-column'
@@ -905,9 +910,7 @@ function Card({ cardData, index }) {
                           e.stopPropagation();
                         }}
                       />
-                    }
-                    {
-                      (!blockColumnCard || blockColumnCard == null) &&
+                    ) : (
                       <MdLockOpen
                         className='lock-column'
                         onClick={(e) => {
@@ -915,50 +918,331 @@ function Card({ cardData, index }) {
                           e.stopPropagation();
                         }}
                       />
-                    }
+                    )}
 
                   </label>
 
 
-                  <div className='btns-card-container'>
 
-                    {getAccessLevel('editar') &&
-                      <button onClick={(e) => getCardData(e)} className='btn-update-card'>
-                        <MdEdit className='icons-btns-update-card' />
-                      </button>
-                    }
 
-                    {getAccessLevel('historico') &&
-                      <button onClick={openHistoricModal} className='btn-update-card'>
-                        <MdOutlineHistory className='icons-btns-update-card' />
-                      </button>
-                    }
 
-                    {getAccessLevel('tarefas') &&
-                      <button onClick={openTarefasModal} className='btn-update-card'>
-                        <GrTask className='icons-btns-update-card' />
-                      </button>
-                    }
 
-                    {getAccessLevel('compartilhar') &&
-                      <button onClick={openCompartilharModal} className='btn-update-card'>
-                        <MdShare className='icons-btns-update-card' />
-                      </button>
-                    }
 
-                    {getAccessLevel('producao') &&
-                      <button onClick={openModuloEsquadriasModal} className='btn-update-card'>
-                        <MdWindow className='icons-btns-update-card' />
-                      </button>
-                    }
 
-                    {getAccessLevel('anexos') &&
-                      <button onClick={openAnexosModal} className='btn-update-card'>
-                        <MdAttachFile className='icons-btns-update-card' />
-                      </button>
-                    }
+
+
+
+                  <label className='row-column-container'>
+
+                    <label className='card-body-item-chat-bot'>
+                      <MdArticle className='card-icon-item' />
+
+                      <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.document_number ? cardData.document_number : 'Não informado'}</label>
+                    </label>
+                    <MdDeleteForever
+                      className='btn-delete-card'
+
+                      onClick={(e) => {
+                        excluirCard();
+                        e.stopPropagation();
+                      }}
+                    />
+
+                  </label>
+
+
+                  <label style={{ display: 'none' }} className='card-body-item'>
+                    <MdAssignment className='card-icon-item' />Orçamento: {cardData.second_document_number ? cardData.second_document_number : 'Não Informado'}
+                  </label>
+                  <label className='card-body-item'>
+                    <MdAssignmentTurnedIn className='card-icon-item' />
+
+                    <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.pedido_number ? cardData.pedido_number : 'Não Informado'}</label>
+                  </label>
+
+                  <label className='card-body-item'>
+                    <MdHome className='card-icon-item' />
+
+                    <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.nome_obra && cardData.nome_obra != '' ? cardData.nome_obra : 'Não informado'}</label>
+                  </label>
+
+
+
+                  {getAccessLevel('contato') &&
+                    <label className='card-body-item-fone'>
+                      <div className='card-body-item-fone-number'>
+                        <MdWhatsapp className='icons-whatsapp' onClick={() => abrirWhatsApp(cardData.fone)} />
+
+                        <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.fone ? cardData.fone : 'Não informado'}</label>
+                      </div>
+                    </label>
+                  }
+
+                  {getAccessLevel('contato') &&
+                    <label className='card-body-item'>
+                      <MdAlternateEmail className='card-icon-item' />
+
+                      <label style={{ marginLeft: '0px', fontWeight: '500' }} >{getAccessLevel('contato') && cardData.email ? cardData.email : "Não informado"}</label>
+                    </label>
+                  }
+
+
+
+                  <label className='card-body-item'>
+                    <MdRoom className='card-icon-item' />
+
+                    <label style={{ marginLeft: '0px', fontWeight: '500' }} >{(cardData.city ? cardData.city : 'Cidade') + '/' + (cardData.state ? cardData.state : 'UF')} </label>
+                  </label>
+
+
+                  <label className='card-body-item'>
+                    <MdAccountBalance className='card-icon-item' />
+
+                    <label className='card-valor-item'>{getAccessLevel('valor') && cardData.cost_value ? parseFloat(cardData.cost_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ 0,00'}</label>
+                  </label>
+                  <label className='card-body-item'>
+                    <MdShoppingCart className='card-icon-item' />
+
+                    <label className='card-valor-item'>{getAccessLevel('valor') && cardData.sale_value ? parseFloat(cardData.sale_value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ 0,00'}</label>
+                  </label>
+
+
+                  <label className='card-body-item'>
+                    <MdAccountBox className='card-icon-item' />
+
+                    <label style={{ marginLeft: '0px', fontWeight: '500' }} >{getUsernameById(cardData.entity_id).substring(0, 28)}</label>
+                  </label>
+
+
+                  <label style={{ display: 'none' }} className='card-body-item'>
+                    <MdCreate className='card-icon-item' />{formatDate(cardData.created_at)}
+                  </label>
+                  <label style={{ display: 'none' }} className='card-body-item'>
+                    <MdOutlineUpdate className='card-icon-item' />{formatDate(cardData.updated_at)}
+                  </label>
+                  <label style={{ display: 'none' }} className='card-body-item'>
+                    <MdAnalytics className='card-icon-item' />{cardData.status_date ? formatDate(cardData.status_date) : ''}
+                  </label>
+
+
+
+
+
+
+
+                  <label className='card-body-item'>
+                    <MdAddShoppingCart className='card-icon-item' />
+
+                    <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.produto ? cardData.produto : 'Não informado'}</label>
+                  </label>
+
+
+
+
+                  <label className='row-column-container'>
+
+                    <label className='card-body-item-chat-bot'>
+                      <MdAdsClick className='card-icon-item' />
+
+                      <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.origem ? cardData.origem : 'Não informado'}</label>
+                    </label>
+
+                    <MdOutlineSendToMobile
+                      className='lock-column' style={{ display: user.access_level === 5 ? '' : 'none' }}
+
+                      onClick={(e) => {
+                        enviarMensagemPotencialCliente();
+                        e.stopPropagation();
+                      }}
+                    />
+
+                  </label>
+
+
+
+                  <label className='row-column-container'>
+
+                    <label className='card-body-item-chat-bot'>
+                      <MdAutoAwesomeMotion className='card-icon-item' />
+                      Etapa de Produção:
+                      <label style={{ marginLeft: '5px', fontWeight: '700' }} >{cardData.etapa_producao === 0 ? 1 : cardData.etapa_producao + 1}</label>
+                    </label>
+                    <MdLibraryAdd
+                      className='lock-column'
+
+                      onClick={(e) => {
+                        criarEtapaDeProducao();
+                        e.stopPropagation();
+                      }}
+                    />
+
+                  </label>
+
+
+
+
+
+
+
+                  <label style={{ display: 'none' }} className='row-column-container'>
+
+                    <label className='card-body-item-chat-bot'>
+                      <MdCreditCard className='card-icon-item' />ID: {cardData.card_id}
+                    </label>
+                    <MdDeleteForever
+                      className='btn-delete-card'
+
+                      onClick={(e) => {
+                        excluirCard();
+                        e.stopPropagation();
+                      }}
+                    />
+
+                  </label>
+
+
+
+
+
+
+                  <div className='modulos-card-container'>
+
+
+                    <div className='modulos-card-column-container'>
+
+                    </div>
+                    <label className='label-modulos-title'>
+                      Módulos
+                    </label>
+                    <div className='btns-card-container'>
+
+                      {getAccessLevel('editar') &&
+                        <button onClick={(e) => getCardData(e)} className='btn-update-card'>
+                          <MdCreditCard className='icons-btns-update-card' />
+                        </button>
+                      }
+
+                      {getAccessLevel('historico') &&
+                        <button onClick={openHistoricModal} className='btn-update-card'>
+                          <MdOutlineHistory className='icons-btns-update-card' />
+                        </button>
+                      }
+
+                      {getAccessLevel('tarefas') &&
+                        <button onClick={openTarefasModal} className='btn-update-card'>
+                          <GrTask className='icons-btns-update-card' />
+                        </button>
+                      }
+
+                      {getAccessLevel('compartilhar') &&
+                        <button onClick={openCompartilharModal} className='btn-update-card'>
+                          <MdShare className='icons-btns-update-card' />
+                        </button>
+                      }
+
+
+
+
+
+                    </div>
+
+
+
+
+
+                    <label style={{ display: '' }} className='label-modulos-title'>
+                      Módulos Extas
+                    </label>
+                    <div style={{ display: '' }} className='btns-card-container'>
+
+                      {getAccessLevel('producao') &&
+                        <button onClick={openModuloEsquadriasModal} className='btn-update-card'>
+                          <MdWindow className='icons-btns-update-card' />
+                        </button>
+                      }
+
+                      {getAccessLevel('anexos')  &&
+                        <button onClick={openAnexosModal} className='btn-update-card'>
+                          <MdAttachFile className='icons-btns-update-card' />
+                        </button>
+                      }
+
+                      {false &&
+                        <button onClick={(e) => { handleEmailButtonClick(); e.stopPropagation(); }} className='btn-update-card'>
+                          <MdEmail className='icons-btns-update-card' />
+                          {showEmails && <EmailConversation clientEmail={cardData.email} />}
+                        </button>
+
+                      }
+
+                      {true && (
+                        <button onClick={(e) => { handlePedidosButtonClick(); e.stopPropagation(); }} className='btn-update-card'>
+                          <MdAssignment className='icons-btns-update-card' />
+                          {showPedidos && <PedidoPedido cardData={cardData} onClose={handlePedidosButtonClick} />}
+                        </button>
+                      )}
+
+                      {false && (
+                        <button onClick={(e) => { handleCustomModuleButtonClick(e); e.stopPropagation(); }} className='btn-update-card'>
+                          <MdEdit className='icons-btns-update-card' />
+                        </button>
+                      )}
+
+
+
+
+
+
+
+                      {Array.isArray(modules) && modules.map((module, index) => (
+
+                        <button  key={index} onClick={(e) => { handleCustomModuleButtonClick(e, module); e.stopPropagation(); }} className='btn-update-card'>
+                          <MdEdit className='icons-btns-update-card' />
+                        </button>
+                      ))}
+
+
+
+                      {showNewModuleContainer ? (
+                        <div className='create-new-module-container'>
+                          <input
+                            type="text"
+                            value={newModuleName}
+                            onChange={(e) => setNewModuleName(e.target.value)}
+                            placeholder="Nome do Módulo"
+                            onClick={(e) => { e.stopPropagation(); }}
+                            className='create-new-module-input'
+                          />
+
+                          <div className='create-new-module-btns-container'>
+
+                            <button className='btn-create-new-module-cancel' onClick={(e) => { e.stopPropagation(); setShowNewModuleContainer(false) }}>Cancelar</button>
+                            <button className='btn-create-new-module-create' onClick={(e) => { e.stopPropagation(); createNewModule() }}>Criar Módulo</button>
+
+
+                          </div>
+
+                        </div>
+                      ) : (
+                        <div  style={{display: 'none'}} className='btn-create-new-module-container'>
+                          <button className='btn-create-new-module' onClick={(e) => { e.stopPropagation(); setShowNewModuleContainer(true) }}>+</button>
+                        </div>
+                      )}
+
+
+
+
+                    </div>
+
 
                   </div>
+
+
+
+
+
+
+
                 </>
               )
             }
@@ -986,7 +1270,7 @@ function Card({ cardData, index }) {
 
 
                     <label className='card-body-item-separate'>
-                      {cardData.city + '/' + cardData.state}
+                      {(cardData.city ? cardData.city : 'Cidade') + '/' + (cardData.state ? cardData.state : 'Estado')}
                     </label>
 
                     <label style={{ display: 'none' }} className='card-id-item-separate'>ID: {cardData.card_id}</label>
@@ -1000,7 +1284,22 @@ function Card({ cardData, index }) {
           </div>
           <div className='card-footer'>
 
-            <label style={{ backgroundColor: getBackgroundColor(getDaysSinceUpdate(cardData.updated_at)) }} className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label>
+            <div className='card-icons-status-container'>
+              <Md360 onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === null || statusCard === '' ? '' : 'none' }} className='card-icon-em-andamento' />
+              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Vendido' ? '' : 'none' }} className='card-icon-vendido' />
+              <MdThumbDown onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Perdido' ? '' : 'none' }} className='card-icon-perdido' />
+              <MdFolder onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Arquivado' ? '' : 'none', color: '#82839E' }} className='card-icon-vendido' />
+              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'InstalacaoExt' ? '' : 'none' }} className='card-icon-vendido' />
+              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Assistencia' ? '' : 'none' }} className='card-icon-vendido' />
+              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'AssistenciaExt' ? '' : 'none' }} className='card-icon-vendido' />
+
+            </div>
+
+            {/* <label style={{ backgroundColor: getBackgroundColor(getDaysSinceUpdate(cardData.updated_at)) }} className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label> */}
+
+            {/* <label className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label> */}
+
+
             <label style={{ backgroundColor: cardData.etapa_producao + 1 > 1 ? '' : 'transparent' }} className='etapa-producao'>Parte: {cardData.etapa_producao + 1}</label>
 
             {true &&
@@ -1036,17 +1335,9 @@ function Card({ cardData, index }) {
             <label style={{ backgroundColor: 'white' }} className='etapa-producao'>Etapa: {cardData.etapa_producao + 1}</label>
 
 
+            <label style={{ display: 'none', backgroundColor: getBackgroundColor(getDaysSinceUpdate(cardData.updated_at)) }} className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label>
 
-            <div className='card-icons-status-container'>
-              <Md360 onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === null || statusCard === '' ? '' : 'none' }} className='card-icon-em-andamento' />
-              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Vendido' ? '' : 'none' }} className='card-icon-vendido' />
-              <MdThumbDown onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Perdido' ? '' : 'none' }} className='card-icon-perdido' />
-              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Entregue' ? '' : 'none' }} className='card-icon-vendido' />
-              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'InstalacaoExt' ? '' : 'none' }} className='card-icon-vendido' />
-              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Assistencia' ? '' : 'none' }} className='card-icon-vendido' />
-              <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'AssistenciaExt' ? '' : 'none' }} className='card-icon-vendido' />
 
-            </div>
 
           </div>
           {
@@ -1056,8 +1347,9 @@ function Card({ cardData, index }) {
         </div>
 
 
-      )}
-    </Draggable>
+      )
+      }
+    </Draggable >
   );
 }
 

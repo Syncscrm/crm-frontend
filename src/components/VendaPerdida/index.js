@@ -12,7 +12,7 @@ import { apiUrl } from '../../config/apiConfig';
 
 function VendaPerdida({ cardData, closeModal }) {
 
-    const { user } = useUser();
+    const { user, empresa} = useUser();
     const { setCards, setPreviewSearchCards, setListNotifications, addHistoricoCardContext } = useCard();
     const { columns } = useColumns();
 
@@ -46,18 +46,26 @@ function VendaPerdida({ cardData, closeModal }) {
     
     
         // Verificar se existe uma coluna com o nome 'Perdidos' e obter seu ID
-        const perdidosColumn = columns.find(column => column.name === 'Perdidos');
+        const perdidosColumn = columns.find(column => column.name === empresa.coluna_perdido);
         if (!perdidosColumn) {
           console.error("Coluna 'Perdidos' não encontrada");
-          return;
+          //return;
         }
+
+          let columnId;
+
+          if (perdidosColumn) {
+            columnId = perdidosColumn.id;
+          } else {
+            columnId = cardData.column_id;
+          }
     
         try {
           const response = await axios.post(`${apiUrl}/card/update-status-venda-perdida`, {
             id,
             status,
             motivo,
-            columnId: perdidosColumn.id,
+            columnId: columnId,
           });
           setCards(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));
           setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));

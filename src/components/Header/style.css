@@ -369,6 +369,26 @@
     background-color:deeppink;
 }
 
+
+
+
+.btn-icon-calendario {
+    min-width: 25px;
+    min-height: 25px;
+    border: none;
+    border-radius: 5px;
+    background-color: #505050;
+    margin-left: 0px;
+    color: white;
+    margin-left: 8px;
+    padding: 2px;
+}
+
+.btn-icon-calendario:hover {
+    background-color:deeppink;
+}
+
+
 .item-notifications {
     width: calc(100% - 0px);
     background-color: white;
@@ -499,4 +519,23 @@
     background-color: red;
 
 }
+
+
+
+
+
+
+
+.date-input-header {
+    margin-left: 10px;
+  }
+  
+  .tasks-for-date-container {
+    margin-top: 20px;
+  }
+  
+  .task-item {
+    margin-bottom: 10px;
+  }
+  
 

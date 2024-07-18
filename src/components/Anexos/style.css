@@ -1,5 +1,3 @@
-
-
 /* ----------- GERAL ------------*/
 .geral-modal {
     position: fixed;
@@ -19,8 +17,8 @@
     top: 40px;
     width: 700px;
     max-width: calc(100vw - 10px);
-    height: calc(100vh - 70px);
-    max-height: calc(100vh - 70px);
+    height: calc(100vh - 100px);
+    max-height: calc(100vh - 100px);
     background-color: white;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
     display: flex;
@@ -51,7 +49,7 @@
 }
 
 .geral-header-close-button {
-    width: 35px;
+    min-width: 35px;
     min-height: 35px;
     border: none;
     border-radius: 5px;
@@ -60,12 +58,12 @@
 }
 
 .geral-header-close-button:hover {
-    background-color:red;
+    background-color: red;
 }
 
 .geral-body-container {
     width: 100%;
-    height: calc(100% - 130px);
+    height: calc(100% - 120px);
     overflow-y: auto;
     padding-inline: 10px;
 }
@@ -83,7 +81,7 @@
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     height: 60px;
     min-height: 50px;
 }
@@ -96,6 +94,34 @@
     color: white;
     padding-inline: 5px;
 }
+
+.geral-footer-btn-save {
+    min-height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    padding-inline: 5px;
+}
+
+.geral-footer-btn-edite {
+    min-height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: #5a5a5a;
+    color: white;
+    padding-inline: 5px;
+}
+
+.geral-footer-btn-delete {
+    min-height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: red;
+    color: white;
+    padding-inline: 5px;
+}
+
 /* --------- FIM GERAL ---------*/
 
 
@@ -146,29 +172,47 @@
 .file-info {
     display: flex;
     flex-direction: column;
+    max-width: 100%;
+    overflow: hidden;
 }
 
+
 .link-anexo {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
     font-weight: bold;
     color: #007bff;
     text-decoration: none;
+    font-size: 14px;
 }
+
+
 
 .link-anexo:hover {
     text-decoration: underline;
 }
 
+.container-btns-anexo-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
 .btn-delete-anexo {
-    background: #dc3545;
+    background-color: #747474;
     color: white;
     border: none;
     cursor: pointer;
     border-radius: 5px;
-    width: 30px;
-    height: 30px;
+    min-height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 70px;
+    margin-right: 5px;
 }
 
 .btn-delete-anexo:hover {
@@ -176,9 +220,31 @@
 
 }
 
+.btn-download-anexo {
+    background-color:#007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+}
+
 .descricao-anexos {
     color: #5c5c5c;
     font-size: 12px;
+    display: flex;
+    margin-bottom: 4px;
+    min-height: 20px;
+    align-items: center;
+}
+
+.title-tipe-info {
+    font-weight: 700;
+    margin-right: 10px;
 }
 
 .btn-anexos-add {
@@ -228,5 +294,134 @@
 }
 
 .btn-anexos-close:hover {
+    background-color: #6eb2fc;
+}
+
+
+.input-comentario {
+    width: 100%;
+    margin-right: 10px;
+    min-height: 40px;
+    padding: 3px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    /* Adiciona uma borda padrão */
+}
+
+.input-comentario:focus {
+    outline: none;
+    /* Remove a borda de foco padrão */
+    border: 1px solid #007bff;
+    /* Define uma borda de foco customizada */
+}
+
+
+.select-setor {
+    min-width: 120px;
+    margin-right: 10px;
+    min-height: 40px;
+    border: 1px solid #ccc;
+    /* Adiciona uma borda padrão */
+    border-radius: 5px;
+
+}
+
+.select-setor:focus {
+    outline: none;
+    /* Remove a borda de foco padrão */
+    border: 1px solid #007bff;
+    /* Define uma borda de foco customizada */
+}
+
+
+.camera-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+.video-stream {
+    position: fixed;
+    top: 50px;
+    max-width: 90%;
+    max-height: 80%;
+    border: 2px solid #fff;
+    border-radius: 10px;
+}
+
+
+.btns-cam-anexos {
+    position: absolute;
+    bottom: 50px;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    min-height: 40px;
+    align-items: center;
+}
+
+.capture-button {
+    height: 40px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding-inline: 5px;
+}
+
+.capture-button:hover {
+    background-color: #0056b3;
+}
+
+
+.switch-camera-button {
+    width: 40px;
+    height: 40px;
+    left: 50px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-inline: 10px;
+    font-size: 20px;
+}
+
+.switch-camera-button:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+
+
+
+
+
+.btn-camera {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    min-width: 40px;
+    min-height: 40px;
+    padding-inline: 3px;
+    margin-left: 8px;
+    font-size: 18px;
+}
+
+.btn-camera:hover {
     background-color: #6eb2fc;
 }

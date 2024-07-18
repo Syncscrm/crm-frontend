@@ -161,7 +161,7 @@ function Column(props) {
 
     return sorted;
   }, [filteredCards, orderBy, isAscending]);
-
+  
 
 
   return (

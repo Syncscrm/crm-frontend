@@ -2,8 +2,8 @@
     position: fixed;
     bottom: 30px;
     right: 4px;
-    width: 400px;
-    max-width: 400px;
+    width: 460px;
+    max-width: 460px;
     min-height: calc(100vh - 35px);
     max-height: calc(100vh - 35px);
     display: flex;
@@ -130,8 +130,8 @@
     position: fixed;
     bottom: 30px;
     right: 4px;
-    min-width: 400px;
-    max-width: 400px;
+    min-width: 460px;
+    max-width: 460px;
 
     min-height: calc(100vh - 35px);
     max-height: calc(100vh - 35px);
@@ -290,3 +290,49 @@
     font-size: 19px;
     margin-left: 5px;
 }
+
+
+
+.input-search-user-messenger {
+    width: calc(100% - 40px);
+    padding: 8px;
+
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    margin-top: 10px;
+  }
+  
+  .input-search-user-messenger:focus {
+    border-color: #007acc;
+    outline: none;
+  }
+
+  .column-messender-item-label {
+    display: flex;
+    align-items: center;
+  }
+  
+  .label-user-type-messenger {
+    width: max-content;
+    background: rgb(119, 119, 119);
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 10px;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .label-state-messenger {
+    width: max-content;
+    background: rgb(119, 119, 119);
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 5px;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+  }
+  

@@ -19,7 +19,7 @@ import UpdateUser from '../UpdateUser';
 const ListUsers = () => {
 
   // CONTEXT API
-  const { user } = useUser();
+  const { user, empresa } = useUser();
 
   // ESTADOS LOCAL
   const [users, setUsers] = useState([]);
@@ -105,7 +105,7 @@ const ListUsers = () => {
             <button className='btn-order-by-users' onClick={() => orderUsersBy('state')} style={{ backgroundColor: orderBy === 'state' ? 'dodgerblue' : '#aaaaaa' }}>Estado</button>
           </div>
 
-          <label style={{ fontSize: '12px' }}>{users.length} usuários</label>
+          <label style={{ fontSize: '12px' }}>{users.length} usuários / {empresa.numero_de_licencas} licenças</label>
           <div className='list-user-form-container'>
             {filteredUsers.map((user) => (
               <li key={user.id} className='item-list-users' onClick={() => updateUser(user)}>

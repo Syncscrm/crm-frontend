@@ -11,6 +11,8 @@ import { CardProvider } from './contexts/cardContext';
 import ColumnsPage from './components/pages/ColumnsPage';
 import PCP from './components/pages/PCP';
 import DashboardPage from './components/pages/DashboardPage';
+import LandingPage from './components/pages/LandingPage';
+import SignUp from './components/pages/SignUp';
 
 
 function App() {
@@ -20,8 +22,11 @@ function App() {
         <CardProvider>
           <Router>
             <Routes>
-              <Route path="/" element={<LoginPage />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignUp />} />
               <Route element={<ProtectedRoute />}>
+                <Route path="/login" element={<LoginPage />} />
                 <Route path="/home" element={<HomePage />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/process" element={<ColumnsPage />} />

@@ -44,7 +44,7 @@ function Tarefas() {
         // console.log('buscando historico')
         const response = await axios.get(`${apiUrl}/card/tarefas/${user.id}/${currentCardData.card_id}`);
         setTarefas(response.data);
-        //console.log('tarefas:', response.data);
+        console.log('tarefas:', response.data);
 
       } catch (error) {
         console.error('Error fetching tarefas:', error);
@@ -66,12 +66,16 @@ function Tarefas() {
     }
 
     try {
+
+      const dueDateWithTimezone = new Date(dueDate).toISOString();
+
+
       const payload = {
         user_id: user.id, // from useUser context
         card_id: currentCardData.card_id, // or any other type depending on the context
         description: currentTarefa,
         task_type: 'Card',
-        due_date: dueDate,
+        due_date: dueDateWithTimezone,
         completed: false,
         empresa_id: user.empresa_id
       };
@@ -89,16 +93,16 @@ function Tarefas() {
   const updateTarefas = async (event, task_id, newStatus) => {
     event.preventDefault();
     event.stopPropagation();
-  
+
     try {
       const payload = {
         task_id: task_id,
         completed: newStatus,
         card_id: currentCardData.id,
       };
-  
+
       const response = await axios.post(`${apiUrl}/card/update-tarefa`, payload);
-  
+
       if (response.data) {
         setTarefas(prevTarefas =>
           prevTarefas.map(tarefa =>
@@ -107,12 +111,12 @@ function Tarefas() {
         );
         setCurrentTarefa('');
       }
-  
+
     } catch (error) {
       console.error('Error updating card tarefa:', error);
     }
   };
-  
+
 
   useEffect(() => {
   }, [tarefas]);
@@ -124,9 +128,12 @@ function Tarefas() {
   }
 
   function formatDateSimple(dateString) {
-    const date = parseISO(dateString);
-    return format(date, 'dd/MM/yyyy');
+    const date = new Date(dateString);
+    const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    return format(adjustedDate, 'dd/MM/yyyy');
   }
+
+
 
 
   const containerRef = useRef(null);
@@ -148,9 +155,9 @@ function Tarefas() {
     <div className='tarefa-card-modal'>
       <div className='tarefa-card-container'>
         <div className='tarefa-card-footer'>
-        <div className='header-update-card-container'>
-          <label>Tarefas</label>
-        </div>
+          <div className='header-update-card-container'>
+            <label>Tarefas</label>
+          </div>
           <button className="tarefa-card-close-button" onClick={() => setOpenCloseTarefasModal(false)}>X</button>
         </div>
         <div className="tarefa-card-form-container">

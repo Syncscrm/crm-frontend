@@ -175,7 +175,7 @@ function ImportExcel() {
         try {
 
           const cardData = {
-            name: name ? name : 'Não Informado',
+            name: name ? name : '',
             state: '',
             city: '',
             fone: '',
@@ -183,7 +183,7 @@ function ImportExcel() {
             column_id: idColumnFinalizados,
             entity_id: buscarIdReferencia(entidade),
             empresa_id: user.empresa_id,
-            document_number: documento_card ? documento_card : 'Não Informado',
+            document_number: documento_card ? documento_card : '',
             cost_value:valor ? valor : 0,
           };
 

@@ -10,7 +10,7 @@ import './style.css';
 const apiUrlIbge = 'https://servicodados.ibge.gov.br/api/v1/localidades';
 
 function UpdateCard({ idCard, cardData }) {
-  const { user, listAllUsers } = useUser();
+  const { user, listAllUsers, empresa } = useUser();
   const { columnsUser, columns } = useColumns();
   const { addHistoricoCardContext, setOpenCloseUpdateCard, cards, setCards, setPreviewSearchCards, setListNotifications, listaEtiquetas} = useCard();
 
@@ -242,17 +242,25 @@ function UpdateCard({ idCard, cardData }) {
     }
 
 
-    const arquivadosColumn = columns.find(column => column.name === 'Arquivados');
+    const arquivadosColumn = columns.find(column => column.name === empresa.coluna_arquivado);
     if (!arquivadosColumn) {
-      console.error("Coluna 'Arquivados' não encontrada");
-      return;
+      console.error("Coluna não encontrada");
+      //return;
+    }
+
+    let columnId;
+
+    if (arquivadosColumn) {
+      columnId = arquivadosColumn.id;
+    } else {
+      columnId = cardData.column_id;
     }
 
     try {
       const response = await axios.post(`${apiUrl}/card/update-arquivados`, {
         id,
         status: 'Arquivado',
-        columnId: arquivadosColumn.id,
+        columnId: columnId,
       });
       setCards(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));
       setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));
