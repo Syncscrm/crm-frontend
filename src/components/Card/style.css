@@ -26,7 +26,7 @@
     display: flex;
     width: 5px;
     height: 100%;
-    background-color: dodgerblue;
+    background-color: rgb(124, 124, 124);
     z-index: 10;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
@@ -182,7 +182,7 @@
     border-radius: 5px;
     color: white;
     font-size: 10px;
-    min-height: 20px;
+    min-height: 21px;
     margin-inline: 3px;
     display: flex;
     align-items: center;
@@ -196,7 +196,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 29px;
+    margin-right: 0px;
+    margin-left: 4px;
 }
 
 .card-icon-star {
@@ -210,8 +211,8 @@
 }
 
 .card-icons-status-container {
-    width: 35px;
-    max-width: 35px;
+    width: 80px;
+    max-width: 80px;
     padding-left: 0px;
     display: flex;
     justify-content: center;
@@ -219,6 +220,7 @@
     height: 100%;
     padding-top: 2px;
     font-size: 20px;
+    margin-left: 5px;
 }
 
 .card-icon-em-andamento {
@@ -230,7 +232,9 @@
 }
 
 .card-icon-vendido {
-    color: dodgerblue;
+    color: rgb(87, 190, 250);
+    margin-right: 3px;
+    
 }
 
 .card-icon-vendido:hover {
@@ -239,6 +243,7 @@
 
 .card-icon-perdido {
     color:rgb(255, 20, 98);
+    margin-right: 3px;
 }
 
 .card-icon-perdido:hover {
@@ -284,9 +289,9 @@
 
 .edit-status-footer-container {
     width: calc(100% - 0px);
-    height: calc(95px);
-    background-color: rgba(0, 0, 0, 0.678);
-    border-radius: 8px;
+    height: 126px;
+    background-color: rgba(0, 0, 0, 0.671);
+    border-radius: 4px;
     z-index: 1000;
     position:absolute;
     bottom: 0;
@@ -356,6 +361,15 @@
 
 }
 
+.card-body-item button {
+    pointer-events: none; /* Desativa a propagação do evento hover nos botões */
+}
+
+.card-container:hover .card-body-item button {
+    pointer-events: auto; /* Reativa a interação com os botões quando o card está em hover */
+}
+
+
 .select-column-card:focus {
     background-color: rgb(121, 121, 121);
     color: white;
@@ -370,6 +384,7 @@
     width: 100%;
     margin-bottom: 5px;
     height: 23px;
+    
 }
 
 .icons-shared-card {
@@ -388,6 +403,9 @@
     cursor:default;
 }
 
+
+
+/* Estilo para o select */
 .select-etiqueta-card {
     color: #ffffff;
     height: 21px;
@@ -396,17 +414,37 @@
     border: none;
     background-color: #C4C4C4;
     padding-inline: 2px;
-    max-width: 210;
+    max-width: 210px; /* Corrigido para incluir 'px' */
     min-width: 100px;
     margin-left: 4px;
 }
 
+/* Estilo para o select quando está em foco */
 .select-etiqueta-card:focus {
     background-color: rgb(121, 121, 121);
     color: white;
     outline: none;
     border-color: initial;
     box-shadow: none;
+}
+
+
+/* Estilo para as opções do select */
+.select-etiqueta-card option {
+    background-color: #fff; /* Cor de fundo padrão */
+    color: #000; /* Cor do texto */
+    height: 30px; /* Aumenta a altura dos itens */
+    padding: 5px; /* Adiciona padding interno */
+    margin-bottom: 2px; /* Adiciona margem inferior */
+}
+
+/* Estilo para as opções quando em foco */
+.select-etiqueta-card option:hover {
+    background-color: #e0e0e0; /* Cor de fundo ao passar o mouse */
+}
+
+.item-select-etiqueta-card {
+    color: white;
 }
 
 
@@ -499,20 +537,38 @@
 
 
 .card-n-dias {
-    min-width: 20px;
-    max-width: 20px;
-    height: 20px;
+    min-width: 21px;
+    max-width: 21px;
+    height: 21px;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #c2c2c2;
     color: white;
-    border-radius: 30px;
+    border-radius: 4px;
     font-size: 10px;
-    padding-inline: 3px;
     margin-right: 3px;
+    padding-top: 1px;
+    margin-top: 1px;
 }
 
+.card-n-dias-expanded {
+    min-width: 70px;
+    max-width: 70px;
+    height: 21px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #c2c2c2;
+    color: white;
+    border-radius: 4px;
+    font-size: 10px;
+    margin-right: 3px;
+    padding-top: 1px;
+    margin-top: 1px;
+    position:absolute;
+    right: 4px;
+}
 
 .btn-create-new-module-container {
     width:  35px;
@@ -599,5 +655,23 @@
     border-radius: 5px;
     margin-top: 10px;
     margin-left: 10px;
+}
+
+.btn-open-status-container {
+    min-width: 32px;
+    height: 21px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    background-color: #4eafff;
+    margin-left: 10px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content:space-evenly;
+}
+
+.btn-open-status-container:hover {
+    background-color: #f5355f;
 }
 

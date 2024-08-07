@@ -95,16 +95,18 @@ function CreateUser() {
     return true;
   };
 
+
+
   const handleCreateUser = async (e) => {
     e.preventDefault();
     setIsCreatingAccount(true);
     setError('');
-
+  
     let avatarBase64 = null;
     if (avatar) {
       avatarBase64 = await convertToBase64(avatar);
     }
-
+  
     const userData = {
       userEmail,
       username,
@@ -116,21 +118,22 @@ function CreateUser() {
       cep,
       fone,
       avatar: avatarBase64,
+      empresa_id: user.empresa_id // Inclua empresa_id aqui
     };
-
+  
     if (password !== confirmPassword) {
       setError('As senhas não coincidem.');
       setIsCreatingAccount(false);
       return;
     }
-
+  
     if (!validatePassword(password)) {
       setIsCreatingAccount(false);
       return;
     }
-
+  
     try {
-      await axios.post(`${apiUrl}/users/create`, { userEmail, username, email, password, address, state, city, cep, fone, metaUser, metaGrupo, entity, avatar: avatarBase64 });
+      await axios.post(`${apiUrl}/users/create`, userData);
       openModalCreateUser();
     } catch (error) {
       setIsCreatingAccount(false);
@@ -141,6 +144,54 @@ function CreateUser() {
       }
     }
   };
+  
+
+  // const handleCreateUser = async (e) => {
+  //   e.preventDefault();
+  //   setIsCreatingAccount(true);
+  //   setError('');
+
+  //   let avatarBase64 = null;
+  //   if (avatar) {
+  //     avatarBase64 = await convertToBase64(avatar);
+  //   }
+
+  //   const userData = {
+  //     userEmail,
+  //     username,
+  //     email,
+  //     password,
+  //     address,
+  //     state,
+  //     city,
+  //     cep,
+  //     fone,
+  //     avatar: avatarBase64,
+  //   };
+
+  //   if (password !== confirmPassword) {
+  //     setError('As senhas não coincidem.');
+  //     setIsCreatingAccount(false);
+  //     return;
+  //   }
+
+  //   if (!validatePassword(password)) {
+  //     setIsCreatingAccount(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     await axios.post(`${apiUrl}/users/create`, { userEmail, username, email, password, address, state, city, cep, fone, metaUser, metaGrupo, entity, avatar: avatarBase64 });
+  //     openModalCreateUser();
+  //   } catch (error) {
+  //     setIsCreatingAccount(false);
+  //     if (error.response && error.response.status === 409) {
+  //       setError('Email já está em uso.');
+  //     } else {
+  //       setError('Erro ao criar usuário.');
+  //     }
+  //   }
+  // };
 
   return (
     <div className='create-user-container'>

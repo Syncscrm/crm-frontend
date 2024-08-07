@@ -1,11 +1,33 @@
+.modal-messenger {
+    /* width: 480px;
+    height: 100vh; */
+    position: fixed;
+    right: 0;
+    top: 0;
+    background-color: #0000000e;
+    z-index: 1100;
+}
+
+
+/* Desativa a interação do mouse com os botões */
+.message-label button {
+    pointer-events: none;
+}
+
+/* Reativa a interação do mouse com os botões quando o card está em hover */
+.message-label:hover button {
+    pointer-events: auto;
+}
+
+
 .messenger-container {
     position: fixed;
-    bottom: 30px;
+    top: 38px;
     right: 4px;
     width: 460px;
-    max-width: 460px;
-    min-height: calc(100vh - 35px);
-    max-height: calc(100vh - 35px);
+    max-width: calc(100vw - 10px);
+    min-height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
     display: flex;
     border-radius: 10px;
     background-color: #00AEFF;
@@ -128,13 +150,13 @@
 
 .message-container {
     position: fixed;
-    bottom: 30px;
+    top: 38px;
     right: 4px;
-    min-width: 460px;
-    max-width: 460px;
+    width: 460px;
+    max-width: calc(100vw - 10px);
 
-    min-height: calc(100vh - 35px);
-    max-height: calc(100vh - 35px);
+    min-height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
     height: 100%;
     display: flex;
     border-radius: 8px;

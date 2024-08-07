@@ -10,7 +10,7 @@ import ListColumns from '../../forms/ListColumns';
 import CreateColumns from '../../forms/CreateColumns';
 
 function ColumnsPage() {
-  const { user, empresa } = useUser();
+  const { user, empresa, setEmpresa } = useUser();
   const { openCloseCreateColumn, openModalCreateColumn } = useColumns();
 
   const [modalEtiquetas, setModalEtiquetas] = useState(false);
@@ -33,18 +33,28 @@ function ColumnsPage() {
   const [colunaStatusVendido, setColunaStatusVendido] = useState('');
   const [colunaStatusPerdido, setColunaStatusPerdido] = useState('');
   const [colunaStatusArquivado, setColunaStatusArquivado] = useState('');
+  const [colunaStatusPedido, setColunaStatusPedido] = useState('');
+
 
 
 
   // ----------- BTNS TOOLS --------------
+  // const showModalStatus = () => {
+
+  //   setColunaStatusVendido(empresa.coluna_vendido ? empresa.coluna_vendido : 'Não definido!')
+  //   setColunaStatusPerdido(empresa.coluna_perdido ? empresa.coluna_perdido : 'Não definido!')
+  //   setColunaStatusArquivado(empresa.coluna_arquivado ? empresa.coluna_arquivado : 'Não definido!')
+
+  //   setModalStatus(!modalStatus);
+
+  // };
+
   const showModalStatus = () => {
-
-    setColunaStatusVendido(empresa.coluna_vendido ? empresa.coluna_vendido : 'Não definido!')
-    setColunaStatusPerdido(empresa.coluna_perdido ? empresa.coluna_perdido : 'Não definido!')
-    setColunaStatusArquivado(empresa.coluna_arquivado ? empresa.coluna_arquivado : 'Não definido!')
-
+    setColunaStatusVendido(empresa.coluna_vendido ? empresa.coluna_vendido : 'Não definido!');
+    setColunaStatusPerdido(empresa.coluna_perdido ? empresa.coluna_perdido : 'Não definido!');
+    setColunaStatusArquivado(empresa.coluna_arquivado ? empresa.coluna_arquivado : 'Não definido!');
+    setColunaStatusPedido(empresa.pedido_coluna ? empresa.pedido_coluna : 'Não definido!'); // Novo estado
     setModalStatus(!modalStatus);
-
   };
 
   const showModalCores = () => {
@@ -63,10 +73,10 @@ function ColumnsPage() {
     setModalOrigens(!modalOrigens);
   };
 
-  const showModalColunas = () => {
-    getColumns();
-    setModalColunas(!modalColunas);
-  };
+  // const showModalColunas = () => {
+  //   getColumns();
+  //   setModalColunas(!modalColunas);
+  // };
 
   const showModalProdutos = () => {
     getProdutos();
@@ -88,14 +98,36 @@ function ColumnsPage() {
   };
 
 
+  // const getEtiquetas = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/users/getEtiquetas/${user.empresa_id}`);
+  //     setListaEtiquetas(response.data);
+  //   } catch (error) {
+  //     console.error('Erro ao buscar Etiquetas:', error);
+  //   }
+  // };
+
+  const getColumns = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/users/getColumns/${user.empresa_id}`);
+      const orderedColumns = response.data.sort((a, b) => a.display_order - b.display_order);
+      setListaColunas(orderedColumns);
+    } catch (error) {
+      console.error('Erro ao buscar Colunas:', error);
+    }
+  };
+
+
   const getEtiquetas = async () => {
     try {
       const response = await axios.get(`${apiUrl}/users/getEtiquetas/${user.empresa_id}`);
-      setListaEtiquetas(response.data);
+      const orderedEtiquetas = response.data.sort((a, b) => a.order - b.order);
+      setListaEtiquetas(orderedEtiquetas);
     } catch (error) {
       console.error('Erro ao buscar Etiquetas:', error);
     }
   };
+
 
   const getOrigens = async () => {
     try {
@@ -106,14 +138,14 @@ function ColumnsPage() {
     }
   };
 
-  const getColumns = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/users/getColumns/${user.empresa_id}`);
-      setListaColunas(response.data);
-    } catch (error) {
-      console.error('Erro ao buscar Colunas:', error);
-    }
-  };
+  // const getColumns = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/users/getColumns/${user.empresa_id}`);
+  //     setListaColunas(response.data);
+  //   } catch (error) {
+  //     console.error('Erro ao buscar Colunas:', error);
+  //   }
+  // };
 
   const getProdutos = async () => {
     try {
@@ -252,7 +284,30 @@ function ColumnsPage() {
       }
     }
   };
-  
+
+
+  const editeColunaStatusPedido = async () => {
+    const newName = prompt('Novo nome:', colunaStatusPedido);
+    if (newName) {
+      try {
+        await axios.put(`${apiUrl}/users/updateColunaPedido/${user.empresa_id}`, { pedido_coluna: newName });
+        setColunaStatusPedido(newName);
+
+         // Atualizar o contexto da empresa
+      setEmpresa((prevEmpresa) => ({
+        ...prevEmpresa,
+        pedido_coluna: newName, // Atualiza o pedido_coluna no estado da empresa
+      }));
+
+      
+      } catch (error) {
+        console.error('Erro ao editar coluna pedido:', error);
+      }
+    }
+  };
+
+
+
   const editeColunaStatusPerdido = async () => {
     const newName = prompt('Novo nome:', colunaStatusPerdido);
     if (newName) {
@@ -264,7 +319,7 @@ function ColumnsPage() {
       }
     }
   };
-  
+
   const editeColunaStatusArquivado = async () => {
     const newName = prompt('Novo nome:', colunaStatusArquivado);
     if (newName) {
@@ -276,7 +331,7 @@ function ColumnsPage() {
       }
     }
   };
-  
+
 
 
   const editeCor = async (item) => {
@@ -294,18 +349,18 @@ function ColumnsPage() {
 
 
 
-  const editeEtiqueta = async (item) => {
-    const newName = prompt('Novo nome:', item.description);
-    if (newName) {
-      try {
-        await axios.put(`${apiUrl}/users/updateEtiqueta/${item.id}`, { description: newName });
+  // const editeEtiqueta = async (item) => {
+  //   const newName = prompt('Novo nome:', item.description);
+  //   if (newName) {
+  //     try {
+  //       await axios.put(`${apiUrl}/users/updateEtiqueta/${item.id}`, { description: newName });
 
-        setListaEtiquetas(listaEtiquetas.map(itemList => itemList.id === item.id ? { ...itemList, description: newName } : itemList));
-      } catch (error) {
-        console.error('Erro ao editar Etiqueta:', error);
-      }
-    }
-  };
+  //       setListaEtiquetas(listaEtiquetas.map(itemList => itemList.id === item.id ? { ...itemList, description: newName } : itemList));
+  //     } catch (error) {
+  //       console.error('Erro ao editar Etiqueta:', error);
+  //     }
+  //   }
+  // };
 
   const editeOrigem = async (item) => {
     const newName = prompt('Novo nome:', item.name);
@@ -396,14 +451,14 @@ function ColumnsPage() {
     }
   };
 
-  const removeColuna = async (id) => {
-    try {
-      await axios.delete(`${apiUrl}/users/deleteColuna/${id}`);
-      setListaColunas(listaColunas.filter(itemList => itemList.id !== id));
-    } catch (error) {
-      console.error('Erro ao excluir Coluna:', error);
-    }
-  };
+  // const removeColuna = async (id) => {
+  //   try {
+  //     await axios.delete(`${apiUrl}/users/deleteColuna/${id}`);
+  //     setListaColunas(listaColunas.filter(itemList => itemList.id !== id));
+  //   } catch (error) {
+  //     console.error('Erro ao excluir Coluna:', error);
+  //   }
+  // };
 
   const removeProduto = async (id) => {
     const isBlocked = true;
@@ -421,6 +476,172 @@ function ColumnsPage() {
     }
   };
 
+
+
+
+  const [editingEtiqueta, setEditingEtiqueta] = useState(null);
+  const [newDescription, setNewDescription] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
+  const [newOrder, setNewOrder] = useState('');
+
+
+  const [availableColors, setAvailableColors] = useState([
+    // Tons em vermelho (pastéis)
+    "#FFB3B3", "#FFCCCC", "#FFE6E6", "#FF9999", "#FF8080", "#FF6666", "#FF4D4D", "#FF3333", "#FF1A1A", "#FF9999", "#FFB3B3",
+    // Tons em azul (pastéis)
+    "#B3D9FF", "#CCE6FF", "#E6F2FF", "#99CCFF", "#80BFFF", "#66B3FF", "#4DA6FF", "#3399FF", "#1A8CFF", "#99CCFF", "#B3D9FF",
+    // Tons em verde (pastéis)
+    "#B3FFB3", "#CCFFCC", "#E6FFE6", "#99FF99", "#80FF80", "#66FF66", "#4DFF4D", "#33FF33", "#1AFF1A", "#99FF99", "#B3FFB3",
+    // Tons em laranja (pastéis)
+    "#FFD9B3", "#FFE6CC", "#FFF2E6", "#FFCC99", "#FFB380", "#FF9966", "#FF804D", "#FF6633", "#FF4D1A", "#FFCC99", "#FFD9B3",
+    // Tons em rosa (pastéis)
+    "#FFCCE6", "#FFE6F2", "#FFF2F8", "#FF99CC", "#FF80B2", "#FF6699", "#FF4D80", "#FF3366", "#FF1A4D", "#FF99CC", "#FFCCE6",
+    // Tons em roxo (pastéis)
+    "#D9B3FF", "#E6CCFF", "#F2E6FF", "#CC99FF", "#B380FF", "#9966FF", "#804DFF", "#6633FF", "#4D1AFF", "#CC99FF", "#D9B3FF",
+    // Tons em amarelo (pastéis)
+    "#FFFFB3", "#FFFFCC", "#FFFFE6", "#FFFF99", "#FFFF80", "#FFFF66", "#FFFF4D", "#FFFF33", "#FFFF1A", "#FFFF99", "#FFFFB3",
+    // Tons variados (pastéis)
+    "#FFCEB3", "#FFD1B2", "#FFDB99", "#DBFFB3", "#B3FF99", "#99FFD1", "#B2E6FF", "#DBB3FF", "#FFB3D9", "#FFB2CE", "#FFDAB9"
+  ]);
+
+
+
+
+
+
+
+
+
+  const editeEtiqueta = (item) => {
+    setEditingEtiqueta(item);
+    setNewDescription(item.description);
+    setSelectedColor(item.color);
+    setNewOrder(item.order);
+  };
+
+
+
+  const saveEtiquetaEdits = async () => {
+    if (editingEtiqueta) {
+      try {
+        await axios.put(`${apiUrl}/users/updateEtiqueta/${editingEtiqueta.id}`, {
+          description: newDescription,
+          color: selectedColor,
+          order: newOrder
+        });
+
+        setListaEtiquetas(listaEtiquetas.map(itemList =>
+          itemList.id === editingEtiqueta.id ? { ...itemList, description: newDescription, color: selectedColor, order: newOrder } : itemList
+        ));
+        setEditingEtiqueta(null); // Fechar o modal de edição
+      } catch (error) {
+        console.error('Erro ao editar Etiqueta:', error);
+      }
+    }
+  };
+
+
+
+
+
+
+  const [newEtiqueta, setNewEtiqueta] = useState(null);
+  const [newSelectedColor, setNewSelectedColor] = useState('');
+
+  const showCreateEtiquetaModal = () => {
+    setNewEtiqueta(true);
+    setNewDescription('');
+    setNewSelectedColor('');
+    setNewOrder('');
+  };
+
+  const hideCreateEtiquetaModal = () => {
+    setNewEtiqueta(null);
+  };
+
+
+  const saveNewEtiqueta = async () => {
+    if (newDescription && newSelectedColor && newOrder) {
+      try {
+        const itemData = {
+          description: newDescription,
+          color: newSelectedColor,
+          order: parseInt(newOrder, 10),
+          empresa_id: user.empresa_id,
+        };
+
+        await axios.post(`${apiUrl}/users/createEtiqueta`, itemData);
+
+        const response = await axios.get(`${apiUrl}/users/getEtiquetas/${user.empresa_id}`);
+        const orderedEtiquetas = response.data.sort((a, b) => a.order - b.order);
+        setListaEtiquetas(orderedEtiquetas);
+
+        hideCreateEtiquetaModal(); // Fechar o modal de criação
+      } catch (error) {
+        console.error('Erro ao criar Etiqueta:', error);
+      }
+    }
+  };
+
+
+
+
+  const [editingColumn, setEditingColumn] = useState(null);
+  const [newName, setNewName] = useState('');
+  const [newDisplayOrder, setNewDisplayOrder] = useState('');
+  const [newSetor, setNewSetor] = useState('');
+
+  const showModalColunas = () => {
+    getColumns();
+    setModalColunas(!modalColunas);
+  };
+
+  // const getColumns = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/users/getColumns/${user.empresa_id}`);
+  //     setListaColunas(response.data);
+  //   } catch (error) {
+  //     console.error('Erro ao buscar Colunas:', error);
+  //   }
+  // };
+
+  const editColumn = (column) => {
+    setEditingColumn(column);
+    setNewName(column.name);
+    setNewDisplayOrder(column.display_order);
+    setNewDescription(column.description);
+    setNewSetor(column.setor);
+  };
+
+  const saveColumnEdits = async () => {
+    if (editingColumn) {
+      try {
+        const updatedColumn = {
+          name: newName,
+          display_order: newDisplayOrder,
+          description: newDescription,
+          setor: newSetor
+        };
+        await axios.put(`${apiUrl}/users/updateColuna/${editingColumn.id}`, updatedColumn);
+        setListaColunas(listaColunas.map(col => col.id === editingColumn.id ? { ...col, ...updatedColumn } : col));
+        setEditingColumn(null); // Fechar o modal de edição
+      } catch (error) {
+        console.error('Erro ao editar Coluna:', error);
+      }
+    }
+  };
+
+  const removeColuna = async (id) => {
+    try {
+      await axios.delete(`${apiUrl}/users/deleteColuna/${id}`);
+      setListaColunas(listaColunas.filter(item => item.id !== id));
+    } catch (error) {
+      console.error('Erro ao excluir Coluna:', error);
+    }
+  };
+
+
+
   return (
     <div className="users-page-container">
       <Header />
@@ -435,6 +656,108 @@ function ColumnsPage() {
         <button className="btn-select-edit-parameter" onClick={showModalStatus}>Status</button>
 
       </div>
+
+
+
+
+      {editingColumn && (
+        <div className="parameter-modal-etiqueta">
+          <div className="parameter-container">
+            <div className="parameter-header">
+              <label className="parameter-title">Editar Coluna</label>
+            </div>
+            <div className="parameter-body">
+              <label>Nome:</label>
+              <input
+                className='input-select-color-etiqueta-selector'
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+
+              <label>Ordem de Exibição:</label>
+              <input
+                className='input-select-color-etiqueta-selector'
+                type="number"
+                value={newDisplayOrder}
+                onChange={(e) => setNewDisplayOrder(e.target.value)}
+              />
+
+              <label>Descrição:</label>
+              <input
+                className='input-select-color-etiqueta-selector'
+                type="text"
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+              />
+
+              <label>Setor:</label>
+              <input
+                className='input-select-color-etiqueta-selector'
+                type="text"
+                value={newSetor}
+                onChange={(e) => setNewSetor(e.target.value)}
+              />
+            </div>
+            <div className="parameter-footer">
+              <button className="btn-close-parameter" onClick={() => setEditingColumn(null)}>Cancelar</button>
+              <button className="btn-add-parameter" onClick={saveColumnEdits}>Salvar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+      {editingEtiqueta && (
+        <div className="parameter-modal-etiqueta">
+          <div className="parameter-container">
+            <div className="parameter-header">
+              <label className="parameter-title">Editar Etiqueta</label>
+            </div>
+            <div className="parameter-body">
+              <label className='title-select-color-etiqueta-selector'>Descrição:</label>
+              <input
+                className='input-select-color-etiqueta-selector'
+                type="text"
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+              />
+
+              <label className='title-select-color-etiqueta-selector'>Ordem:</label>
+              <input
+                className='input-select-color-etiqueta-selector'
+                type="number"
+                value={newOrder}
+                onChange={(e) => setNewOrder(e.target.value)}
+              />
+
+              <label className='title-select-color-etiqueta-selector'>Selecione a Cor:</label>
+              <div className="color-options">
+                {availableColors.map((color) => (
+                  <div
+                    key={color}
+                    className={`color-option ${color === selectedColor ? 'selected' : ''}`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => setSelectedColor(color)}
+                  ></div>
+                ))}
+              </div>
+            </div>
+            <div className="parameter-footer">
+              <button className="btn-close-parameter" onClick={() => setEditingEtiqueta(null)}>Cancelar</button>
+              <button className="btn-add-parameter" onClick={saveEtiquetaEdits}>Salvar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+
+
 
       {modalCores && (
         <div className="parameter-modal">
@@ -462,7 +785,7 @@ function ColumnsPage() {
       )}
 
 
-
+      {/* 
       {modalEtiquetas && (
         <div className="parameter-modal">
           <div className="parameter-container">
@@ -486,7 +809,78 @@ function ColumnsPage() {
             </div>
           </div>
         </div>
+      )} */}
+
+      {newEtiqueta && (
+        <div className="parameter-modal-etiqueta">
+          <div className="parameter-container">
+            <div className="parameter-header">
+              <label className="parameter-title">Criar Nova Etiqueta</label>
+            </div>
+            <div className="parameter-body">
+              <label className='title-select-color-etiqueta-selector'>Descrição:</label>
+              <input
+                className='input-select-color-etiqueta-selector'
+                type="text"
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+              />
+
+              <label className='title-select-color-etiqueta-selector'>Ordem:</label>
+              <input
+                className='input-select-color-etiqueta-selector'
+                type="number"
+                value={newOrder}
+                onChange={(e) => setNewOrder(e.target.value)}
+              />
+
+              <label className='title-select-color-etiqueta-selector'>Selecione a Cor:</label>
+              <div className="color-options">
+                {availableColors.map((color) => (
+                  <div
+                    key={color}
+                    className={`color-option ${color === newSelectedColor ? 'selected' : ''}`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => setNewSelectedColor(color)}
+                  ></div>
+                ))}
+              </div>
+            </div>
+            <div className="parameter-footer">
+              <button className="btn-close-parameter" onClick={hideCreateEtiquetaModal}>Cancelar</button>
+              <button className="btn-add-parameter" onClick={saveNewEtiqueta}>Salvar</button>
+            </div>
+          </div>
+        </div>
       )}
+
+
+      {modalEtiquetas && (
+        <div className="parameter-modal">
+          <div className="parameter-container">
+            <div className="parameter-header">
+              <label className="parameter-title">Etiquetas</label>
+            </div>
+            <div className="parameter-body">
+              {listaEtiquetas?.map((item) => (
+                <div className="item-list-parameter" key={item.id} style={{ borderLeft: `10px solid ${item.color}` }}>
+                  <label className="label-item-parameter">{item.order} - {item.description}</label>
+                  <div className="btns-item-list">
+                    <button className="btn-remove-item-list" onClick={() => removeEtiqueta(item.id)}>Remover</button>
+                    <button className="btn-edite-item-list" onClick={() => editeEtiqueta(item)}>Editar</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="parameter-footer">
+              <button className="btn-close-parameter" onClick={showModalEtiquetas}>Fechar</button>
+              <button className="btn-add-parameter" onClick={showCreateEtiquetaModal}>Adicionar</button>
+
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {modalOrigens && (
         <div className="parameter-modal">
@@ -512,7 +906,7 @@ function ColumnsPage() {
           </div>
         </div>
       )}
-
+      {/* 
       {modalColunas && (
         <div className="parameter-modal">
           <div className="parameter-container">
@@ -533,6 +927,31 @@ function ColumnsPage() {
             <div className="parameter-footer">
               <button className="btn-close-parameter" onClick={showModalColunas}>Fechar</button>
               <button className="btn-add-parameter" onClick={createColuna}>Adicionar</button>
+            </div>
+          </div>
+        </div>
+      )} */}
+
+      {modalColunas && (
+        <div className="parameter-modal">
+          <div className="parameter-container">
+            <div className="parameter-header">
+              <label className="parameter-title">Colunas</label>
+            </div>
+            <div className="parameter-body">
+              {listaColunas?.map((item) => (
+                <div className="item-list-parameter" key={item.id}>
+                  <label className="label-item-parameter">{item.display_order} - {item.name}</label>
+                  <div className="btns-item-list">
+                    <button className="btn-remove-item-list" onClick={() => removeColuna(item.id)}>Remover</button>
+                    <button className="btn-edite-item-list" onClick={() => editColumn(item)}>Editar</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="parameter-footer">
+              <button className="btn-close-parameter" onClick={showModalColunas}>Fechar</button>
+              <button className="btn-add-parameter" onClick={openModalCreateColumn}>Adicionar</button>
             </div>
           </div>
         </div>
@@ -597,6 +1016,14 @@ function ColumnsPage() {
                 </div>
               </div>
 
+
+              <label className="label-item-parameter-description">Quando Criar Pedido ir para a Coluna com seguinte nome:</label>
+              <div className="item-list-parameter" >
+                <label className="label-item-parameter">{colunaStatusPedido}</label>
+                <div className="btns-item-list">
+                  <button className="btn-edite-item-list" onClick={() => editeColunaStatusPedido()}>Editar</button>
+                </div>
+              </div>
 
 
 

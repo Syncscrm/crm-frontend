@@ -58,7 +58,7 @@ const Calendario = ({ userId, closeModal }) => {
   return (
     <div className="calendar-modal">
       <div className="calendar-modal-content">
-        <button className="close-button" onClick={closeModal}>X</button>
+        <button className="close-button-calendario" onClick={closeModal}>X</button>
         <Calendar
           onChange={handleDateChange}
           value={selectedDate}

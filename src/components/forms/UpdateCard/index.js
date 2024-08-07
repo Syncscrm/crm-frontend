@@ -51,11 +51,21 @@ function UpdateCard({ idCard, cardData }) {
     }
   }, [statusCard, documentNumber, entityId, name, saleValue, costValue, email, state, city, fone, columnId, origemCard]);
 
+
+  const formatToBrazilianCurrency = (value) => {
+    if (value === undefined || value === null) return '';
+    return value.toString().replace('.', ',');
+  };
+
   useEffect(() => {
     if (cardData) {
       setDocumentNumber(cardData.document_number || '');
-      setSaleValue(cardData.sale_value);
-      setCostValue(cardData.cost_value);
+      // setSaleValue(cardData.sale_value);
+      // setCostValue(cardData.cost_value);
+
+      setSaleValue(formatToBrazilianCurrency(cardData.sale_value)); // Formatar valor de venda
+      setCostValue(formatToBrazilianCurrency(cardData.cost_value)); 
+
       setName(cardData.name);
       setEmail(cardData.email);
       setState(cardData.state);
@@ -195,6 +205,9 @@ function UpdateCard({ idCard, cardData }) {
       document_number: documentNumber ? documentNumber : '',
       cost_value: costValue,
       sale_value: saleValue,
+      cost_value: convertToDatabaseFormat(costValue), // Converter valor de custo
+      sale_value: convertToDatabaseFormat(saleValue), // Converter valor de venda
+      
       status: statusCard ? statusCard : '',
       origem: origemCard ? origemCard : 'Sem Origem',
       produto: produtoCard ? produtoCard : 'Não informado',
@@ -295,6 +308,13 @@ function UpdateCard({ idCard, cardData }) {
 
   const sortedEtiquetas = [...listaEtiquetas].sort((a, b) => a.order - b.order);
 
+
+  const convertToDatabaseFormat = (value) => {
+    if (!value) return 0;
+    return parseFloat(value.replace(/\./g, '').replace(',', '.'));
+  };
+  
+  
 
   return (
     <div className='update-card-modal'>

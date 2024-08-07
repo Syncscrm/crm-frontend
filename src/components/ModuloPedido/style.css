@@ -29,7 +29,10 @@
     color: dimgray;
 }
 
-.close-button {
+
+  
+
+.close-button-form-pedidos {
     background: red;
     border: none;
     font-size: 12px;
@@ -37,7 +40,16 @@
     top: 10px;
     right: 20px;
     cursor: pointer;
+    min-width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    color:white;
 }
+
+.close-button-form-pedidos:hover {
+    background: rgb(151, 7, 7);
+}
+
 
 
 .pedido-form {

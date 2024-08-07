@@ -306,6 +306,9 @@
     border-radius: 5px;
     border: 1px solid #ccc;
     /* Adiciona uma borda padrão */
+    display: flex;
+    align-items: center;
+    padding-inline: 8px;
 }
 
 .input-comentario:focus {
@@ -317,13 +320,12 @@
 
 
 .select-setor {
-    min-width: 120px;
-    margin-right: 10px;
+    min-width: 100px;
     min-height: 40px;
     border: 1px solid #ccc;
     /* Adiciona uma borda padrão */
     border-radius: 5px;
-
+    padding-inline: 5px;
 }
 
 .select-setor:focus {
@@ -424,4 +426,26 @@
 
 .btn-camera:hover {
     background-color: #6eb2fc;
+}
+
+
+.btn-private-anexo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    min-height: 20px;
+    padding-inline: 5px;
+    margin-left: 8px;
+    font-size: 12px;
+}
+
+
+.btn-private-anexo:hover{
+
+    background-color: #ff0000;
+
 }

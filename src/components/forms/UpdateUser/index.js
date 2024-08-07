@@ -110,44 +110,42 @@ function UpdateUser({ user: propUser }) {
     }
   }, [propUser]);
 
+
+
   // BUSCAR COLUNAS ASSOCIADAS AO USUÁRIO
-  const toggleColumnContainer = async () => {
-    setSelectedColumnsContainer(!selectedColumnsContainer);
-    if (!selectedColumnsContainer) {
-      try {
-        const response = await axios.get(`${apiUrl}/users/${id}/columns`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-        setSelectedColumns(response.data); // Atualize o estado com as colunas recebidas
-      } catch (error) {
-        console.error('Erro ao buscar colunas:', error);
-        setError('Falha ao carregar colunas.');
-      }
-    }
-  };
-
-  // ADICIONAR OU EXCLUIR COLUNAS ASSOCIADAS
-  const handleColumnToggle = async (event, columnId) => {
-    event.preventDefault();
-    const isSelected = selectedColumns.includes(columnId);
-
-    if (isSelected) {
-      // Remover coluna
-      setSelectedColumns(selectedColumns.filter(id => id !== columnId));
-      await axios.delete(`${apiUrl}/users/${id}/columns/${columnId}`, {
+const toggleColumnContainer = async () => {
+  setSelectedColumnsContainer(!selectedColumnsContainer);
+  if (!selectedColumnsContainer) {
+    try {
+      const response = await axios.get(`${apiUrl}/users/${id}/columns?empresaId=${user.empresa_id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+      setSelectedColumns(response.data); // Atualize o estado com as colunas recebidas
+    } catch (error) {
+      console.error('Erro ao buscar colunas:', error);
+      setError('Falha ao carregar colunas.');
+    }
+  }
+};
 
-    } else {
-      // Adicionar coluna
-      setSelectedColumns([...selectedColumns, columnId]);
-      await axios.post(`${apiUrl}/users/${id}/columns`, { columnId }, {
+
+const toggleEditableColumnsContainer = async () => {
+  setSelectedColumnsPermissionsContainer(!selectedColumnsPermissionsContainer);
+  if (!selectedColumnsPermissionsContainer) {
+    try {
+      const response = await axios.get(`${apiUrl}/users/${id}/permissions?empresaId=${user.empresa_id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+      setEditableColumns(response.data); // Atualize o estado com as permissões recebidas
+    } catch (error) {
+      console.error('Erro ao buscar permissões de edição:', error);
+      setError('Falha ao carregar permissões.');
     }
-  };
+  }
+};
 
-  // BUSCAR TODOS OS USUÁRIOS DA EMPRESA
+
+
   // BUSCAR AFILHADOS ASSOCIADOS AO USUÁRIO ATUAL
   const toggleAfilhadosContainer = async () => {
     setSelectedAfilhadosContainer(!selectedAfilhadosContainer);
@@ -171,25 +169,27 @@ function UpdateUser({ user: propUser }) {
     }
   };
 
-  // ADICIONAR OU EXCLUIR AFILHADOS ASSOCIADOS
-  const handleAfilhadosToggle = async (event, afilhadoId) => {
-    event.preventDefault();
-    const isSelected = afilhadosList.some(afilhado => afilhado.id === afilhadoId && afilhado.isAfilhado);
-    try {
-      if (isSelected) {
-        await axios.delete(`${apiUrl}/users/${id}/afilhados/${afilhadoId}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-      } else {
-        await axios.post(`${apiUrl}/users/${id}/afilhados`, { afilhadoId }, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-      }
-      setAfilhadosList(afilhadosList.map(afilhado => afilhado.id === afilhadoId ? { ...afilhado, isAfilhado: !isSelected } : afilhado));
-    } catch (error) {
-      console.error('Erro ao atualizar afilhados:', error);
+
+
+  // Adicionar ou excluir afilhados associados
+const handleAfilhadosToggle = async (event, afilhadoId) => {
+  event.preventDefault();
+  const isSelected = afilhadosList.some(afilhado => afilhado.id === afilhadoId && afilhado.isAfilhado);
+  try {
+    const config = {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    };
+    if (isSelected) {
+      await axios.delete(`${apiUrl}/users/${id}/afilhados/${afilhadoId}?empresaId=${user.empresa_id}`, config);
+    } else {
+      await axios.post(`${apiUrl}/users/${id}/afilhados`, { afilhadoId, empresaId: user.empresa_id }, config);
     }
-  };
+    setAfilhadosList(afilhadosList.map(afilhado => afilhado.id === afilhadoId ? { ...afilhado, isAfilhado: !isSelected } : afilhado));
+  } catch (error) {
+    console.error('Erro ao atualizar afilhados:', error);
+  }
+};
+
 
 
   // CARREGAR UM AVATAR
@@ -209,20 +209,44 @@ function UpdateUser({ user: propUser }) {
 
 
 
+//   // ATUALIZAR INFORMAÇÕES DO USUÁRIO
+// const handleUpdateUser = async (e) => {
+//   e.preventDefault();
+//   setError('');
+
+//   try {
+//     const avatarBase64 = avatar instanceof File ? await convertToBase64(avatar) : avatar;
+//     const userData = {
+//       username,
+//       fone,
+//       avatar: avatarBase64,
+//       is_active: isActive,
+//       meta_user: metaUser,
+//       meta_grupo: metaGrupo,
+//       entidade: entidade,
+//       access_level: accessLevel,
+//       address,
+//       city,
+//       state,
+//       cep, 
+//       user_type: userType
+//     };
+//     const response = await axios.put(`${apiUrl}/users/${id}`, userData, {
+//       headers: {
+//         'Content-Type': 'application/json',
+//         Authorization: `Bearer ${localStorage.getItem('token')}`,
+//       },
+//     });
+//     updateUser(response.data);
+//     openModalUpdateUser();
+//     setError('');
+//   } catch (error) {
+//     console.error('Erro ao atualizar usuário:', error);
+//     setError('Falha ao atualizar o usuário.');
+//   }
+// };
 
 
-
-
-
-
-
-
-
-
-
-
-
-  // ATUALIZAR INFORMAÇÕES DO USUÁRIO
 const handleUpdateUser = async (e) => {
   e.preventDefault();
   setError('');
@@ -236,14 +260,16 @@ const handleUpdateUser = async (e) => {
       is_active: isActive,
       meta_user: metaUser,
       meta_grupo: metaGrupo,
-      entidade: entidade,
+      entidade,
       access_level: accessLevel,
       address,
       city,
       state,
-      cep, 
-      user_type: userType
+      cep,
+      user_type: userType,
+      empresa_id: user.empresa_id // Inclua o campo empresa_id
     };
+    console.log('Dados enviados para atualização:', userData);
     const response = await axios.put(`${apiUrl}/users/${id}`, userData, {
       headers: {
         'Content-Type': 'application/json',
@@ -258,14 +284,6 @@ const handleUpdateUser = async (e) => {
     setError('Falha ao atualizar o usuário.');
   }
 };
-
-
-
-
-
-
-
-
 
 
 
@@ -287,51 +305,47 @@ const handleUpdateUser = async (e) => {
   const [editableColumns, setEditableColumns] = useState([]);
 
 
-
-  const toggleEditableColumnsContainer = async () => {
-    setSelectedColumnsPermissionsContainer(!selectedColumnsPermissionsContainer);
-    if (!selectedColumnsPermissionsContainer) {
-      try {
-        const response = await axios.get(`${apiUrl}/users/${id}/permissions`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-        setEditableColumns(response.data); // Atualize o estado com as permissões recebidas
-
-        console.log('Colunas Editaveis: ', response.data, 'User id:', id)
-      } catch (error) {
-        console.error('Erro ao buscar permissões de edição:', error);
-        setError('Falha ao carregar permissões.');
-      }
+  const handleColumnToggle = async (event, columnId) => {
+    event.preventDefault();
+    const isSelected = selectedColumns.includes(columnId);
+  
+    const config = {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    };
+  
+    if (isSelected) {
+      // Remover coluna
+      await axios.delete(`${apiUrl}/users/${id}/columns/${columnId}?empresaId=${user.empresa_id}`, config);
+      setSelectedColumns(selectedColumns.filter(id => id !== columnId));
+    } else {
+      // Adicionar coluna
+      await axios.post(`${apiUrl}/users/${id}/columns`, { columnId, empresaId: user.empresa_id }, config);
+      setSelectedColumns([...selectedColumns, columnId]);
     }
   };
+  
+
 
   const handlePermissionToggle = async (event, columnId) => {
     event.preventDefault();
     const isSelected = editableColumns.some(col => col.columnId === columnId);
-
-    if (isSelected) {
-      // Remover permissão de edição
-      setEditableColumns(editableColumns.filter(col => col.columnId !== columnId));
-      await axios.delete(`${apiUrl}/users/${id}/permissions/${columnId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-
-      //console.log(editableColumns)
-    } else {
-      // Adicionar permissão de edição
-      setEditableColumns([...editableColumns, { columnId, canEdit: true }]);
-      await axios.post(`${apiUrl}/users/${id}/permissions`, { columnId, canEdit: true, empresaId: user.empresa_id }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      //console.log(editableColumns)
+  
+    try {
+      const config = {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      };
+      if (isSelected) {
+        await axios.delete(`${apiUrl}/users/${id}/permissions/${columnId}?empresaId=${user.empresa_id}`, config);
+        setEditableColumns(editableColumns.filter(col => col.columnId !== columnId));
+      } else {
+        await axios.post(`${apiUrl}/users/${id}/permissions`, { columnId, canEdit: true, empresaId: user.empresa_id }, config);
+        setEditableColumns([...editableColumns, { columnId, canEdit: true }]);
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar permissões:', error);
     }
   };
-
-
-
-
-
-
+  
 
 
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);

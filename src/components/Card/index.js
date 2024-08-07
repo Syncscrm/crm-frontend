@@ -7,7 +7,7 @@ import { format, parseISO } from 'date-fns';
 // ICONS
 import { GrTask } from "react-icons/gr";
 import { MdEmail, MdFolder, MdDeleteForever, MdCreditCard, MdLibraryAdd, MdAutoAwesomeMotion, MdOutlineSendToMobile, MdLockOpen, MdLockOutline, MdBookmark, MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdAddShoppingCart, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
-import { GiWindow } from "react-icons/gi";
+
 
 import './style.css';
 
@@ -23,11 +23,6 @@ import VendaPerdida from '../VendaPerdida';
 import EmailConversation from '../forms/EmailConversation';
 
 import PedidoPedido from '../ModuloPedido';
-
-
-import fb from '../../config/firebase';
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import CustomModule from '../DynamicForm/CustomModule';
 
 
 function Card({ cardData, index }) {
@@ -82,9 +77,14 @@ function Card({ cardData, index }) {
 
   const openAnexosModal = (e) => {
     e.stopPropagation();
-    setCurrentCardData(cardData)
-    setOpenCloseAnexosModal(true)
+    if (!user.is_premium) {
+      alert("Você não é Premium");
+      return; // Adicione este return para evitar a abertura do modal
+    }
+    setCurrentCardData(cardData);
+    setOpenCloseAnexosModal(true);
   };
+  
 
 
   const openHistoricModal = (e) => {
@@ -102,8 +102,11 @@ function Card({ cardData, index }) {
 
   const viewCard = (e) => {
     e.stopPropagation();
-    fetchCardDetails(cardData.card_id);
-    fetchModules();
+    if(!showCard){
+      fetchCardDetails(cardData.card_id);
+      fetchModules(); 
+    }
+
     setShowCard(!showCard);
   };
 
@@ -138,26 +141,27 @@ function Card({ cardData, index }) {
     handleUpdatePotencialVenda(number)
   }
 
-  const handleUpdatePotencialVenda = async (potencial) => {
 
+  const handleUpdatePotencialVenda = async (potencial) => {
     if (!getAccessLevel('estrelas')) {
       const confirmDelete = window.alert('Não autorizado pelo Administrador!');
-      return
+      return;
     }
-
+  
     const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
     if (!userConfirmed) {
       return;
     }
-
+  
     const currentCard = {
       id: cardData.card_id,
       potencial_venda: potencial,
     };
-
+  
     try {
       setModalLoading(true)
       const response = await axios.post(`${apiUrl}/card/update-potencial-venda`, currentCard);
+      // Atualiza os cards
       setCards(prevCards => prevCards.map(card => card.card_id === currentCard.card_id ? { ...card, ...response.data } : card));
       setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === currentCard.card_id ? { ...card, ...response.data } : card));
       setListNotifications(prevCards => prevCards.map(card => card.card_id === currentCard.card_id ? { ...card, ...response.data } : card));
@@ -168,6 +172,7 @@ function Card({ cardData, index }) {
       setMensagemLoading('Erro ao Salvar Status!')
     }
   };
+  
 
   function getDaysSinceUpdate(updatedAt) {
     const today = new Date();
@@ -182,50 +187,33 @@ function Card({ cardData, index }) {
   }
 
   function openCloseEditEstatusCard(event) {
-
+    event.stopPropagation();
     if (!getAccessLevel('status')) {
-      event.stopPropagation();
       const confirmDelete = window.alert('Não autorizado pelo Administrador!');
       return
     }
 
-
-    event.stopPropagation();
     setStatusCard(cardData.status)
-    console.log(cardData.status)
 
-    setOpenCloseEditStatusModal(!openCloseEditStatusModal)
+    setOpenCloseEditStatusModal(true)
   }
+
+
 
   const updateCardStatus = async (id, status, event) => {
     event.stopPropagation();
-
+  
     const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
     if (!userConfirmed) {
       return;
     }
-
-
-    // Verificar se existe uma coluna com o nome 'Vendidos' e obter seu ID
+  
     const vendidosColumn = columns.find(column => column.name === empresa.coluna_vendido);
-    if (!vendidosColumn) {
-      console.error(`Coluna ${empresa.coluna_vendido} não encontrada`);
-      //return;
-    }
-
-    let columnId;
-
-    if (vendidosColumn && status != null) {
-      // Definir o ID da coluna para 'Vendidos' se o status for 'Vendido'
-      columnId = vendidosColumn.id;
-    } else {
-      columnId = cardData.column_id;
-    }
-
+    let columnId = vendidosColumn && status != null ? vendidosColumn.id : cardData.column_id;
+  
     try {
       setModalLoading(true);
       const response = await axios.post(`${apiUrl}/card/update-status`, { id, status, columnId });
-      //console.log(response.data);
       setStatusCard(response.data.status);
       setCards(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));
       setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === id ? { ...card, ...response.data } : card));
@@ -238,6 +226,7 @@ function Card({ cardData, index }) {
       setMensagemLoading('Erro ao Salvar Status!');
     }
   };
+  
 
 
   const [openCloseModalVendaPerdida, setOpenCloseModalVendaPerdida] = useState(false)
@@ -286,27 +275,22 @@ function Card({ cardData, index }) {
   };
 
   const [modalLoading, setModalLoading] = useState(false)
-  const [mensagemLoading, setMensagemLoading] = useState('Salvando...')
+  const [mensagemLoading, setMensagemLoading] = useState('Atualizando...')
 
-
-
-
-
-
-  // ------------- ALTERAR COLUNA DO CARD -------------
 
   const updateCardColumn = async (newColumnId) => {
     const currentCardId = cardData.card_id;
-
+  
     const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
     if (!userConfirmed) {
       return;
     }
-
-
-
-
-
+  
+    if (!cardData.city || !cardData.state) {
+      alert('Não é possível mover o card. Cidade e/ou Estado não preenchidos.');
+      return;
+    }
+  
     try {
       setModalLoading(true);
       setShowConfirmButton(true);
@@ -315,16 +299,9 @@ function Card({ cardData, index }) {
         cardId: currentCardId,
         columnId: newColumnId
       });
-
-      if (response.data) {
-        addHistoricoCardContext(`Coluna alterada para ${getNameColumnCard(newColumnId)}`, currentCardId, user.id);
-      } else {
-        throw new Error('No data returned');
-      }
-
+      addHistoricoCardContext(`Coluna alterada para ${getNameColumnCard(newColumnId)}`, currentCardId, user.id);
       setCards(prevCards => prevCards.map(card => card.card_id === currentCardId ? { ...card, ...response.data } : card));
       setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === currentCardId ? { ...card, ...response.data } : card));
-
       setModalLoading(false);
       setMensagemLoading('');
       setShowConfirmButton(false);
@@ -447,10 +424,6 @@ function Card({ cardData, index }) {
 
   // ---------------- Enviar whatsapp CHATBOT--------------------
 
-
-
-
-
   function enviarMensagemPotencialCliente() {
 
     const userConfirmed = window.confirm(`Emviar mensagem para Parceiro?`);
@@ -467,19 +440,6 @@ function Card({ cardData, index }) {
     );
   }
 
-  // const   = async (numero, contato, mensagem) => {
-  //   try {
-
-  //     // Envie a mensagem
-  //     await axios.post(`${apiUrl}/card/enviar`, { numero, mensagem, contato });
-
-  //     const userConfirmed = window.confirm('Mensagem enviada!');
-
-  //     console.log('Mensagem enviada com sucesso!');
-  //   } catch (error) {
-  //     console.error('Erro ao enviar mensagem:', error.message);
-  //   }
-  // };
 
   const enviarMensagemParaBotConversa = async (empresaId, numero, contato, mensagem) => {
     try {
@@ -569,60 +529,6 @@ function Card({ cardData, index }) {
 
 
 
-  // const excluirCard = async () => {
-  //   if (!getAccessLevel('excluir')) {
-  //     window.alert(`Não autorizado pelo ADM!`);
-  //     return;
-  //   }
-
-  //   const userConfirmed = window.confirm(`Excluir Card?`);
-  //   if (!userConfirmed) {
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await axios.delete(`${apiUrl}/card/${cardData.card_id}`);
-  //     setCards(prevCards => prevCards.filter(card => card.card_id !== cardData.card_id));
-  //     window.alert(`Card excluído com sucesso!`);
-  //   } catch (error) {
-  //     console.error('Erro ao excluir o card:', error);
-  //     window.alert(`Erro ao excluir o card!`);
-  //   }
-  // };
-
-
-  // const excluirCard = async () => {
-  //   if (!getAccessLevel('excluir')) {
-  //     window.alert(`Não autorizado pelo ADM!`);
-  //     return;
-  //   }
-  //   const userConfirmed = window.confirm(`Excluir Card?`);
-  //   if (!userConfirmed) {
-  //     return;
-  //   }
-  //   try {
-  //     // Chame o endpoint para excluir todos os anexos
-  //     const anexosResponse = await axios.delete(`${apiUrl}/card/${cardData.card_id}/delete-all-anexos`);
-  //     if (anexosResponse.data) {
-  //       // Exclua os arquivos do Firebase Storage
-  //       const storage = getStorage(fb);
-  //       for (const anexo of anexosResponse.data) {
-  //         const storagePath = `syncs/empresa-id-${user.empresa_id}/${anexo.nome_arquivo}`;
-  //         const storageRef = ref(storage, storagePath);
-  //         await deleteObject(storageRef);
-  //       }
-  //     }
-  //     // Chame o endpoint para excluir o card
-  //     const response = await axios.delete(`${apiUrl}/card/${cardData.card_id}`);
-  //     setCards(prevCards => prevCards.filter(card => card.card_id !== cardData.card_id));
-  //     window.alert(`Card excluído com sucesso!`);
-  //   } catch (error) {
-  //     console.error('Erro ao excluir o card:', error);
-  //     window.alert(`Erro ao excluir o card!`);
-  //   }
-  // };
-
-
   const excluirCard = async () => {
     if (!getAccessLevel('excluir')) {
       window.alert(`Não autorizado pelo ADM!`);
@@ -681,20 +587,21 @@ function Card({ cardData, index }) {
 
   function getBackgroundColor(days) {
     if (days <= 3) {
-      return '#00C7E2';
+      return '#72D419'; //#72D419#00C7E2
     } else if (days > 3 && days <= 6) {
-      return '#FEE300';
+      return '#F7B304';
     } else if (days > 6) {
-      return '#FC553F';
+      return '#F51148';
     } else {
       return 'rgb(255, 20, 98)';
     }
   }
 
 
+
   const fetchCardDetails = async (cardId) => {
     try {
-
+      setModalLoading(true)
       const response = await axios.get(`${apiUrl}/card/find-by-id/${cardId}`);
       const updatedCard = response.data;
       setCards(prevCards =>
@@ -702,11 +609,12 @@ function Card({ cardData, index }) {
           card.card_id === updatedCard.card_id ? { ...card, ...updatedCard } : card
         )
       );
-
+      setModalLoading(false)
     } catch (error) {
       console.error('Erro ao buscar detalhes do card:', error);
     }
   };
+  
 
   const [showEmails, setShowEmails] = useState(false);
 
@@ -722,7 +630,6 @@ function Card({ cardData, index }) {
     setShowPedidos(!showPedidos);
   };
 
-  //const [showCustomModule, setShowCustomModule] = useState(false);
 
   const handleCustomModuleButtonClick = (event, Module) => {
     setCurrentModuleCard(Module);
@@ -789,7 +696,7 @@ function Card({ cardData, index }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          onClick={(e) => viewCard(e)}
+          onClick={(e) => { viewCard(e) ; e.stopPropagation()}}
         >
 
           <div className='rotulo-container' style={{ backgroundColor: getEtiquetaColorById(cardData.etiqueta_id) }}></div>
@@ -806,7 +713,7 @@ function Card({ cardData, index }) {
               <div className='edit-status-footer-container'>
                 <div className='update-card-status-container'>
 
-                  <div onClick={(event) => updateCardStatus(cardData.card_id, null, event)} className='icon-edit-status-card-container' >
+                  <div style={{ display: user.access_level != '5' ? 'none' : '' }} onClick={(event) => updateCardStatus(cardData.card_id, null, event)} className='icon-edit-status-card-container' >
                     <Md360 style={{ color: statusCard === null || statusCard === '' ? '' : '#9c9c9c' }} className='icon-status-card-vendido' />
                   </div>
                   <div onClick={(event) => updateCardStatus(cardData.card_id, 'Vendido', event)} className='icon-edit-status-card-container' >
@@ -826,7 +733,7 @@ function Card({ cardData, index }) {
             )
           }
           <div className='card-header'>
-            <label className='card-title'>{cardData.name.toUpperCase().substring(0, 28)}</label>
+            <label className='card-title'>{cardData.name.toUpperCase().substring(0, 26)}</label>
             <MdShare className='icons-shared-card' onClick={(event) => shareCard(cardData.card_id, event)} />
 
           </div>
@@ -835,7 +742,6 @@ function Card({ cardData, index }) {
             {
               showCard && (
                 <>
-
                   <label className='card-body-item'>
                     <MdBookmark className='card-icon-item' />
                     Etiqueta:
@@ -849,18 +755,21 @@ function Card({ cardData, index }) {
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
-                      style={{ backgroundColor: getEtiquetaColorById(cardData.etiqueta_id) }}
-                      disabled={!getAccessLevel('etiqueta')} // Adiciona o atributo disabled
-
+                      disabled={!getAccessLevel('etiqueta')}
                     >
                       <option value={0}>Sem Etiqueta</option>
                       {sortedEtiquetas.map(etiqueta => (
-                        <option key={etiqueta.id} value={etiqueta.id}>
-                          {etiqueta.description}
+                        <option
+                          style={{ /*backgroundColor: getEtiquetaColorById(etiqueta.id)*/ }}
+                          key={etiqueta.id}
+                          value={etiqueta.id}
+                        >
+                          <label className='item-select-etiqueta-card'>{etiqueta.description}</label>
                         </option>
                       ))}
                     </select>
                   </label>
+
 
 
 
@@ -937,7 +846,7 @@ function Card({ cardData, index }) {
                     <label className='card-body-item-chat-bot'>
                       <MdArticle className='card-icon-item' />
 
-                      <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.document_number ? cardData.document_number : 'Não informado'}</label>
+                      <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.document_number ? cardData.document_number.substring(0, 35) : 'Não informado'}</label>
                     </label>
                     <MdDeleteForever
                       className='btn-delete-card'
@@ -952,18 +861,18 @@ function Card({ cardData, index }) {
 
 
                   <label style={{ display: 'none' }} className='card-body-item'>
-                    <MdAssignment className='card-icon-item' />Orçamento: {cardData.second_document_number ? cardData.second_document_number : 'Não Informado'}
+                    <MdAssignment className='card-icon-item' />Orçamento: {cardData.second_document_number ? cardData.second_document_number.substring(0, 35) : 'Não Informado'}
                   </label>
                   <label className='card-body-item'>
                     <MdAssignmentTurnedIn className='card-icon-item' />
 
-                    <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.pedido_number ? cardData.pedido_number : 'Não Informado'}</label>
+                    <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.pedido_number ? cardData.pedido_number.substring(0, 35) : 'Não Informado'}</label>
                   </label>
 
                   <label className='card-body-item'>
                     <MdHome className='card-icon-item' />
 
-                    <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.nome_obra && cardData.nome_obra != '' ? cardData.nome_obra : 'Não informado'}</label>
+                    <label style={{ marginLeft: '0px', fontWeight: '500' }} >{cardData.nome_obra && cardData.nome_obra != '' ? cardData.nome_obra.substring(0, 35) : 'Não informado'}</label>
                   </label>
 
 
@@ -982,7 +891,7 @@ function Card({ cardData, index }) {
                     <label className='card-body-item'>
                       <MdAlternateEmail className='card-icon-item' />
 
-                      <label style={{ marginLeft: '0px', fontWeight: '500' }} >{getAccessLevel('contato') && cardData.email ? cardData.email : "Não informado"}</label>
+                      <label style={{ marginLeft: '0px', fontWeight: '500' }} >{getAccessLevel('contato') && cardData.email ? cardData.email.substring(0, 35) : "Não informado"}</label>
                     </label>
                   }
 
@@ -1118,7 +1027,7 @@ function Card({ cardData, index }) {
 
                       {getAccessLevel('editar') &&
                         <button onClick={(e) => getCardData(e)} className='btn-update-card'>
-                          <MdCreditCard className='icons-btns-update-card' />
+                          <MdEdit className='icons-btns-update-card' />
                         </button>
                       }
 
@@ -1196,7 +1105,7 @@ function Card({ cardData, index }) {
 
                       {Array.isArray(modules) && modules.map((module, index) => (
 
-                        <button  key={index} onClick={(e) => { handleCustomModuleButtonClick(e, module); e.stopPropagation(); }} className='btn-update-card'>
+                        <button style={{display: 'none'}} key={index} onClick={(e) => { handleCustomModuleButtonClick(e, module); e.stopPropagation(); }} className='btn-update-card'>
                           <MdEdit className='icons-btns-update-card' />
                         </button>
                       ))}
@@ -1224,7 +1133,7 @@ function Card({ cardData, index }) {
 
                         </div>
                       ) : (
-                        <div  style={{display: 'none'}} className='btn-create-new-module-container'>
+                        <div style={{ display: 'none' }} className='btn-create-new-module-container'>
                           <button className='btn-create-new-module' onClick={(e) => { e.stopPropagation(); setShowNewModuleContainer(true) }}>+</button>
                         </div>
                       )}
@@ -1285,13 +1194,19 @@ function Card({ cardData, index }) {
           <div className='card-footer'>
 
             <div className='card-icons-status-container'>
-              <Md360 onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === null || statusCard === '' ? '' : 'none' }} className='card-icon-em-andamento' />
+              <button style={{ display: statusCard === null || statusCard === '' ? '' : 'none' }} onClick={(event) => openCloseEditEstatusCard(event)} className='btn-open-status-container'>
+                <MdThumbUp />
+                <MdThumbDown />
+
+              </button>
+              {/* <Md360 onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === null || statusCard === '' ? '' : 'none' }} className='card-icon-em-andamento' /> */}
               <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Vendido' ? '' : 'none' }} className='card-icon-vendido' />
               <MdThumbDown onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Perdido' ? '' : 'none' }} className='card-icon-perdido' />
               <MdFolder onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Arquivado' ? '' : 'none', color: '#82839E' }} className='card-icon-vendido' />
               <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'InstalacaoExt' ? '' : 'none' }} className='card-icon-vendido' />
               <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'Assistencia' ? '' : 'none' }} className='card-icon-vendido' />
               <MdThumbUp onClick={(event) => openCloseEditEstatusCard(event)} style={{ display: statusCard === 'AssistenciaExt' ? '' : 'none' }} className='card-icon-vendido' />
+              <label style={{ backgroundColor: cardData.etapa_producao + 1 > 1 ? '' : 'transparent' }} className='etapa-producao'>Parte: {cardData.etapa_producao + 1}</label>
 
             </div>
 
@@ -1300,7 +1215,6 @@ function Card({ cardData, index }) {
             {/* <label className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label> */}
 
 
-            <label style={{ backgroundColor: cardData.etapa_producao + 1 > 1 ? '' : 'transparent' }} className='etapa-producao'>Parte: {cardData.etapa_producao + 1}</label>
 
             {true &&
               <label className='card-star-container'>
@@ -1335,7 +1249,8 @@ function Card({ cardData, index }) {
             <label style={{ backgroundColor: 'white' }} className='etapa-producao'>Etapa: {cardData.etapa_producao + 1}</label>
 
 
-            <label style={{ display: 'none', backgroundColor: getBackgroundColor(getDaysSinceUpdate(cardData.updated_at)) }} className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label>
+            <label style={{ display: '', backgroundColor: getBackgroundColor(getDaysSinceUpdate(cardData.updated_at)) }} className='card-n-dias'>{getDaysSinceUpdate(cardData.updated_at)}</label>
+            <label style={{ display: 'none', backgroundColor: getBackgroundColor(getDaysSinceUpdate(cardData.updated_at)) }} className='card-n-dias-expanded'>{`${getDaysSinceUpdate(cardData.updated_at)} dias sem atualização `}</label>
 
 
 

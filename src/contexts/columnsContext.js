@@ -74,6 +74,46 @@ export const ColumnsProvider = ({ children }) => {
     fetchUserColumnsInfo();
   }, [user]);
 
+
+
+
+  const handleLocalSearch = (searchTerm) => {
+    setLocalSearchTerm(searchTerm.toLowerCase());
+  };
+  
+  const [localSearchTerm, setLocalSearchTerm] = useState('');
+
+
+
+
+
+
+
+
+const [selectedSetores, setSelectedSetores] = useState([]);
+
+// Obtém a lista de setores únicos das colunas do usuário
+const setores = Array.from(new Set(columnsUser.map(column => column.setor))).filter(Boolean);
+
+// Seleciona todos os setores por padrão quando as colunas do usuário são carregadas
+useEffect(() => {
+  setSelectedSetores(setores);
+}, [columnsUser]);
+
+const handleSetorChange = (setor) => {
+  setSelectedSetores(prevSetores =>
+    prevSetores.includes(setor)
+      ? prevSetores.filter(s => s !== setor)
+      : [...prevSetores, setor]
+  );
+};
+
+
+
+
+
+
+
   
 
   const contextValue = {
@@ -96,6 +136,12 @@ export const ColumnsProvider = ({ children }) => {
     setDataFinal,
     orderBy, setOrderBy,
     isAscending, setIsAscending,
+    localSearchTerm,
+    handleLocalSearch,
+    setores,
+    selectedSetores,
+    setSelectedSetores,
+    handleSetorChange
     
   };
 

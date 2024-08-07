@@ -256,3 +256,90 @@
 }
 
 
+
+
+
+
+
+
+
+
+
+
+.parameter-modal-etiqueta {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1001;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.171);
+}
+
+
+.title-select-color-etiqueta-selector {
+    margin-top: 10px;
+}
+
+.input-select-color-etiqueta-selector {
+    width: 200px;
+    min-height: 40px;
+    border-radius: 5px;
+    margin-top: 5px;
+    padding: 3px;
+}
+
+
+.color-selector {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .color-options {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  
+  .color-option {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  
+  .color-option:hover {
+    border: 2px solid #000;
+  }
+  
+  .btn-save-color {
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    min-height: 30px;
+    background-color: dodgerblue;
+    color: white;
+    margin-top: 10px;
+  }
+  
+  .btn-save-color:hover {
+    background-color: rgb(106, 181, 255);
+  }
+
+
+  .color-option.selected {
+    border: 2px solid #000;
+  }
+  
+  

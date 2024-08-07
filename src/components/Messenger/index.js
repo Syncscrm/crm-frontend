@@ -86,22 +86,26 @@ function Messenger({ closeModal }) {
   }
 
 
+
+
+
+
   const sendMessage = async (mensagem) => {
     if (mensagem.trim() === '') return;
-
+  
     if (containsForbiddenWords(mensagem)) {
       alert('Sua mensagem contém palavras proibidas e não pode ser enviada.');
       return;
     }
-
+  
     const isCardMessage = mensagem.includes('card_id:');
     let cardData = null;
-
+  
     if (isCardMessage) {
       const cardId = mensagem.split('card_id:')[1].trim();
       cardData = await fetchCardById(cardId);
     }
-
+  
     // Atualização otimista da interface do usuário
     const tempMessage = {
       id: `temp-${new Date().getTime()}`,
@@ -114,7 +118,7 @@ function Messenger({ closeModal }) {
     };
     setListMessages(prev => [...prev, tempMessage]);
     setMessage('');
-
+  
     try {
       const dados = {
         id_remetente: user.id,
@@ -122,25 +126,85 @@ function Messenger({ closeModal }) {
         message: mensagem,
         read: false,
         card_id: isCardMessage ? cardData.card_id : null,
+        empresa_id: user.empresa_id // Adiciona empresa_id aqui
       };
-
+  
       const response = await axios.post(`${apiUrl}/card/add-messenger`, dados);
-
+  
       // Atualiza a mensagem otimista com os dados reais do servidor
       setListMessages(prev => prev.map(msg => msg.id === tempMessage.id ? {
         ...msg,
         id: response.data.id,
         created_at: response.data.created_at,
       } : msg));
-
+  
       setCurrentCardIdMessage(null);
-
+  
     } catch (error) {
       console.error('Erro', error);
       // Remove a mensagem otimista em caso de erro
       setListMessages(prev => prev.filter(msg => msg.id !== tempMessage.id));
     }
   };
+
+  
+
+
+  // const sendMessage = async (mensagem) => {
+  //   if (mensagem.trim() === '') return;
+
+  //   if (containsForbiddenWords(mensagem)) {
+  //     alert('Sua mensagem contém palavras proibidas e não pode ser enviada.');
+  //     return;
+  //   }
+
+  //   const isCardMessage = mensagem.includes('card_id:');
+  //   let cardData = null;
+
+  //   if (isCardMessage) {
+  //     const cardId = mensagem.split('card_id:')[1].trim();
+  //     cardData = await fetchCardById(cardId);
+  //   }
+
+  //   // Atualização otimista da interface do usuário
+  //   const tempMessage = {
+  //     id: `temp-${new Date().getTime()}`,
+  //     message: mensagem,
+  //     id_remetente: user.id,
+  //     id_destinatario: destinatarioId,
+  //     created_at: new Date().toISOString(),
+  //     read: false,
+  //     cardData: isCardMessage ? cardData : null,
+  //   };
+  //   setListMessages(prev => [...prev, tempMessage]);
+  //   setMessage('');
+
+  //   try {
+  //     const dados = {
+  //       id_remetente: user.id,
+  //       id_destinatario: destinatarioId,
+  //       message: mensagem,
+  //       read: false,
+  //       card_id: isCardMessage ? cardData.card_id : null,
+  //     };
+
+  //     const response = await axios.post(`${apiUrl}/card/add-messenger`, dados);
+
+  //     // Atualiza a mensagem otimista com os dados reais do servidor
+  //     setListMessages(prev => prev.map(msg => msg.id === tempMessage.id ? {
+  //       ...msg,
+  //       id: response.data.id,
+  //       created_at: response.data.created_at,
+  //     } : msg));
+
+  //     setCurrentCardIdMessage(null);
+
+  //   } catch (error) {
+  //     console.error('Erro', error);
+  //     // Remove a mensagem otimista em caso de erro
+  //     setListMessages(prev => prev.filter(msg => msg.id !== tempMessage.id));
+  //   }
+  // };
 
   function handleKeyPress(event) {
     if (event.key === 'Enter') {
@@ -332,136 +396,138 @@ function Messenger({ closeModal }) {
 
 
   return (
-    <div className='messenger-container'>
-      <div className='header-messenger'>
-        <label>Messenger</label>
-        <button onClick={clearIdCardMessage} className='close-messenger-modal'>X</button>
-      </div>
+    <div className='modal-messenger'>
+      <div className='messenger-container'>
+        <div className='header-messenger'>
+          <label>Messenger</label>
+          <button onClick={clearIdCardMessage} className='close-messenger-modal'>X</button>
+        </div>
 
-      <div className="header-messenger">
+        <div className="header-messenger">
 
-        <input
-          type="text"
-          placeholder="Buscar usuário"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className='input-search-user-messenger'
-        />
+          <input
+            type="text"
+            placeholder="Buscar usuário"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className='input-search-user-messenger'
+          />
 
-      </div>
+        </div>
 
-      <div className='messenger-body'>
+        <div className='messenger-body'>
 
 
-        {filteredUsers &&
-          filteredUsers.map((item) => (
-            <div key={item.id} className='item-list-messenger' onClick={() => { openMessage(item) }}>
-              <div className='user-logo-messenger-container'>
-                <img
-                  src={item.avatar ? (item.avatar.includes('syncs-avatar') ? require(`../../assets/avatares/${item.avatar}`) : item.avatar) : logo}
-                  className='messenger-logo-user'
-                  alt={`${item.username}'s avatar`}
-                />
-              </div>
-              <label className='messenger-username-label'>
-                <div className='column-messender-item-label'>
-                  <label>{item.username}</label>
-                  <label className='label-user-type-messenger' style={{ background: item.user_type == 'Administrador' ? 'red' : item.user_type == 'Supervisor' ? 'rgb(138, 224, 0)' : '' }}>{item.user_type}</label>
-                  <label className='label-state-messenger'>{item.state}</label>
+          {filteredUsers &&
+            filteredUsers.map((item) => (
+              <div key={item.id} className='item-list-messenger' onClick={() => { openMessage(item) }}>
+                <div className='user-logo-messenger-container'>
+                  <img
+                    src={item.avatar ? (item.avatar.includes('syncs-avatar') ? require(`../../assets/avatares/${item.avatar}`) : item.avatar) : logo}
+                    className='messenger-logo-user'
+                    alt={`${item.username}'s avatar`}
+                  />
                 </div>
+                <label className='messenger-username-label'>
+                  <div className='column-messender-item-label'>
+                    <label>{item.username}</label>
+                    <label className='label-user-type-messenger' style={{ background: item.user_type == 'Administrador' ? 'red' : item.user_type == 'Supervisor' ? 'rgb(138, 224, 0)' : '' }}>{item.user_type}</label>
+                    <label className='label-state-messenger'>{item.state}</label>
+                  </div>
 
-                {userUnreadMessages[item.id] > 0 && (
-                  <span className="mensagens-nao-lidas">{userUnreadMessages[item.id]}</span>
-                )}
-              </label>
-            </div>
-          ))
-        }
-
-
-
-      </div>
-
-      {user != null && openCloseModalMessage && (
-        <div className='message-container'>
-          <div className='message-header'>
-            <MdOutlineArrowBackIos
-              className='icons-back-message'
-              onClick={() => {
-                closeMessageContainer()
-              }}
-            />
-            <div className='user-logo-message-container'>
-              {/* <img src={destinatarioAvatar} className='message-logo-user' alt={`${destinatarioName}'s avatar`} /> */}
-              <img
-                src={destinatarioAvatar ? (destinatarioAvatar.includes('syncs-avatar') ? require(`../../assets/avatares/${destinatarioAvatar}`) : destinatarioAvatar) : logo}
-                className='message-logo-user'
-                alt={`${destinatarioName}'s avatar`}
-              />
-
-            </div>
-            <label className='messenger-username-label'>{destinatarioName}</label>
-          </div>
-          <div className='message-body'>
-            {listMessages.map((item) => (
-
-
-              <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: item.id_remetente === user.id ? 'flex-end' : 'flex-start' }} className='item-list-message'>
-
-
-                {!item.cardData && !item.message.includes('card_id:') &&
-                  <label style={{ backgroundColor: item.id_remetente === user.id ? 'rgb(78, 78, 78)' : 'white', color: item.id_remetente === user.id ? 'white' : 'rgb(78, 78, 78)' }} className='message-label'>
-                    {item.message}
-                  </label>
-                }
-
-                {!item.cardData && item.message.includes('card_id:') &&
-                  <label style={{ backgroundColor: item.id_remetente === user.id ? 'rgb(78, 78, 78)' : 'white', color: item.id_remetente === user.id ? 'white' : 'rgb(78, 78, 78)' }} className='message-label'>
-                    ⛔ Mensagem Bloqueada pelo ADM ⛔
-                  </label>
-                }
-
-
-                {item.cardData &&
-                  <label style={{ backgroundColor: item.id_remetente === user.id ? 'rgb(78, 78, 78)' : 'white', color: item.id_remetente === user.id ? 'white' : 'rgb(78, 78, 78)' }} className='message-label'>
-
-                    <PreviewCard cardData={item.cardData} />
-
-                  </label>
-
-
-                }
-
-                <label className='date-message-label'>
-                  {getUserName(item.id_remetente)} - {formatDate(item.created_at)}
-                  {item.read ? (
-                    user.id === item.id_remetente && <TbChecks className='icone-check-message' />
-                  ) : (
-                    user.id === item.id_remetente && <TbCheck className='icone-check-message' />
+                  {userUnreadMessages[item.id] > 0 && (
+                    <span className="mensagens-nao-lidas">{userUnreadMessages[item.id]}</span>
                   )}
                 </label>
               </div>
-            ))}
+            ))
+          }
 
-            {loadingMessage &&
-              <label style={{ display: 'none' }}>Carregando...</label>
-            }
 
-            <div ref={messagesEndRef}></div>
-          </div>
 
-          <div className='message-footer'>
-            <input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className='message-input'
-              placeholder='Mensagem'
-            />
-            <MdSend className='icon-send-message' onClick={() => sendMessage(message)} />
-          </div>
         </div>
-      )}
+
+        {user != null && openCloseModalMessage && (
+          <div className='message-container'>
+            <div className='message-header'>
+              <MdOutlineArrowBackIos
+                className='icons-back-message'
+                onClick={() => {
+                  closeMessageContainer()
+                }}
+              />
+              <div className='user-logo-message-container'>
+                {/* <img src={destinatarioAvatar} className='message-logo-user' alt={`${destinatarioName}'s avatar`} /> */}
+                <img
+                  src={destinatarioAvatar ? (destinatarioAvatar.includes('syncs-avatar') ? require(`../../assets/avatares/${destinatarioAvatar}`) : destinatarioAvatar) : logo}
+                  className='message-logo-user'
+                  alt={`${destinatarioName}'s avatar`}
+                />
+
+              </div>
+              <label className='messenger-username-label'>{destinatarioName}</label>
+            </div>
+            <div className='message-body'>
+              {listMessages.map((item) => (
+
+
+                <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: item.id_remetente === user.id ? 'flex-end' : 'flex-start' }} className='item-list-message'>
+
+
+                  {!item.cardData && !item.message.includes('card_id:') &&
+                    <label style={{ backgroundColor: item.id_remetente === user.id ? 'rgb(78, 78, 78)' : 'white', color: item.id_remetente === user.id ? 'white' : 'rgb(78, 78, 78)' }} className='message-label'>
+                      {item.message}
+                    </label>
+                  }
+
+                  {!item.cardData && item.message.includes('card_id:') &&
+                    <label style={{ backgroundColor: item.id_remetente === user.id ? 'rgb(78, 78, 78)' : 'white', color: item.id_remetente === user.id ? 'white' : 'rgb(78, 78, 78)' }} className='message-label'>
+                      ⛔ Mensagem Bloqueada pelo ADM ⛔
+                    </label>
+                  }
+
+
+                  {item.cardData &&
+                    <div style={{ backgroundColor: item.id_remetente === user.id ? 'rgb(78, 78, 78)' : 'white', color: item.id_remetente === user.id ? 'white' : 'rgb(78, 78, 78)' }} className='message-label'>
+
+                      <PreviewCard cardData={item.cardData} />
+
+                    </div>
+
+
+                  }
+
+                  <label className='date-message-label'>
+                    {getUserName(item.id_remetente)} - {formatDate(item.created_at)}
+                    {item.read ? (
+                      user.id === item.id_remetente && <TbChecks className='icone-check-message' />
+                    ) : (
+                      user.id === item.id_remetente && <TbCheck className='icone-check-message' />
+                    )}
+                  </label>
+                </div>
+              ))}
+
+              {loadingMessage &&
+                <label style={{ display: 'none' }}>Carregando...</label>
+              }
+
+              <div ref={messagesEndRef}></div>
+            </div>
+
+            <div className='message-footer'>
+              <input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className='message-input'
+                placeholder='Mensagem'
+              />
+              <MdSend className='icon-send-message' onClick={() => sendMessage(message)} />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

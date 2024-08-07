@@ -17,7 +17,7 @@ import { Droppable } from 'react-beautiful-dnd';
 function Column(props) {
   const { user } = useUser();
   const { cards, setCards } = useCard();
-  const { setLoadingResult, setLoadingModal, selectedAfilhados, dataInicial, setDataInicial, dataFinal, orderBy, setOrderBy, isAscending, setIsAscending } = useColumns();
+  const { setLoadingResult, setLoadingModal, selectedAfilhados, dataInicial, setDataInicial, dataFinal, orderBy, setOrderBy, isAscending, setIsAscending, localSearchTerm } = useColumns();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [totalCostValue, setTotalCostValue] = useState(0);
@@ -77,21 +77,103 @@ function Column(props) {
     setCardCount(totals.cardCount);
   }, [filteredCards]);
 
+  // useEffect(() => {
+  //   let filteredCards = [];
+
+  //   //console.log('selectedAfilhados', selectedAfilhados);
+
+  //   if (selectedAfilhados.length > 0) {
+  //     filteredCards = cards.filter(card =>
+  //       card.column_id === props.columnData.id &&
+  //       (selectedAfilhados.includes(card.entity_id) || card.compartilhamento === true)
+  //     );
+  //   }
+
+  //   setFilteredCards(filteredCards);
+  // }, [cards, props.columnData.id, selectedAfilhados]);
+
+  // useEffect(() => {
+  //   let filteredCards = [];
+  
+  //   if (selectedAfilhados.length > 0) {
+  //     filteredCards = cards.filter(card =>
+  //       card.column_id === props.columnData.id &&
+  //       (selectedAfilhados.includes(card.entity_id) || card.compartilhamento === true)
+  //     );
+  //   }
+  
+  //   // Aplicar o filtro local se houver um termo de busca
+  //   if (localSearchTerm.trim()) {
+  //     filteredCards = filteredCards.filter(card => 
+  //       card.name.toLowerCase().includes(localSearchTerm.toLowerCase())
+  //     );
+  //   }
+  
+  //   setFilteredCards(filteredCards);
+  // }, [cards, props.columnData.id, selectedAfilhados, localSearchTerm]);
+
+
+  
+  // useEffect(() => {
+  //   let filteredCards = [];
+  
+  //   if (selectedAfilhados.length > 0) {
+  //     filteredCards = cards.filter(card =>
+  //       card.column_id === props.columnData.id &&
+  //       (selectedAfilhados.includes(card.entity_id) || card.compartilhamento === true)
+  //     );
+  //   }
+  
+  //   // Aplicar o filtro local se houver um termo de busca
+  //   if (localSearchTerm.trim()) {
+  //     const searchTerm = localSearchTerm.toLowerCase();
+  //     if (searchTerm.startsWith('#')) {
+  //       const searchOrigem = searchTerm.substring(1);
+  //       filteredCards = filteredCards.filter(card => 
+  //         card.origem && card.origem.toLowerCase().includes(searchOrigem)
+  //       );
+  //     } else {
+  //       filteredCards = filteredCards.filter(card => 
+  //         (card.name && card.name.toLowerCase().includes(searchTerm)) ||
+  //         (card.city && card.city.toLowerCase().includes(searchTerm)) ||
+  //         (card.fone && card.fone.toLowerCase().includes(searchTerm)) ||
+  //         (card.cost_value && card.cost_value.toString().includes(searchTerm)) ||
+  //         (card.document_number && card.document_number.toLowerCase().includes(searchTerm)) ||
+  //         (card.pedido_number && card.pedido_number.toLowerCase().includes(searchTerm))
+  //       );
+  //     }
+  //   }
+  
+  //   setFilteredCards(filteredCards);
+  // }, [cards, props.columnData.id, selectedAfilhados, localSearchTerm]);
+
+
+
+  
+  
   useEffect(() => {
     let filteredCards = [];
-
-    //console.log('selectedAfilhados', selectedAfilhados);
-
+  
     if (selectedAfilhados.length > 0) {
-      filteredCards = cards.filter(card =>
-        card.column_id === props.columnData.id &&
-        (selectedAfilhados.includes(card.entity_id) || card.compartilhamento === true)
-      );
+      filteredCards = cards.filter(card => {
+        const matchSearchTerm = !localSearchTerm || 
+          card.name.toLowerCase().includes(localSearchTerm) ||
+          card.fone?.toLowerCase().includes(localSearchTerm) ||
+          card.cost_value?.toString().includes(localSearchTerm) ||
+          card.document_number?.toLowerCase().includes(localSearchTerm) ||
+          card.city?.toLowerCase().includes(localSearchTerm) ||
+          card.pedido_number?.toLowerCase().includes(localSearchTerm) ||
+          (localSearchTerm.startsWith('#') && card.origem?.toLowerCase().includes(localSearchTerm.slice(1)));
+        
+        return card.column_id === props.columnData.id &&
+          (selectedAfilhados.includes(card.entity_id) || card.compartilhamento === true) &&
+          matchSearchTerm;
+      });
     }
-
+  
     setFilteredCards(filteredCards);
-  }, [cards, props.columnData.id, selectedAfilhados]);
-
+  }, [cards, props.columnData.id, selectedAfilhados, localSearchTerm]);
+  
 
   // const calculateTotals = (cards, columnId) => {
   //   const filteredCards = cards.filter(card => card.column_id === columnId);

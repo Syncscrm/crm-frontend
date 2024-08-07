@@ -90,11 +90,12 @@ function SignUp() {
             onChange={(e) => setSegment(e.target.value)}
           >
             <option value="" disabled>Selecione o Segmento</option>
-            <option value="CRM">CRM</option>
-            <option value="Tarefas">Tarefas</option>
-            <option value="Suporte Técnico">Suporte Técnico</option>
-            <option value="Gestão de Projetos">Gestão de Projetos</option>
-            <option value="Vendas e Marketing">Vendas e Marketing</option>
+            <option value="Esquadrias">Esquadrias</option>
+            <option style={{display: 'none'}} value="CRM">CRM</option>
+            <option style={{display: 'none'}} value="Tarefas">Tarefas</option>
+            <option style={{display: 'none'}} value="Suporte Técnico">Suporte Técnico</option>
+            <option style={{display: 'none'}} value="Gestão de Projetos">Gestão de Projetos</option>
+            <option style={{display: 'none'}} value="Vendas e Marketing">Vendas e Marketing</option>
           </select>
 
           {error && <div className="error-message">{error}</div>}

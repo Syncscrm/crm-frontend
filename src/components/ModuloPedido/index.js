@@ -6,10 +6,17 @@ import { apiUrl } from '../../config/apiConfig';
 import './style.css';
 
 import { useUser } from '../../contexts/userContext'
+import { useColumns } from '../../contexts/columnsContext';
+import { useCard } from '../../contexts/cardContext'
+
 
 const PedidoPedido = ({ cardData, onClose }) => {
 
-  const { user, listAllUsers, getAccessLevel } = useUser();
+  const { user, listAllUsers, getAccessLevel, empresa } = useUser();
+  const { columns } = useColumns();
+  const { setCards } = useCard();
+
+  //console.log(empresa)
 
   const [numeroPedido, setNumeroPedido] = useState('');
   const [statusPedido, setStatusPedido] = useState('Parado');
@@ -142,7 +149,7 @@ const PedidoPedido = ({ cardData, onClose }) => {
 
         }
 
-        console.log(response.data);
+        //console.log(response.data);
       } catch (error) {
         console.error('Erro ao buscar as informações do pedido:', error);
       }
@@ -151,23 +158,147 @@ const PedidoPedido = ({ cardData, onClose }) => {
     fetchPedidoData();
   }, [cardData]);
 
+
+
+
+
+
+
+  // const handleSavePedido = async (e) => {
+  //   e.preventDefault();
+
+
+
+  //   if (statusPedido !== 'Parado') {
+  //     alert(statusPedido);
+
+  //     alert('Solicite ao ADM alterar o status do pedido para Parado!');
+  //     return
+  //   }
+
+  //   if (cardData.status !== 'Vendido') {
+  //     alert('Necessário alterar o Status para Vendido!');
+  //     return
+  //   }
+
+
+  //   // Verifica se existe uma coluna com o nome informado pela empresa
+  //   const columnVendido = columns.find(column => column.name === user.empresa.coluna_vendido);
+
+
+
+
+
+
+  //   const pedidoData = {
+  //     card_id: cardData.card_id,
+  //     numero_pedido: numeroPedido,
+  //     status_pedido: statusPedido === 'Parado' && user.access_level !== 5 ? 'Em Andamento' : statusPedido,
+  //     data_status: dataStatus,
+  //     nome_obra: nomeObra,
+  //     representante: representante ? representante : cardData.entity_id,
+  //     nome_cliente: nomeCliente,
+  //     cpf_cnpj: cpfCnpj,
+  //     telefone_cliente: telefoneCliente,
+  //     nome_contato: nomeContato,
+  //     email_nota_fiscal: emailNotaFiscal,
+  //     representante_legal_nome: representanteLegalNome,
+  //     representante_legal_email: representanteLegalEmail,
+  //     representante_legal_cpf: representanteLegalCpf,
+  //     endereco_cobranca_responsavel: enderecoCobrancaResponsavel,
+  //     endereco_cobranca_telefone: enderecoCobrancaTelefone,
+  //     endereco_cobranca_email: enderecoCobrancaEmail,
+  //     endereco_cobranca_logradouro: enderecoCobrancaLogradouro,
+  //     endereco_cobranca_numero: enderecoCobrancaNumero,
+  //     endereco_cobranca_complemento: enderecoCobrancaComplemento,
+  //     endereco_cobranca_bairro: enderecoCobrancaBairro,
+  //     endereco_cobranca_cidade: enderecoCobrancaCidade,
+  //     endereco_cobranca_uf: enderecoCobrancaUf,
+  //     endereco_cobranca_cep: enderecoCobrancaCep,
+  //     endereco_cobranca_condominio: enderecoCobrancaCondominio,
+  //     endereco_entrega_logradouro: enderecoEntregaLogradouro,
+  //     endereco_entrega_numero: enderecoEntregaNumero,
+  //     endereco_entrega_complemento: enderecoEntregaComplemento,
+  //     endereco_entrega_bairro: enderecoEntregaBairro,
+  //     endereco_entrega_cidade: enderecoEntregaCidade,
+  //     endereco_entrega_uf: enderecoEntregaUf,
+  //     endereco_entrega_cep: enderecoEntregaCep,
+  //     endereco_entrega_condominio: enderecoEntregaCondominio,
+  //     gestor_obra_nome: gestorObraNome,
+  //     gestor_obra_telefone: gestorObraTelefone,
+  //     gestor_obra_email: gestorObraEmail,
+  //     condicoes_pagamento: condicoesPagamento,
+  //     condicoes_pagamento_terceiro: condicoesPagamentoTerceiro,
+  //     previsao_medicao: previsaoMedicao,
+  //     previsao_entrega: previsaoEntrega,
+  //     observacoes: observacoes,
+  //     empresa_id: user.empresa_id,
+
+  //     valor_instalacao: valorInstalacao,
+  //     valor_frete: valorFrete,
+  //     valor_abatimento_showroom: valorAbatimentoShowroom,
+
+  //     valor_instalacao_pvc: valorInstalacaoPVC,
+  //     valor_frete_esquadrias: valorFreteEsquadrias,
+  //     valor_projeto: valorProjeto,
+  //     valor_vidros_separados: valorVidrosSeparados,
+
+  //     valor_externas_esquadrias: valorExternasEsquadrias,
+  //     desconto_externas: descontoExternas,
+  //     valor_outros_esquadrias: valorOutrosEsquadrias,
+  //     desconto_outros: descontoOutros,
+
+  //   };
+
+  //   try {
+  //     const response = await axios.post(`${apiUrl}/users/upsert-pedido`, pedidoData);
+  //     if (response.data) {
+  //       alert('Pedido salvo com sucesso!');
+  //     }
+
+  //     onClose();
+
+  //     if (columnVendido) {
+  //       try {
+  //         // Atualiza o column_id do card para o ID da coluna encontrada
+  //         await axios.post(`${apiUrl}/card/update-column`, {
+  //           cardId: cardData.card_id,
+  //           columnId: columnVendido.id
+  //         });
+  //       } catch (error) {
+  //         console.error('Erro ao atualizar a coluna do card:', error);
+  //         alert('Erro ao atualizar a coluna do card.');
+  //         return;
+  //       }
+  //     }
+
+
+  //   } catch (error) {
+  //     console.error('Erro ao salvar o pedido:', error);
+  //     alert('Erro ao salvar o pedido. Por favor, tente novamente.');
+  //   }
+  // };
+
+
+
+
   const handleSavePedido = async (e) => {
     e.preventDefault();
-
-
-
+  
     if (statusPedido !== 'Parado') {
       alert(statusPedido);
-
       alert('Solicite ao ADM alterar o status do pedido para Parado!');
-      return
+      return;
     }
-
+  
     if (cardData.status !== 'Vendido') {
       alert('Necessário alterar o Status para Vendido!');
-      return
+      return;
     }
-
+  
+    // Verifica se existe uma coluna com o nome informado pela empresa
+    const columnPedido = columns.find(column => column.name === empresa.pedido_coluna);
+  
     const pedidoData = {
       card_id: cardData.card_id,
       numero_pedido: numeroPedido,
@@ -211,35 +342,67 @@ const PedidoPedido = ({ cardData, onClose }) => {
       previsao_entrega: previsaoEntrega,
       observacoes: observacoes,
       empresa_id: user.empresa_id,
-
       valor_instalacao: valorInstalacao,
       valor_frete: valorFrete,
       valor_abatimento_showroom: valorAbatimentoShowroom,
-
       valor_instalacao_pvc: valorInstalacaoPVC,
       valor_frete_esquadrias: valorFreteEsquadrias,
       valor_projeto: valorProjeto,
       valor_vidros_separados: valorVidrosSeparados,
-
       valor_externas_esquadrias: valorExternasEsquadrias,
       desconto_externas: descontoExternas,
       valor_outros_esquadrias: valorOutrosEsquadrias,
       desconto_outros: descontoOutros,
-
     };
-
+  
     try {
       const response = await axios.post(`${apiUrl}/users/upsert-pedido`, pedidoData);
       if (response.data) {
         alert('Pedido salvo com sucesso!');
       }
-
+  
+      // Verifique se a coluna 'Vendido' existe e atualize o card antes de fechar o modal
+      if (columnPedido) {
+        try {
+          // Atualiza o column_id do card para o ID da coluna encontrada
+          await axios.post(`${apiUrl}/card/update-column`, {
+            cardId: cardData.card_id,
+            columnId: columnPedido.id
+          });
+  
+          // Atualiza localmente o card para refletir a mudança de coluna
+          setCards((prevCards) =>
+            prevCards.map((card) =>
+              card.card_id === cardData.card_id
+                ? { ...card, column_id: columnPedido.id }
+                : card
+            )
+          );
+  
+          console.log('Coluna do card atualizada com sucesso.');
+        } catch (error) {
+          console.error('Erro ao atualizar a coluna do card:', error);
+          alert('Erro ao atualizar a coluna do card.');
+          return;
+        }
+      }
+  
+      // Fechar o modal após as operações
       onClose();
+  
     } catch (error) {
       console.error('Erro ao salvar o pedido:', error);
       alert('Erro ao salvar o pedido. Por favor, tente novamente.');
     }
   };
+  
+
+
+
+
+
+
+
 
   const handleEstadoChange = (e, tipo) => {
     const { value } = e.target;
@@ -329,7 +492,7 @@ const PedidoPedido = ({ cardData, onClose }) => {
 
       <div className="pedido-form-container" onClick={(e) => e.stopPropagation()}>
 
-        <button className="close-button" onClick={onClose}>X</button>
+        <button className="close-button-form-pedidos" onClick={onClose}>X</button>
 
         <form className="pedido-form" onSubmit={handleSavePedido}>
           <h3>Informações do Pedido</h3>
@@ -480,7 +643,7 @@ const PedidoPedido = ({ cardData, onClose }) => {
                 <td><input type="text" name="valor_frete" value={valorFrete} onChange={(e) => setValorFrete(e.target.value)} /></td>
               </tr>
               <tr>
-                <td><label>Abatimento Showroom</label></td>
+                <td><label>Abatimento - Valor deve ser Negativo</label></td>
                 <td><input type="text" name="valor_abatimento_showroom" value={valorAbatimentoShowroom} onChange={(e) => setValorAbatimentoShowroom(e.target.value)} /></td>
               </tr>
             </tbody>

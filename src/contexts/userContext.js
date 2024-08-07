@@ -57,7 +57,7 @@ export const UserProvider = ({ children }) => {
           params: { empresa_id: user.empresa_id }
         });
         setListAllUsers(response.data);
-        console.log('lista de users?', response.data)
+        //console.log('lista de users?', response.data)
       } catch (error) {
         console.error('Erro ao buscar usuários da empresa:', error);
         setListAllUsers([]);
@@ -136,20 +136,38 @@ export const UserProvider = ({ children }) => {
 
   const [editableColumns, setEditableColumns] = useState([]);
 
-  const toggleEditableColumnsContainer = async () => {
+  // const toggleEditableColumnsContainer = async () => {
 
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/users/${user.id}/permissions`, {
+  //       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  //     });
+  //     setEditableColumns(response.data); // Atualize o estado com as permissões recebidas
+
+  //     console.log('context user', response.data)
+  //   } catch (error) {
+  //     console.error('Erro ao buscar permissões de edição:', error);
+
+  //   }
+  // }
+
+
+  const toggleEditableColumnsContainer = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/users/${user.id}/permissions`, {
+      const empresaId = empresa.id; // Ou obtenha de onde for apropriado
+  
+      // Inclua o `empresaId` como um parâmetro de consulta
+      const response = await axios.get(`${apiUrl}/users/${user.id}/permissions?empresaId=${empresaId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+  
       setEditableColumns(response.data); // Atualize o estado com as permissões recebidas
-
-      console.log('context user', response.data)
+      //console.log('context user', response.data);
     } catch (error) {
       console.error('Erro ao buscar permissões de edição:', error);
-
     }
   }
+  
 
 
   useEffect(() => {
@@ -288,7 +306,7 @@ export const UserProvider = ({ children }) => {
       try {
         const response = await axios.get(`${apiUrl}/users/getEmpresa/${user.empresa_id}`);
         setEmpresa(response.data);
-        console.log('Informações da empresa', response.data);
+        //console.log('Informações da empresa', response.data);
       } catch (error) {
         console.error('Erro ao buscar Empresa:', error);
       }
@@ -298,7 +316,7 @@ export const UserProvider = ({ children }) => {
 
   const [empresaRecursos, setEmpresaRecursos] = useState([]);
 
-  console.log(empresaRecursos)
+  //console.log(empresaRecursos)
 
 
 
@@ -321,7 +339,7 @@ export const UserProvider = ({ children }) => {
     getAccessLevel,
     openCloseModalAvatar, setOpenCloseModalAvatar,
     userAvatar, setUserAvatar,
-    empresa,
+    empresa,setEmpresa,
     openCloseCustomModule, setOpenCloseCustomModule,
     empresaRecursos,
   };

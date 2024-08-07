@@ -295,33 +295,37 @@ function Header() {
       </div>
 
       {showLeftMenu && (
-        <div className='left-menu-container'>
 
-          <div className='left-menu-title'>Menu</div>
+        <div onClick={() => setShowLeftMenu(false)} className='modal-left-menu-container'>
 
-          <button className='left-menu-button' onClick={() => pipelinePage()}>Home</button>
-          {getAccessLevel('dashboard') &&
-            <button className='left-menu-button' onClick={() => dashboardPage()}>Dashboard</button>
-          }
+          <div className='left-menu-container'>
 
-          <button className='left-menu-button' onClick={() => PCP()}>PCP</button>
+            <div className='left-menu-title'>Menu</div>
 
-          {getAccessLevel('adm') &&
-            <button className='left-menu-button' onClick={() => usersPage()}>Usuários</button>
-          }
+            <button className='left-menu-button' onClick={() => pipelinePage()}>Home</button>
+            {getAccessLevel('dashboard') &&
+              <button className='left-menu-button' onClick={() => dashboardPage()}>Dashboard</button>
+            }
 
-          {getAccessLevel('adm') &&
-            <button className='left-menu-button' onClick={() => processColumnsPage()}>Configurações</button>
-          }
+            <button className='left-menu-button' onClick={() => PCP()}>PCP</button>
 
-          {getAccessLevel('adm') &&
-            <button className='left-menu-button' onClick={() => setOpenCloseImportExcelEntidades(true)}>Import Excel</button>
-          }
+            {getAccessLevel('adm') &&
+              <button className='left-menu-button' onClick={() => usersPage()}>Usuários</button>
+            }
 
-          {getAccessLevel('adm') &&
-            <button className='left-menu-button' onClick={() => setOpenCloseImportExcelSuiteFlow(true)}>Import SuiteFlow</button>
-          }
+            {getAccessLevel('adm') &&
+              <button className='left-menu-button' onClick={() => processColumnsPage()}>Configurações</button>
+            }
 
+            {getAccessLevel('adm') &&
+              <button className='left-menu-button' onClick={() => setOpenCloseImportExcelEntidades(true)}>Import Excel</button>
+            }
+
+            {getAccessLevel('adm') &&
+              <button className='left-menu-button' onClick={() => setOpenCloseImportExcelSuiteFlow(true)}>Import SuiteFlow</button>
+            }
+
+          </div>
         </div>
       )}
 
@@ -438,7 +442,7 @@ function Header() {
       )}
 
       {openCloseAnexosModal && (
-        <Anexos idCard={currentCardData.card_id} />
+        <Anexos idCard={currentCardData.card_id} cardData={currentCardData} />
       )}
 
       {openCloseCustomModule && (

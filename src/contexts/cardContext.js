@@ -81,7 +81,7 @@ export const CardProvider = ({ children }) => {
     try {
       const response = await axios.get(`${apiUrl}/card/etiquetas/${user.empresa_id}`);
       setListaEtiquetas(response.data);
-      console.log(response.data)
+      //console.log(response.data)
     } catch (error) {
       console.error('Erro ao buscar etiquetas:', error);
     }
@@ -122,7 +122,7 @@ export const CardProvider = ({ children }) => {
           dataFinal,
         },
       });
-      console.log('Cards',response.data)
+      //console.log('Cards',response.data)
       setCards(response.data);
       setLoadingModal(false);
       setLoadingResult('');
@@ -132,6 +132,10 @@ export const CardProvider = ({ children }) => {
       setLoadingResult('Erro ao Carregar Cards!');
     }
   };
+
+
+
+
 
   const contextValue = {
     openCloseCreateCard,
@@ -154,7 +158,8 @@ export const CardProvider = ({ children }) => {
     openCloseAnexosModal, setOpenCloseAnexosModal,
     listaEtiquetas,
     fetchCards,
-    currentModuleCard, setCurrentModuleCard
+    currentModuleCard, setCurrentModuleCard,
+
   };
 
   return (

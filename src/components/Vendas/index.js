@@ -70,7 +70,7 @@ function Vendas() {
       const response = await axios.get(url);
       const vendas = response.data;
 
-      console.log('lista de vendas', vendas)
+
 
       setNovosVendidos(vendas);
 
@@ -83,7 +83,7 @@ function Vendas() {
   useEffect(() => {
 
     if (novosVendidos.length > vendasAnteriores.length) {
-      console.log("Existem novas vendas registradas")
+      //console.log("Existem novas vendas registradas")
 
       const vendasNovasCalculadas = novosVendidos.filter((venda) => !vendasAnteriores.some((vendaAnterior) => venda.card_id === vendaAnterior.card_id));
 
