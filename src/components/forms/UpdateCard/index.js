@@ -49,7 +49,7 @@ function UpdateCard({ idCard, cardData }) {
     if (count > 1) {
       setIsUpdatingCard(true);
     }
-  }, [statusCard, documentNumber, entityId, name, saleValue, costValue, email, state, city, fone, columnId, origemCard]);
+  }, [statusCard, documentNumber, secondDocumentoNumber, pedidoNumber, entityId, name, saleValue, costValue, email, state, city, fone, columnId, origemCard]);
 
 
   const formatToBrazilianCurrency = (value) => {
@@ -126,58 +126,6 @@ function UpdateCard({ idCard, cardData }) {
     return nameColumn ? nameColumn.name : 'Nome não encontrado';
   };
 
-  // const handleUpdateCard = async (e) => {
-  //   e.preventDefault();
-  //   setIsUpdatingCard(true);
-  //   setError('');
-
-  //   const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
-  //   if (!userConfirmed) {
-  //     return;
-  //   }
-
-
-  //   const selectedState = states.find((st) => st.sigla === state);
-  //   const selectedCity = cities.find((ct) => ct.id === parseInt(city));
-
-  //   const cardData = {
-  //     id: idCard,
-  //     name,
-  //     state: selectedState ? selectedState.sigla : '',
-  //     city: selectedCity ? selectedCity.nome : '',
-  //     fone,
-  //     email,
-  //     column_id: columnId,
-  //     entity_id: entityId,
-  //     empresa_id: user.empresa_id,
-  //     document_number: documentNumber ? documentNumber : '',
-  //     cost_value: costValue,
-  //     sale_value: saleValue,
-  //     status: statusCard ? statusCard : '',
-  //     origem: origemCard ? origemCard : 'Não informado',
-  //     produto: produtoCard ? produtoCard : 'Não informado',
-  //     status_date: statusDateCard ? statusDateCard : null, // Envie sempre o status_date no formato correto
-  //   };
-
-  //   try {
-  //     const response = await axios.post(`${apiUrl}/card/update`, cardData);
-  //     const updatedCardData = response.data[0];
-
-  //     setCards(prevCards => prevCards.map(card => card.card_id === idCard ? { ...card, ...updatedCardData } : card));
-  //     setPreviewSearchCards(prevCards => prevCards.map(card => card.card_id === idCard ? { ...card, ...updatedCardData } : card));
-  //     setListNotifications(prevCards => prevCards.map(card => card.card_id === idCard ? { ...card, ...updatedCardData } : card));
-
-  //     setOpenCloseUpdateCard(false);
-  //     setIsUpdatingCard(false);
-
-  //     if (columnId !== currentIdColumn) {
-  //       addHistoricoCardContext(`Coluna alterada para ${getNameColumnCard(columnId)}`, idCard, user.id);
-  //     }
-  //   } catch (error) {
-  //     setIsUpdatingCard(false);
-  //     setError('Erro ao atualizar o Card.');
-  //   }
-  // };
 
   const handleUpdateCard = async (e) => {
     e.preventDefault();

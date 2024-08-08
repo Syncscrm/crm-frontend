@@ -8,6 +8,7 @@ import { format, parseISO } from 'date-fns';
 import { GrTask } from "react-icons/gr";
 import { MdEmail, MdFolder, MdDeleteForever, MdCreditCard, MdLibraryAdd, MdAutoAwesomeMotion, MdOutlineSendToMobile, MdLockOpen, MdLockOutline, MdBookmark, MdAssignment, MdAssignmentTurnedIn, MdAdsClick, MdAddShoppingCart, MdAttachFile, MdViewColumn, MdWhatsapp, MdEdit, MdOutlineHistory, MdAnalytics, MdCreate, MdOutlineUpdate, Md360, MdWindow, MdRoom, MdShoppingCart, MdThumbDown, MdThumbUp, MdShare, MdHome, MdAccountBox, MdAlternateEmail, MdGrade, MdAccountBalance, MdArticle } from "react-icons/md";
 
+
 import './style.css';
 
 // API
@@ -40,7 +41,8 @@ function PreviewCard({ cardData, index }) {
     openCloseModalMessenger, setOpenCloseModalMessenger,
     openCloseAnexosModal, setOpenCloseAnexosModal,
     listaEtiquetas,
-    currentModuleCard, setCurrentModuleCard
+    currentModuleCard, setCurrentModuleCard,
+    openClosePedidosModal, setOpenClosePedidosModal
   } = useCard();
   const { columnsUser, columns } = useColumns();
 
@@ -99,10 +101,20 @@ function PreviewCard({ cardData, index }) {
   };
 
 
+  const openClosePedidos = (e) => {
+    e.stopPropagation();
+    setCurrentCardData(cardData)
+    setOpenClosePedidosModal(true)
+  };
+
+
   const viewCard = (e) => {
     e.stopPropagation();
-    fetchCardDetails(cardData.card_id);
-    fetchModules();
+    if(!showCard){
+      fetchCardDetails(cardData.card_id);
+      fetchModules(); 
+    }
+
     setShowCard(!showCard);
   };
 
@@ -271,7 +283,7 @@ function PreviewCard({ cardData, index }) {
   };
 
   const [modalLoading, setModalLoading] = useState(false)
-  const [mensagemLoading, setMensagemLoading] = useState('Salvando...')
+  const [mensagemLoading, setMensagemLoading] = useState('Atualizando...')
 
 
   const updateCardColumn = async (newColumnId) => {
@@ -597,6 +609,7 @@ function PreviewCard({ cardData, index }) {
 
   const fetchCardDetails = async (cardId) => {
     try {
+      setModalLoading(true)
       const response = await axios.get(`${apiUrl}/card/find-by-id/${cardId}`);
       const updatedCard = response.data;
       setCards(prevCards =>
@@ -604,6 +617,7 @@ function PreviewCard({ cardData, index }) {
           card.card_id === updatedCard.card_id ? { ...card, ...updatedCard } : card
         )
       );
+      setModalLoading(false)
     } catch (error) {
       console.error('Erro ao buscar detalhes do card:', error);
     }
@@ -620,8 +634,8 @@ function PreviewCard({ cardData, index }) {
 
   const [showPedidos, setShowPedidos] = useState(false);
 
-  const handlePedidosButtonClick = () => {
-    setShowPedidos(!showPedidos);
+  const handlePedidosButtonClick = (openClose) => {
+    setShowPedidos(openClose)
   };
 
 
@@ -682,9 +696,9 @@ function PreviewCard({ cardData, index }) {
 
   return (
 
-
         <div
           className='card-container'
+
           onClick={(e) => { viewCard(e) ; e.stopPropagation()}}
         >
 
@@ -1074,9 +1088,9 @@ function PreviewCard({ cardData, index }) {
                       }
 
                       {true && (
-                        <button onClick={(e) => { handlePedidosButtonClick(); e.stopPropagation(); }} className='btn-update-card'>
+                        <button onClick={(e) =>  openClosePedidos(e)} className='btn-update-card'>
                           <MdAssignment className='icons-btns-update-card' />
-                          {showPedidos && <PedidoPedido cardData={cardData} onClose={handlePedidosButtonClick} />}
+                          
                         </button>
                       )}
 

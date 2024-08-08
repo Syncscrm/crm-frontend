@@ -37,6 +37,17 @@ function ColumnsPage() {
 
 
 
+  const [editingCor, setEditingCor] = useState(null);
+  const [newColorName, setNewColorName] = useState('');
+  const [selectedColorForEdit, setSelectedColorForEdit] = useState('');
+  const [newColor, setNewColor] = useState(null);
+  //const [newSelectedColor, setNewSelectedColor] = useState('');
+
+
+
+  
+
+
 
   // ----------- BTNS TOOLS --------------
   // const showModalStatus = () => {
@@ -160,25 +171,25 @@ function ColumnsPage() {
 
 
 
-  const createCor = async () => {
-    const newName = prompt('Novo nome da cor:', '');
-    const descricao = prompt('Descrição da cor:', '');
+  // const createCor = async () => {
+  //   const newName = prompt('Novo nome da cor:', '');
+  //   const descricao = prompt('Descrição da cor:', '');
 
-    if (newName && descricao) {
-      try {
-        const itemData = {
-          name: newName,
-          descricao: descricao,
-          empresa_id: user.empresa_id,
-        };
+  //   if (newName && descricao) {
+  //     try {
+  //       const itemData = {
+  //         name: newName,
+  //         descricao: descricao,
+  //         empresa_id: user.empresa_id,
+  //       };
 
-        await axios.post(`${apiUrl}/users/createCor`, itemData);
-        showModalCores();
-      } catch (error) {
-        console.error('Erro ao criar Cor:', error);
-      }
-    }
-  };
+  //       await axios.post(`${apiUrl}/users/createCor`, itemData);
+  //       showModalCores();
+  //     } catch (error) {
+  //       console.error('Erro ao criar Cor:', error);
+  //     }
+  //   }
+  // };
 
 
   const createEtiqueta = async () => {
@@ -293,13 +304,13 @@ function ColumnsPage() {
         await axios.put(`${apiUrl}/users/updateColunaPedido/${user.empresa_id}`, { pedido_coluna: newName });
         setColunaStatusPedido(newName);
 
-         // Atualizar o contexto da empresa
-      setEmpresa((prevEmpresa) => ({
-        ...prevEmpresa,
-        pedido_coluna: newName, // Atualiza o pedido_coluna no estado da empresa
-      }));
+        // Atualizar o contexto da empresa
+        setEmpresa((prevEmpresa) => ({
+          ...prevEmpresa,
+          pedido_coluna: newName, // Atualiza o pedido_coluna no estado da empresa
+        }));
 
-      
+
       } catch (error) {
         console.error('Erro ao editar coluna pedido:', error);
       }
@@ -334,19 +345,71 @@ function ColumnsPage() {
 
 
 
-  const editeCor = async (item) => {
-    const newName = prompt('Novo nome:', item.name);
-    if (newName) {
-      try {
-        await axios.put(`${apiUrl}/users/updateCor/${item.id}`, { name: newName });
+  // const editeCor = async (item) => {
+  //   const newName = prompt('Novo nome:', item.name);
+  //   if (newName) {
+  //     try {
+  //       await axios.put(`${apiUrl}/users/updateCor/${item.id}`, { name: newName });
 
-        setListaCores(listaCores.map(itemList => itemList.id === item.id ? { ...itemList, name: newName } : itemList));
+  //       setListaCores(listaCores.map(itemList => itemList.id === item.id ? { ...itemList, name: newName } : itemList));
+  //     } catch (error) {
+  //       console.error('Erro ao editar Cor:', error);
+  //     }
+  //   }
+  // };
+
+  const editeCor = (item) => {
+    setEditingCor(item);
+    setNewColorName(item.name);
+    setSelectedColorForEdit(item.color_code); // Mudança aqui para color_code
+  };
+  
+  const saveCorEdits = async () => {
+    if (editingCor) {
+      try {
+        await axios.put(`${apiUrl}/users/updateCor/${editingCor.id}`, {
+          name: newColorName,
+          color_code: selectedColorForEdit, // Mudança aqui para color_code
+        });
+  
+        setListaCores(listaCores.map(itemList =>
+          itemList.id === editingCor.id ? { ...itemList, name: newColorName, color_code: selectedColorForEdit } : itemList
+        ));
+        setEditingCor(null); // Fechar o modal de edição
       } catch (error) {
         console.error('Erro ao editar Cor:', error);
       }
     }
   };
-
+  
+  
+  const createCor = () => {
+    setNewColor(true);
+    setNewColorName('');
+    setNewSelectedColor('');
+  };
+  
+  const saveNewCor = async () => {
+    if (newColorName && newSelectedColor) {
+      try {
+        const itemData = {
+          name: newColorName,
+          color_code: newSelectedColor, // Mudança aqui para color_code
+          empresa_id: user.empresa_id,
+        };
+  
+        await axios.post(`${apiUrl}/users/createCor`, itemData);
+  
+        const response = await axios.get(`${apiUrl}/users/getCores/${user.empresa_id}`);
+        setListaCores(response.data);
+  
+        setNewColor(null); // Fechar o modal de criação
+      } catch (error) {
+        console.error('Erro ao criar Cor:', error);
+      }
+    }
+  };
+  
 
 
   // const editeEtiqueta = async (item) => {
@@ -406,10 +469,10 @@ function ColumnsPage() {
   const removeCor = async (id) => {
     const isBlocked = true;
 
-    if (isBlocked) {
-      alert('Bloqueado pelo ADM');
-      return;
-    }
+    // if (isBlocked) {
+    //   alert('Bloqueado pelo ADM');
+    //   return;
+    // }
 
     try {
       await axios.delete(`${apiUrl}/users/deleteCor/${id}`);
@@ -501,7 +564,9 @@ function ColumnsPage() {
     // Tons em amarelo (pastéis)
     "#FFFFB3", "#FFFFCC", "#FFFFE6", "#FFFF99", "#FFFF80", "#FFFF66", "#FFFF4D", "#FFFF33", "#FFFF1A", "#FFFF99", "#FFFFB3",
     // Tons variados (pastéis)
-    "#FFCEB3", "#FFD1B2", "#FFDB99", "#DBFFB3", "#B3FF99", "#99FFD1", "#B2E6FF", "#DBB3FF", "#FFB3D9", "#FFB2CE", "#FFDAB9"
+    "#FFCEB3", "#FFD1B2", "#FFDB99", "#DBFFB3", "#B3FF99", "#99FFD1", "#B2E6FF", "#DBB3FF", "#FFB3D9", "#FFB2CE", "#FFDAB9",
+    // Preto, Bronze, Amadeirado, Pirita, Cinza
+    "#000000", "#CD7F32", "#8B4513", "#B8860B", "#808080"
   ]);
 
 
@@ -759,30 +824,112 @@ function ColumnsPage() {
 
 
 
-      {modalCores && (
-        <div className="parameter-modal">
-          <div className="parameter-container">
-            <div className="parameter-header">
-              <label className="parameter-title">Cores</label>
-            </div>
-            <div className="parameter-body">
-              {listaCores?.map((item) => (
-                <div className="item-list-parameter" key={item.id}>
-                  <label className="label-item-parameter">{item.name}</label>
-                  <div className="btns-item-list">
-                    <button className="btn-remove-item-list" onClick={() => removeCor(item.id)}>Remover</button>
-                    <button className="btn-edite-item-list" onClick={() => editeCor(item)}>Editar</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="parameter-footer">
-              <button className="btn-close-parameter" onClick={showModalCores}>Fechar</button>
-              <button className="btn-add-parameter" onClick={createCor}>Adicionar</button>
+{modalCores && (
+  <div className="parameter-modal">
+    <div className="parameter-container">
+      <div className="parameter-header">
+        <label className="parameter-title">Cores</label>
+      </div>
+      <div className="parameter-body">
+        {listaCores?.map((item) => (
+          <div className="item-list-parameter" key={item.id} style={{ borderLeft: `10px solid ${item.color_code}` }}>
+            <label className="label-item-parameter">{item.name}</label>
+            <div className="btns-item-list">
+              <button className="btn-remove-item-list" onClick={() => removeCor(item.id)}>Remover</button>
+              <button className="btn-edite-item-list" onClick={() => editeCor(item)}>Editar</button>
             </div>
           </div>
+        ))}
+      </div>
+      <div className="parameter-footer">
+        <button className="btn-close-parameter" onClick={showModalCores}>Fechar</button>
+        <button className="btn-add-parameter" onClick={createCor}>Adicionar</button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+
+
+{editingCor && (
+  <div className="parameter-modal">
+    <div className="parameter-container">
+      <div className="parameter-header">
+        <label className="parameter-title">Editar Cor</label>
+      </div>
+      <div className="parameter-body">
+        <label>Nome:</label>
+        <input
+          type="text"
+          value={newColorName}
+          onChange={(e) => setNewColorName(e.target.value)}
+        />
+
+        <label>Selecione a Cor:</label>
+        <div className="color-options">
+          {availableColors.map((color) => (
+            <div
+              key={color}
+              className={`color-option ${color === selectedColorForEdit ? 'selected' : ''}`}
+              style={{ backgroundColor: color }}
+              onClick={() => setSelectedColorForEdit(color)}
+            ></div>
+          ))}
         </div>
-      )}
+      </div>
+      <div className="parameter-footer">
+        <button className="btn-close-parameter" onClick={() => setEditingCor(null)}>Cancelar</button>
+        <button className="btn-add-parameter" onClick={saveCorEdits}>Salvar</button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+
+
+
+
+
+
+{newColor && (
+  <div className="parameter-modal">
+    <div className="parameter-container">
+      <div className="parameter-header">
+        <label className="parameter-title">Criar Nova Cor</label>
+      </div>
+      <div className="parameter-body">
+        <label>Nome:</label>
+        <input
+          type="text"
+          value={newColorName}
+          onChange={(e) => setNewColorName(e.target.value)}
+        />
+
+        <label>Selecione a Cor:</label>
+        <div className="color-options">
+          {availableColors.map((color) => (
+            <div
+              key={color}
+              className={`color-option ${color === newSelectedColor ? 'selected' : ''}`}
+              style={{ backgroundColor: color }}
+              onClick={() => setNewSelectedColor(color)}
+            ></div>
+          ))}
+        </div>
+      </div>
+      <div className="parameter-footer">
+        <button className="btn-close-parameter" onClick={() => setNewColor(null)}>Cancelar</button>
+        <button className="btn-add-parameter" onClick={saveNewCor}>Salvar</button>
+      </div>
+    </div>
+  </div>
+)}
+
+
 
 
       {/* 

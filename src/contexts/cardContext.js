@@ -41,6 +41,8 @@ export const CardProvider = ({ children }) => {
   const [openCloseModuloEsquadriasModal, setOpenCloseModuloEsquadriasModal] = useState(false)
   const [openCloseAnexosModal, setOpenCloseAnexosModal] = useState(false)
 
+  const [openClosePedidosModal, setOpenClosePedidosModal] = useState(false)
+
 
   const [tarefas, setTarefas] = useState([]);
 
@@ -159,6 +161,7 @@ export const CardProvider = ({ children }) => {
     listaEtiquetas,
     fetchCards,
     currentModuleCard, setCurrentModuleCard,
+    openClosePedidosModal, setOpenClosePedidosModal
 
   };
 

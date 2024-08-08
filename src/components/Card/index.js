@@ -41,7 +41,8 @@ function Card({ cardData, index }) {
     openCloseModalMessenger, setOpenCloseModalMessenger,
     openCloseAnexosModal, setOpenCloseAnexosModal,
     listaEtiquetas,
-    currentModuleCard, setCurrentModuleCard
+    currentModuleCard, setCurrentModuleCard,
+    openClosePedidosModal, setOpenClosePedidosModal
   } = useCard();
   const { columnsUser, columns } = useColumns();
 
@@ -97,6 +98,13 @@ function Card({ cardData, index }) {
     e.stopPropagation();
     setCurrentCardData(cardData)
     setOpenCloseTarefasModal(true)
+  };
+
+
+  const openClosePedidos = (e) => {
+    e.stopPropagation();
+    setCurrentCardData(cardData)
+    setOpenClosePedidosModal(true)
   };
 
 
@@ -626,8 +634,8 @@ function Card({ cardData, index }) {
 
   const [showPedidos, setShowPedidos] = useState(false);
 
-  const handlePedidosButtonClick = () => {
-    setShowPedidos(!showPedidos);
+  const handlePedidosButtonClick = (openClose) => {
+    setShowPedidos(openClose)
   };
 
 
@@ -1085,9 +1093,9 @@ function Card({ cardData, index }) {
                       }
 
                       {true && (
-                        <button onClick={(e) => { handlePedidosButtonClick(); e.stopPropagation(); }} className='btn-update-card'>
+                        <button onClick={(e) =>  openClosePedidos(e)} className='btn-update-card'>
                           <MdAssignment className='icons-btns-update-card' />
-                          {showPedidos && <PedidoPedido cardData={cardData} onClose={handlePedidosButtonClick} />}
+                          
                         </button>
                       )}
 

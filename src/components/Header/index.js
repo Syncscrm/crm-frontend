@@ -34,6 +34,7 @@ import Anexos from '../Anexos';
 import Avatar from '../Avatar';
 import Calendario from '../Calendario';
 import CustomModule from '../DynamicForm/CustomModule';
+import ModuloPedidos from '../ModuloPedido';
 
 
 function Header() {
@@ -50,7 +51,8 @@ function Header() {
     tarefas, setTarefas,
     openCloseModuloEsquadriasModal, setCards, setPreviewSearchCards, setOpenCloseModalVendaPerdida,
     openCloseModalMessenger, setOpenCloseModalMessenger,
-    openCloseAnexosModal, setOpenCloseAnexosModal
+    openCloseAnexosModal, setOpenCloseAnexosModal,
+    openClosePedidosModal, setOpenClosePedidosModal
   } = useCard();
 
   const [showMenuUser, setShowMenuUser] = useState(false);
@@ -447,6 +449,11 @@ function Header() {
 
       {openCloseCustomModule && (
         <CustomModule idCard={currentCardData.card_id} />
+      )}
+
+
+      {openClosePedidosModal && (
+        <ModuloPedidos idCard={currentCardData.card_id} />
       )}
 
 

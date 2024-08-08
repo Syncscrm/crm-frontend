@@ -166,3 +166,10 @@ border: 1px solid #ccc; /* Adiciona uma borda padrão */
   outline: none; /* Remove a borda de foco padrão */
   border: 1px solid #007bff; /* Define uma borda de foco customizada */
 }
+
+
+.error {
+    color: red;
+    font-size: 12px;
+  }
+  

@@ -32,7 +32,7 @@ import ExcelJS from 'exceljs';
 
 function HomePage() {
 
-  const { user, openCloseImportExcelEntidades, openCloseImportExcelSuiteFlow, afilhadosList, editableColumns, getAccessLevel, userAvatar } = useUser();
+  const { user, openCloseImportExcelEntidades, openCloseImportExcelSuiteFlow, afilhadosList, editableColumns, getAccessLevel, userAvatar, empresa } = useUser();
   const { columnsUser, setLoadingResult, setLoadingModal, selectedAfilhados, setSelectedAfilhados, dataInicial, setDataInicial, dataFinal, setDataFinal, orderBy, setOrderBy, isAscending, setIsAscending, localSearchTerm, handleLocalSearch, setores, selectedSetores, setSelectedSetores, handleSetorChange } = useColumns();
   const { fetchCards, addHistoricoCardContext, cards, setCards, previewSearchCards, setPreviewSearchCards, searchTerm, setSearchTerm, setCurrentCardData, setOpenCloseUpdateCard, openCloseModalVendaPerdida, setOpenCloseModalVendaPerdida, currentCardData } = useCard();
 
@@ -45,30 +45,6 @@ function HomePage() {
 
   const [searchType, setSearchType] = useState('name'); // Estado para armazenar o tipo de pesquisa selecionado
 
-//console.log(user)
-
-
-  // const fetchCardsByName = async () => {
-  //   setLoadingSearch(true);
-  //   if (searchTerm.trim()) {
-  //     try {
-  //       const response = await axios.get(`${apiUrl}/card/search`, {
-  //         params: {
-  //           [searchType]: encodeURIComponent(searchTerm), // Usa o tipo de pesquisa selecionado
-  //           entityId: user.id,
-  //           empresaId: user.empresa_id,
-  //         }
-  //       });
-  //       setPreviewSearchCards(response.data);
-  //       setLoadingSearch(false);
-  //     } catch (error) {
-  //       console.error('Failed to fetch cards:', error);
-  //       setLoadingSearch(false);
-  //     }
-  //   } else {
-  //     setPreviewSearchCards([]);
-  //   }
-  // };
 
   const fetchCardsByName = async () => {
     setLoadingSearch(true);
@@ -118,95 +94,6 @@ function HomePage() {
     return nameColumn ? nameColumn.name : 'Nome não encontrado';
   };
 
-  // const handleOnDragEnd = async (result) => {
-  //   const { destination, source, draggableId } = result;
-
-  //   const startCards = [...cards];
-
-
-  //   if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) {
-  //     return; // Não faz nada se não há destino ou se o card foi largado na mesma posição
-  //   }
-
-  //   const { cardData, block_column } = JSON.parse(draggableId);
-  //   const currentCardId = cardData.card_id;
-  //   const currentColumnId = parseInt(source.droppableId, 10);
-  //   const newColumnId = parseInt(destination.droppableId, 10);
-
-
-
-  //   if (!getAccessLevel('coluna')) {
-  //     const confirmDelete = window.alert('Não autorizado pelo Administrador!');
-  //     return
-  //   }
-
-
-  //   if (block_column) {
-  //     alert('Você não pode mover este card.');
-  //     return;
-  //   }
-
-
-
-  //   // Verifica se a coluna de destino está na lista de colunas editáveis
-  //   const editableColumnIds = editableColumns.map(column => column.columnId);
-
-  //   // Verifica se a coluna atual do card está na lista de colunas editáveis
-  //   if (!editableColumnIds.includes(currentColumnId)) {
-  //     alert('Você não tem permissão para mover o card a partir desta coluna.');
-  //     return;
-  //   }
-
-  //   // Verifica se a coluna de destino está na lista de colunas editáveis
-  //   if (!editableColumnIds.includes(newColumnId)) {
-  //     alert('Você não tem permissão para mover o card para esta coluna.');
-  //     return;
-  //   }
-
-
-
-
-  //   const userConfirmed = window.confirm(`Você tem certeza que deseja alterar?`);
-  //   if (!userConfirmed) {
-  //     return;
-  //   }
-
-
-  //   try {
-  //     setLoadingModal(true);
-  //     setLoadingResult('Alterando Coluna...');
-  //     // Chama a API para atualizar o column_id no banco de dados
-  //     const response = await axios.post(`${apiUrl}/card/update-column`, {
-  //       cardId: currentCardId,
-  //       columnId: newColumnId
-  //     });
-
-  //     if (response.data) {
-  //       addHistoricoCardContext(`Coluna alterada para ${getNameColumnCard(newColumnId)}`, currentCardId, user.id);
-  //     } else {
-  //       throw new Error('No data returned');
-  //     }
-
-  //     // Atualização otimista: Atualiza o estado imediatamente
-  //     const newCards = cards.map(card => {
-  //       if (card.card_id === currentCardId) {
-  //         return { ...card, column_id: newColumnId }; // Assume que a propriedade que define a coluna é `column_id`
-  //       }
-  //       return card;
-  //     });
-  //     setCards(newCards);
-
-  //     setLoadingModal(false);
-  //     setLoadingResult('');
-  //   } catch (error) {
-  //     setLoadingResult('Erro ao alterar Card de Coluna!');
-  //     console.error('Failed to update card column:', error);
-  //     // Reverte a mudança otimista em caso de erro
-  //     setCards(startCards);
-  //     alert('Failed to move card, please try again.');
-  //   }
-  // };
-
 
   const handleOnDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
@@ -241,7 +128,7 @@ function HomePage() {
     // Verifica se a coluna de destino está na lista de colunas editáveis
     const editableColumnIds = editableColumns.map(column => column.columnId);
 
-      //console.log('colunas inclusas', editableColumns)
+    //console.log('colunas inclusas', editableColumns)
     // Verifica se a coluna atual do card está na lista de colunas editáveis
     if (!editableColumnIds.includes(currentColumnId)) {
       alert('Você não tem permissão para mover o card a partir desta coluna.');
@@ -334,10 +221,7 @@ function HomePage() {
     }
   }, [user]);
 
-  // const handleTempDateChange = (e) => {
-  //   const { value } = e.target;
-  //   setDataInicial(value);
-  // };
+
 
   const handleTempDateChange = (e) => {
     const { name, value } = e.target;
@@ -421,20 +305,6 @@ function HomePage() {
 
   const [isLocalSearchVisible, setIsLocalSearchVisible] = useState(true);
 
-  // useEffect(() => {
-  //   const handleKeyDown = (event) => {
-  //     if (event.ctrlKey && event.key === 'l') {
-  //       event.preventDefault();
-  //       setIsLocalSearchVisible((prev) => !prev);
-  //     }
-  //   };
-
-  //   window.addEventListener('keydown', handleKeyDown);
-
-  //   return () => {
-  //     window.removeEventListener('keydown', handleKeyDown);
-  //   };
-  // }, []);
 
 
 
@@ -456,17 +326,17 @@ function HomePage() {
   const handleSelectAllSetores = () => {
     setSelectedSetores(setores);
   };
-  
+
   const handleDeselectAllSetores = () => {
     setSelectedSetores([]);
   };
-  
+
 
 
   const selectAllAfilhados = () => {
     setSelectedAfilhados([user.id, ...afilhadosList.map(afilhado => afilhado.id)]);
   };
-  
+
 
   useEffect(() => {
     if (user && afilhadosList.length > 0) {
@@ -476,8 +346,41 @@ function HomePage() {
 
 
 
-  
-  
+
+
+
+
+
+
+//-----------------------------------------------
+//-----------------------------------------------
+//-----------------------------------------------
+//----------------- ENVIAR EMAIL ----------------
+//-----------------------------------------------
+//-----------------------------------------------
+//-----------------------------------------------
+
+  const handleSendEmail = async () => {
+
+
+    // Dados do e-mail
+    const emailData = {
+      to: empresa.email_solicitacao_pedidos, // Alterar para o e-mail do destinatário
+      subject: 'Novo Pedido Criado',
+      text: 'Um novo pedido foi criado.',
+    };
+
+    try {
+      const response = await axios.post(`${apiUrl}/users/send-email/${empresa.id}`, emailData);
+
+    } catch (err) {
+
+    } finally {
+
+    }
+  };
+
+
 
 
   return (
@@ -491,31 +394,15 @@ function HomePage() {
 
 
 
-
+        <div>
+          <button style={{display: 'none'}} onClick={handleSendEmail} >
+            Send Email
+          </button>
+        </div>
 
 
         <MdOutlineSearch onClick={() => clearSearchTerm()} style={{ display: openCloseFilterModal || openCloseSelectAfilhadosModal || openCloseSelectDateModal ? 'none' : '', background: openCloseSearchModal ? 'dodgerblue' : '', cursor: 'pointer' }} className='search-icon-open-close' />
 
-        {/* <div style={{ display: openCloseSearchModal ? '' : 'none' }} className='search-card-container'>
-          <input
-            style={{ backgroundColor: searchTerm.trim() ? '#e0e0e0' : '', color: searchTerm.trim() ? 'rgb(83, 83, 83)' : '' }}
-            className='search-card-input'
-            placeholder="Buscar Cards..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-          />
-          <MdOutlineSearch style={{ cursor: 'pointer' }} className='search-icon' onClick={handleSearchClick} />
-          <button
-            style={{ display: openCloseSearchModal ? '' : 'none' }}
-            className='btn-clear-search'
-            onClick={() => {
-              clearSearchTerm();
-              setOpenCloseSearchModal(false);
-            }}
-          >
-            X
-          </button>
-        </div> */}
 
         {openCloseSearchModal &&
 
@@ -523,6 +410,7 @@ function HomePage() {
 
             className='modal-date-filter-container'
           >
+
 
 
 
@@ -546,16 +434,6 @@ function HomePage() {
 
               </div>
 
-              {/* <button
-            style={{ display: openCloseSearchModal ? '' : 'none' }}
-            className='btn-clear-search'
-            onClick={() => {
-              clearSearchTerm();
-              setOpenCloseSearchModal(false);
-            }}
-          >
-            X
-          </button> */}
 
               <div className='search-type-container'>
                 <label className='label-search-radio'>
@@ -675,90 +553,7 @@ function HomePage() {
 
 
 
-        {/* {openCloseSelectAfilhadosModal && (
-          <div className='modal-date-filter-container'>
 
-            <div id="afilhadosSelect" className="select-filter">
-              <label className="title-label-afilhados">Afilhados</label>
-
-              <input
-                type="text"
-                placeholder="Buscar Afilhado..."
-                value={afilhadoSearchTerm}
-                onChange={(e) => handleAfilhadoSearch(e.target.value)}
-              />
-              <div className="list-afilhados-container">
-
-
-                <div
-                  key="select-all"
-                  className={`select-filter-option ${selectedAfilhados.length === afilhadosList.length + 1 ? 'selected' : ''}`}
-                  style={{ backgroundColor: selectedAfilhados.length === afilhadosList.length + 1 ? 'dodgerblue' : '' }}
-                  onClick={handleSelectAll}
-                >
-                  {selectedAfilhados.length === afilhadosList.length + 1 ? 'Desselecionar Todos' : 'Selecionar Todos'}
-                </div>
-
-                <div
-                  key={user.id}
-                  className={`select-filter-option ${selectedAfilhados.includes(user.id) ? 'selected' : ''}`}
-                  style={{ backgroundColor: selectedAfilhados.includes(user.id) ? 'dodgerblue' : '' }}
-                  onClick={() => handleSelectChange(user.id)}
-                >
-                  <img
-                    className='logo-afilhado-lista'
-                    src={user.avatar ? (userAvatar?.includes('syncs-avatar') ? require(`../../../assets/avatares/${userAvatar}`) : user.avatar) : logoDefault}
-                  />
-                  <label className='label-afilhados-lista'>
-                    {user.username}
-                    <label className='label-user-type' style={{ background: user.user_type == 'Administrador' ? 'red' : user.user_type == 'Supervisor' ? '#49c5ff' : '' }}>{user.user_type}</label>
-                  </label>
-                </div>
-
-                {Object.entries(
-                  afilhadosList.reduce((acc, afilhado) => {
-                    const state = afilhado.state || 'Sem Estado'; // Adicione um fallback caso não haja estado
-                    if (!acc[state]) {
-                      acc[state] = [];
-                    }
-                    acc[state].push(afilhado);
-                    return acc;
-                  }, {})
-                ).map(([state, afilhados]) => (
-                  <React.Fragment key={state}>
-                    <div className='state-divider'>{state}</div>
-                    {afilhados.sort((a, b) => a.username.localeCompare(b.username)).map(afilhado => (
-                      <div
-                        key={afilhado.id}
-                        className={`select-filter-option ${selectedAfilhados.includes(afilhado.id) ? 'selected' : ''}`}
-                        style={{ backgroundColor: selectedAfilhados.includes(afilhado.id) ? 'dodgerblue' : '' }}
-                        onClick={() => handleSelectChange(afilhado.id)}
-                      >
-                        <img
-                          className='logo-afilhado-lista'
-                          src={afilhado.avatar ? (afilhado.avatar.includes('syncs-avatar') ? require(`../../../assets/avatares/${afilhado.avatar}`) : afilhado.avatar) : logoDefault}
-                        />
-                        <label className='label-afilhados-lista'>
-                          {afilhado.username}
-
-                          <label
-                            className='label-user-type'
-                            style={{
-                              background: afilhado.user_type === 'Administrador' ? 'red' : afilhado.user_type === 'Supervisor' ? '#49c5ff' : ''
-                            }}
-                          >
-                            {afilhado.user_type}
-                          </label>
-                        </label>
-
-                      </div>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-          </div>
-        )} */}
 
         {openCloseSelectAfilhadosModal && (
           <div className='modal-date-filter-container'>
@@ -954,7 +749,7 @@ function HomePage() {
                 <button
                   className='btns-filter-select-columns'
                   onClick={handleDeselectAllSetores}
-                  
+
                 >
                   Deselecionar Todos
                 </button>
